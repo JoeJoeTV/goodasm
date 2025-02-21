@@ -1,0 +1,111 @@
+#ifndef GOODASM_H
+#define GOODASM_H
+
+/* This is the main class, which repesents an assembler and disassembler
+ * for all supported languages.  It holds a symbol array and convenience
+ * functions for loading code or binaries.
+ */
+
+#include <QString>
+#include <QByteArray>
+#include <QList>
+#include <QStack>
+
+#include "galanguage.h"
+#include "gainstruction.h"
+#include "gasymboltable.h"
+class GAListing;
+
+class GoodASM
+{
+public:
+    GoodASM(GALanguage *language=0);
+    GoodASM(QString language);
+    ~GoodASM();
+
+    void setLanguage(GALanguage *language);
+    void setLanguage(QString language);
+    void setListing(QString style);
+    void setListing(GAListing *style);
+    QString opcodeTable();                    //Opcode table for active language.
+
+    GASymbolTable symbols;
+
+    QString source();              //Text input or disassembly.
+    QString formatSource(QString label, QString code,
+                         QString comment, QString comment2="");
+    QByteArray code();             //Binary input or assembly.
+    QString hexdump();             //Code in hex.
+
+    void load(QByteArray bytes);    //Load a binary for disassembly.
+    //Disassemble bytes and append them to the working project.
+    void loadFragment(QString label, QByteArray bytes, QString comment);
+    void load(QString source);      //Load source for assembly.
+    void loadFile(QString file);    //Loads a filename for assembly.
+    void clear(bool symbols=false); //Clears all data or instructions.
+
+    void append(GAInstruction ins); //Insert the next instruction.
+
+    uint8_t byteAt(uint64_t adr);   //Grab a byte from an address.
+    GAInstruction at(uint64_t adr); //Grab an instruction from an address.
+    uint64_t address();             //Calculated current working address.
+    uint64_t baseaddress=0;         //Base address of the image.
+
+    QString addr2line(int64_t adr=-1); //Returns filename and line number.
+    void pushFilename(QString name);   //Pushes filename and line number.
+    QString popFilename();             //Pops them back.
+
+    //Error handling.
+    void error(QString message);       //Logs an error at current file and line.
+    QVector<QString> errors;           //Vector of error messages from latest run.
+    int printErrors();                 //Prints all errors collected since the last run.
+    void clearErrors();                //Clear errors between rows.
+
+    //Self tests for sanity and consistency.
+    bool selftest_all();        // All the self testing.
+    bool selftest_examples();   // Do the examples line up?
+    bool selftest_collisions(); // Are there collisions?
+    bool selftest_fuzz();       // Do disassemblies ever violate assertions?
+    bool selftest_overlap();    // Does a parameter's mask overlap with the opcode?
+    bool selftest_length();     // Are the mask strings null-terminated?
+
+    //Should these be private?
+    GALanguage *lang=0;
+    GAListing *listing=0;
+    int listbytes=-1;    //Number of bytes to show in listing.
+    int listadr=1;       //Include the address in the listing.
+    int autocomment=0;   //Autogen comments when none is available.
+    int verbose=0;       //Useful for printf debugging.
+    bool listbits=false; //Shows bits instead of bytes.
+    int line=0;          //Line number.
+    QString filename=""; //Filename.
+    QStack<int> filenamelines;
+    QStack<QString> filenames;
+    int duplicates=0;    //Count of instructions that match both ways.
+
+    //Returns an array of tab completions for the REPL mode.
+    char **readline_completions(const char *fragment, const char *line,
+                                int start, int end);
+
+    //Formerly private.
+    QByteArray bytes;                    //Byte representation of program.
+    QList<GAInstruction> instructions;   //Source listing of the program.
+    enum {NONE, ASSEMBLY, DISASSEMBLY} type=NONE;
+
+private:
+    uint64_t workingadr=0;  //Working address for in-progress parsing.
+
+    //Available languages and listing drivers.
+    QVector<GALanguage*> languages;
+    QVector<GAListing*> listings;
+};
+
+
+//Convenience test, to disable readline on platforms that don't have it.
+#define HASREADLINE
+#if defined(Q_OS_WIN) || defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
+#undef HASREADLINE
+#endif
+
+
+#endif // GOODASM_H

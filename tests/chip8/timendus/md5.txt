@@ -1,0 +1,8 @@
+bf86114b5b690bdbaaf860169765970f  1-chip8-logo.bin
+#7184900e4e4343554a6706792b21d7b7  2-ibm-logo.bin
+#6d91749442c9a3b9e4db9582b60638cd  3-corax+.bin
+#9a63f29c4cd120341dd320e20872ba11  4-flags.bin
+#cb02d1248208ce48c50237981f6ef23f  5-quirks.bin
+#fed134a323de303197fcc61bcf514eb7  6-keypad.bin
+#925eb7dc8f6f7d1777a84ed8912e46f0  7-beep.bin
+#e60f0d69776f8cf699b913402c0aeca1  8-scrolling.bin

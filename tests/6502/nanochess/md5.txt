@@ -1,0 +1,35 @@
+# Chapter 1
+6a5a236144ac3476ee3e3dea2038c46d  demo1_4.bin
+2edf11cc98742c5b048ac27c752259e6  demo1_8.bin
+
+# Chapter 2
+cca15f8d3a4468f5f2599ed66fba69d3  demo2_1.bin
+63262f99d8671cc95fa17e385691f208  demo2_2.bin
+f6016dbf34b4f336083f8743b580409e  demo2_3.bin
+9a310ef288eff935eb696545e4cf4139  demo2_4.bin
+42975f96b8948a5999423c2d1e5867a7  demo2_5.bin
+
+# Chapter 3
+a259a82bbd14ca3481e4620520532a77  demo3_1.bin
+# ffac62b051f0ff5117dba80f3def8892  demo3_2.bin
+# a3ee85ce48b2ef7c751fe8b9356c2d98  demo3_3.bin
+# 43771ad91c4c6a8015c37f2c09985b83  demo3_4.bin
+# 7febeb73a8a5e5ec71cb8e8e015177b3  demo3_5.bin
+# 35643d72905a82cea2aebf0c36435ea6  demo3_6.bin
+# e91e1acb584feeec6c83605c5b69717f  demo3_7.bin
+# 348626a47e7f4167990cef4e064b4681  demo3_8.bin
+# 9a2d6782ec794ae8abb4be56a7715d19  demo4_1.bin
+# ab332f6c909059457bd0c299c8aa8028  demo4_2.bin
+# 1866d10630a771f01bd38c6a2b053c91  demo4_3.bin
+# e17763c43b5f44d5094a97258edb7406  demo4_4.bin
+# 8928ed598d79845940ef708ee2a192ab  demo4_5.bin
+# 4294f0d8e545058a03d5705569ce7fce  demo4_6.bin
+# 9da9a7ff31debbc63f02faf176b60c11  demo4_7.bin
+# e02ac2606b8d985cec9e434d7964dab0  demo4_8.bin
+# 4aa3b5b1f0e4bbf27742ce8a3e72b8fb  demo4_9.bin
+# c10c6479ce78b1fe548b704f8fc03ab9  demo5_1.bin
+# 83157c9a5afdee334685f3da0d012fd3  demo6_1.bin
+# 8c15829853f1a23796fca043c7997ecc  demo7_1.bin
+# 3f0a4723c207beeb218c0603b5cfa337  demo8_1.bin
+# 6dc8e55cdfb8d09951eb4c76873f3109  demo9_1.bin
+# 4b56d465bed42c9eaaf0b3ab27500566  palette.bin
