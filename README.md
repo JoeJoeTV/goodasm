@@ -281,6 +281,7 @@ A number of directives are available for all languages:
 .equ foo 0xcafe      ;; Defines the symbol foo to be 0xCAFE.
 .db 0xde, 0xad, 0xbe ;; Includes the bytes DEADBE.
 .db "hello", 0       ;; Null terminated string.
+.dh 9d de ad be ef   ;; Hex bytes, as data.
 .ib 9d de ad be ef   ;; Instruction bytes, disassembled then reloaded.
 ```
 

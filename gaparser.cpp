@@ -194,9 +194,9 @@ void GAParser::parse(){
         else if(checkToken(GATokenType::symbol))
             instruction();
         else if(checkToken(GATokenType::comment))
-            precomment(); //Skip comment.
+            precomment(); //Comment with empty instruction.
         else if(!checkToken(GATokenType::newline))
-            qDebug()<<"Unexpected middle token"<<token->literal;
+            goodasm->error("Unexpected middle token: "+token->literal);
 
         //Comments at the end.
         if(checkToken(GATokenType::comment))
@@ -227,6 +227,26 @@ void GAParser::directive(){
                 bytes.append(byte);
             }else if(token->type==GATokenType::quote){
                 bytes.append(token->literal.toUtf8());
+            }else if(token->type==GATokenType::comment){
+                comment=token->literal;
+            }
+            nextToken();
+        }
+        GAInstruction ins(goodasm, bytes);
+        ins.comment=comment;
+        if(labelname.length()>0){       //Consume label if it's waiting.
+            ins.label=labelname;
+            labelname="";
+        }
+        goodasm->append(ins);
+    }else if(directive=="dh"){  // Data bytes as hex.
+        QByteArray bytes;
+        QString comment;
+        while(token->type!=GATokenType::newline && token->type!=GATokenType::endoffile){
+            if(token->type==GATokenType::symbol){
+                GAParserOperand op(goodasm, "", token->literal, "");
+                uint8_t byte=op.fromhex();
+                bytes.append(byte);
             }else if(token->type==GATokenType::comment){
                 comment=token->literal;
             }
