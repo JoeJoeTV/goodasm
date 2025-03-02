@@ -35,6 +35,7 @@
 #include "galistingyarax.h"
 #include "galistingmarkdown.h"
 #include "galistinghex.h"
+#include "galistingga.h"
 
 //Symbol table.
 #include "gasymboltable.h"
@@ -89,6 +90,7 @@ void GoodASM::setListing(QString style){
         listings.append(new GAListingYaraX());
         listings.append(new GAListingMarkdown());
         listings.append(new GAListingHex());
+        listings.append(new GAListingGA());
     }
     listing=0;
     foreach(auto l, listings){

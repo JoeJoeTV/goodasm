@@ -26,6 +26,7 @@ set(GOODASM_SOURCES
     galistingyarax.h galistingyarax.cpp
     galistingmarkdown.h galistingmarkdown.cpp
     galistinghex.h galistinghex.cpp
+    galistingga.h galistingga.cpp
 
     # Lexer and Parser
     gatoken.h gatoken.cpp

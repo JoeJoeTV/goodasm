@@ -110,6 +110,11 @@ int main(int argc, char *argv[]){
                                   );
     parser.addOption(nasmOption);
 
+    QCommandLineOption goodasmOption(QStringList()<<"F"<<"goodasm",
+                                  "Output is legal in GoodASM."
+                                  );
+    parser.addOption(goodasmOption);
+
     QCommandLineOption cOption(QStringList()<<"C",
                                   "Output is legal in C."
                                   );
@@ -273,6 +278,8 @@ int main(int argc, char *argv[]){
         goodasm->setListing("markdown");
     else if(parser.isSet(hexOption))
         goodasm->setListing("hex");
+    else if(parser.isSet(goodasmOption))
+        goodasm->setListing("goodasm");
     else
         listing=parser.isSet(listOption);
 
