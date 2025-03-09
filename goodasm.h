@@ -87,6 +87,8 @@ public:
     char **readline_completions(const char *fragment, const char *line,
                                 int start, int end);
 
+    QVector<QString> languageNames();
+
     //Formerly private.
     QByteArray bytes;                    //Byte representation of program.
     QList<GAInstruction> instructions;   //Source listing of the program.

@@ -79,6 +79,17 @@ void GoodASM::setLanguage(QString language){
     if(!lang) setLanguage(0);
 }
 
+//List of supported language names.
+QVector<QString> GoodASM::languageNames(){
+    QVector<QString> v;
+    if(languages.empty())
+        setLanguage("");
+    foreach(auto l, languages){
+        v.append(l->name);
+    }
+    return v;
+}
+
 
 void GoodASM::setListing(QString style){
     if(listings.empty()){
