@@ -104,6 +104,11 @@ if(WIN32 OR (LINUX AND NOT ANDROID) OR (APPLE AND NOT IOS) )
         main.cpp
         ${GOODASM_SOURCES}
     )
+    qt_add_library(libgoodasm STATIC
+        #main.cpp
+        ${GOODASM_SOURCES}
+    )
+    target_link_libraries(libgoodasm PRIVATE Qt6::Quick)
     if(WIN32)
         target_link_libraries(goodasm PRIVATE Qt6::Quick)
     else()
