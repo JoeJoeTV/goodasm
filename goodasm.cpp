@@ -37,6 +37,9 @@
 #include "galistinghex.h"
 #include "galistingga.h"
 
+//Graders
+#include "gagradervalidops.h"
+
 //Symbol table.
 #include "gasymboltable.h"
 
@@ -113,6 +116,21 @@ void GoodASM::setListing(QString style){
     assert(listing);
 }
 
+
+void GoodASM::setGrader(QString grader){
+    if(graders.empty()){
+        //Graders, for identifying unknown languages or confirming guesses.
+        graders.append(new GAGraderValidOps());
+    }
+    this->grader=0;
+    foreach(auto g, graders){
+        if(g->name==grader)
+            setGrader(g);
+    }
+}
+void GoodASM::setGrader(GAGrader *grader){
+    this->grader=grader;
+}
 
 
 
@@ -605,6 +623,24 @@ void GoodASM::loadFile(QString file){
     load(QString(bytes));
     popFilename();
 }
+
+//Loads a filename for disassembly.
+void GoodASM::loadBinFile(QString file){
+    QByteArray bytes;
+
+    QFile input(file);
+    if(file=="-")
+        input.open(stdin, QIODevice::ReadOnly);
+    else
+        input.open(QFile::ReadOnly);
+    bytes=input.readAll();
+    if(bytes.length()==0)
+        exit(1);
+
+    load(bytes);
+}
+
+
 //Pushes the filename before including another.
 void GoodASM::pushFilename(QString name){
     filenames.push(filename);
@@ -660,8 +696,9 @@ uint8_t GoodASM::byteAt(uint64_t adr){
     if(adr<bytes.length())
         return bytes[(int) adr];
 
-    if(verbose)
-        qDebug()<<"Illegal fetch from adr"<<adr;
+    //Too loud even for verbose mode.  Uncomment if you reall need this.
+    //if(verbose) qDebug()<<"Illegal fetch from adr"<<adr;
+
     return 0;
 }
 

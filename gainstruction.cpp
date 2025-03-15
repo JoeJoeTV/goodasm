@@ -26,7 +26,7 @@ GAInstruction::GAInstruction(GoodASM *gasm, uint8_t byte){
     type=DATA;
     data.append(byte);
 }
-
+//Many bytes.
 GAInstruction::GAInstruction(GoodASM *gasm, QByteArray bytes){
     assert(gasm);
     this->gasm=gasm;

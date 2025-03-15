@@ -28,6 +28,10 @@ set(GOODASM_SOURCES
     galistinghex.h galistinghex.cpp
     galistingga.h galistingga.cpp
 
+    #Graders
+    gagrader.h gagrader.cpp
+    gagradervalidops.h gagradervalidops.cpp
+
     # Lexer and Parser
     gatoken.h gatoken.cpp
     galexer.h galexer.cpp

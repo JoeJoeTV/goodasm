@@ -11,13 +11,14 @@
 #include <QList>
 #include <QStack>
 
+#include "gagrader.h"
 #include "galanguage.h"
 #include "gainstruction.h"
 #include "gasymboltable.h"
+
 class GAListing;
 
-class GoodASM
-{
+class GoodASM {
 public:
     GoodASM(GALanguage *language=0);
     GoodASM(QString language);
@@ -27,6 +28,8 @@ public:
     void setLanguage(QString language);
     void setListing(QString style);
     void setListing(GAListing *style);
+    void setGrader(QString grader);
+    void setGrader(GAGrader *grader);
     QString opcodeTable();                    //Opcode table for active language.
 
     GASymbolTable symbols;
@@ -42,6 +45,7 @@ public:
     void loadFragment(QString label, QByteArray bytes, QString comment);
     void load(QString source);      //Load source for assembly.
     void loadFile(QString file);    //Loads a filename for assembly.
+    void loadBinFile(QString file); //Loads a filename for disassembly.
     void clear(bool symbols=false); //Clears all data or instructions.
 
     void append(GAInstruction ins); //Insert the next instruction.
@@ -72,6 +76,7 @@ public:
     //Should these be private?
     GALanguage *lang=0;
     GAListing *listing=0;
+    GAGrader *grader=0;
     int listbytes=-1;    //Number of bytes to show in listing.
     int listadr=1;       //Include the address in the listing.
     int autocomment=0;   //Autogen comments when none is available.
@@ -100,6 +105,7 @@ private:
     //Available languages and listing drivers.
     QVector<GALanguage*> languages;
     QVector<GAListing*> listings;
+    QVector<GAGrader*> graders;
 };
 
 

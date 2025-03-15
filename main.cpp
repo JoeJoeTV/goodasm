@@ -385,38 +385,15 @@ int main(int argc, char *argv[]){
             }
         }
     } else if(args.count()==1 && parser.isSet(gradeOption)){  //Is this binary in this language?
-        //FIXME: Refactor this into the GoodASM class.
-        QByteArray bytes;
+        goodasm->loadBinFile(args[0]);
 
-        QFile input(args[0]);
-        if(args[0]=="-")
-            input.open(stdin, QIODevice::ReadOnly);
-        else
-            input.open(QFile::ReadOnly);
-        bytes=input.readAll();
-        if(bytes.length()==0)
-            exit(1);
-        goodasm->load(bytes);
-
-        /* At this point, we have a complete copy of the disassembly as a string.
-         * For languages with sparse opcodes, like 6502 with 151/256 instructions
-         * defined, a random binary will contain a hell of a lot of illegal
-         * instructions.  This doesn't work for every architecture yet.
-         */
-        goodasm->autocomment=1;
-        QString src=goodasm->source();
-        auto srca=src.split("\n");
-        int total=srca.count();
-        int goods=total;
-        for(int i=0; i<total; i++){
-            if(srca[i].contains("illegal"))
-                goods--;
-        }
-
-        int score=goods*100;
-        score/=total;
-        std::cout<<score<<"\t"<<args[0].toStdString()<<"\n";
-        return !(score>(goodasm->lang->threshold));
+        goodasm->setGrader("validops"); // TODO Don't hardcode this.
+        assert(goodasm->grader);
+        bool valid=goodasm->grader->isValid(goodasm);
+        bool compatible=goodasm->grader->isCompatible(goodasm);
+        qDebug()<<goodasm->grader->name<<" is "<<
+            (compatible?"compatible":"incompatible")<<"and"<<
+            (valid?"valid":"invalid");
     }
 
 
