@@ -320,7 +320,15 @@ int main(int argc, char *argv[]){
     }
 
     //Fuzz tests to identify crashes.
-    if(parser.isSet(fuzzOption)){
+    if(parser.isSet(fuzzOption) && parser.isSet(identOption)){
+        if(!goodasm->selftest_fuzz()){
+            std::cout<<"Fuzz test failed.\n";
+            return 1;
+        }
+        goodasm->identify();
+        std::cout<<"Identity of fuzzed target did not crash.\n";
+        return 0;
+    }else if(parser.isSet(fuzzOption)){
         if(goodasm->selftest_fuzz()){
             std::cout<<"Fuzz test passed.\n";
             return 0;

@@ -60,5 +60,7 @@ fuzz:
 	goodasm --fuzz --6805
 	goodasm --fuzz --chip8
 	goodasm --fuzz --z80
-	goodasm --pic16c5x --fuzz
+	goodasm --fuzz --pic16c5x
+# Identitify fuzzing.
+	goodasm --fuzz -i
 
