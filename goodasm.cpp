@@ -40,6 +40,7 @@
 //Graders
 #include "gagradervalidops.h"
 #include "gagraderjumptargets.h"
+#include "gagradergameboy.h"
 
 //Symbol table.
 #include "gasymboltable.h"
@@ -123,6 +124,7 @@ void GoodASM::setGrader(QString grader){
         //Graders, for identifying unknown languages or confirming guesses.
         graders.append(new GAGraderValidOps());
         graders.append(new GAGraderJumpTargets());
+        graders.append(new GAGraderGameBoy());
     }
     this->grader=0;
     foreach(auto g, graders){
@@ -715,29 +717,21 @@ uint64_t GoodASM::address(){
 }
 
 //Identifies languages for a binary.
-QList<QString> GoodASM::identify(){
+QVector<GAGraderGrade> GoodASM::identify(){
     /* This function works by reconfiguring the disassembler
      * into each language and grader, then testing to see if
      * the binary is a match.
      */
 
-    QList<QString> matches;
+    QVector<GAGraderGrade> matches;
 
     setLanguage(""); //Ensure list is populated.
     setGrader("");   //Ensure list is populated.
-    foreach(auto l, languages){
-        setLanguage(l);
-        foreach(auto g, graders){
-            if(g->isCompatible(this)){
-                uint64_t score=g->isValid(this);
-                if(score){
-                    qDebug()<<"VALID:   "<<l->name<<g->name<<score;
-                    matches<<l->name;
-                }else{
-                    //qDebug()<<"INVALID: "<<l->name<<g->name;
-                }
-            }
-        }
+
+    //Collect the scores of each grader.
+    foreach(auto g, graders){
+        //For all languages.
+        matches.append(g->scores(this));
     }
 
     return matches;

@@ -49,7 +49,7 @@ public:
     void clear(bool symbols=false); //Clears all data or instructions.
 
 
-    QList<QString> identify();      //Identifies languages for a binary.
+    QVector<GAGraderGrade> identify(); //Identifies potential languages for a binary.
 
 
     void append(GAInstruction ins); //Insert the next instruction.

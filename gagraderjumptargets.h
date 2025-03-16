@@ -16,7 +16,7 @@ public:
     GAGraderJumpTargets();
 
     uint64_t isValid(GoodASM *goodasm) override;        // Is it real?
-    bool isCompatible(GoodASM *goodasm) override;   // Is this grader compatible?
+    bool isCompatible(GALanguage *lang) override;   // Is this grader compatible?
 
 private:
     int threshold=5;

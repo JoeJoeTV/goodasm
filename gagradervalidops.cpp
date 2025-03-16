@@ -12,7 +12,7 @@ GAGraderValidOps::GAGraderValidOps() {
 // Is it real?
 uint64_t GAGraderValidOps::isValid(GoodASM *goodasm){
     //Needed to set the threshold.
-    isCompatible(goodasm);
+    isCompatible(goodasm->lang);
 
 
     GAInstruction ins=goodasm->at(goodasm->baseaddress);
@@ -42,8 +42,8 @@ uint64_t GAGraderValidOps::isValid(GoodASM *goodasm){
 }
 
 // Is this grader compatible?
-bool GAGraderValidOps::isCompatible(GoodASM *goodasm){
-    GALanguage *l=goodasm->lang;
+bool GAGraderValidOps::isCompatible(GALanguage *lang){
+    GALanguage *l=lang;
 
     //How many opcodes are defined?
     int count=0;
@@ -56,9 +56,6 @@ bool GAGraderValidOps::isCompatible(GoodASM *goodasm){
         }
         if(matched) count++;
     }
-
-    if(goodasm->verbose)
-        qDebug()<<"Valid op count:"<<count<<"\n";
 
     /* The threshold is 90% valid instructions or 5% more valid instructions
      * than would be explained by chance.  On architectures like 8051 where

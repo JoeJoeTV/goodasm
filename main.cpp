@@ -338,20 +338,7 @@ int main(int argc, char *argv[]){
         //Interactive assembly and disassembly modes are now unified.
         return garepl_encode(goodasm);
     }else if(args.count()==1 && parser.isSet(disOption)){    //Disassemble a binary.
-        QByteArray bytes;
-
-        QFile input(args[0]);
-        if(args[0]=="-")
-            input.open(stdin, QIODevice::ReadOnly);
-        else
-            input.open(QFile::ReadOnly);
-        bytes=input.readAll();
-        if(bytes.length()==0){
-            qDebug()<<"Empty file.";
-            exit(1);
-        }
-        goodasm->load(bytes);
-
+        goodasm->loadBinFile(args[0]);
         std::cout<<goodasm->source().toStdString();
     } else if(args.count()==1
                && !parser.isSet(disOption)
@@ -394,18 +381,27 @@ int main(int argc, char *argv[]){
         goodasm->loadBinFile(args[0]);
 
         goodasm->setGrader("");   //Ensure list is populated.
-
         foreach(auto g, goodasm->graders){
             goodasm->setGrader(g);
-            bool valid=goodasm->grader->isValid(goodasm);
-            bool compatible=goodasm->grader->isCompatible(goodasm);
-            qDebug()<<goodasm->grader->name<<" is "<<
-                (compatible?"compatible":"incompatible")<<"and"<<
-                (valid?"valid":"invalid");
+            bool compatible=goodasm->grader->isCompatible(goodasm->lang);
+            if(compatible){
+                bool valid=goodasm->grader->isValid(goodasm);
+                printf("%s\t%s\n",
+                       goodasm->grader->name.toStdString().c_str(),
+                       (valid?"valid":"invalid")
+                       );
+            }
         }
     } else if(args.count()==1 && parser.isSet(identOption)){  //In what language is the binary?
         goodasm->loadBinFile(args[0]);
-        goodasm->identify();
+        QVector<GAGraderGrade> grades=goodasm->identify();
+        foreach(auto g, grades){
+            printf("%s\t%s\t%ld\n",
+                   g.lang->name.toStdString().c_str(),
+                   g.grader->name.toStdString().c_str(),
+                   (long) g.score
+                   );
+        }
     }
 
 

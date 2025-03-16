@@ -48,7 +48,7 @@ Source code and binaries will be publicly released at
 
 ## Building
 
-For GUI development, install the [Qt Dev Kit]() and then open
+For GUI development, install the [Qt Dev Kit](https://www.qt.io/download-qt-installer-oss) and then open
 `CMakefile.txt` in Qt Creator.
 
 To build in Linux without the GUI, first install `qt6-declarative-dev`, `qml6-module-\*`

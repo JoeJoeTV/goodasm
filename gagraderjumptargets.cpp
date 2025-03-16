@@ -13,8 +13,10 @@ GAGraderJumpTargets::GAGraderJumpTargets() {
 
 // Is it real?
 uint64_t GAGraderJumpTargets::isValid(GoodASM *goodasm){
+    assert(goodasm);
+
     //Needed to set the threshold.
-    isCompatible(goodasm);
+    isCompatible(goodasm->lang);
 
     GAInstruction ins=goodasm->at(goodasm->baseaddress);
     uint64_t valid=0, invalid=0;
@@ -34,7 +36,8 @@ uint64_t GAGraderJumpTargets::isValid(GoodASM *goodasm){
                 if(p.startsWith("0x")){
                     bool okay=false;
                     uint64_t adr=GAParser::str2uint(p, &okay);
-                    if(okay) targets[adr]++;
+                    //FIXME: This is the wrong way to handle address boundaries.
+                    if(okay) targets[adr&0xFFFF]++;
                 }
             }
             break;
@@ -59,11 +62,12 @@ uint64_t GAGraderJumpTargets::isValid(GoodASM *goodasm){
 }
 
 // Is this grader compatible?
-bool GAGraderJumpTargets::isCompatible(GoodASM *goodasm){
-    QString name=goodasm->lang->name;
+bool GAGraderJumpTargets::isCompatible(GALanguage *lang){
+    assert(lang);
+    QString name=lang->name;
 
     //4-bit chips aren't compatible with this trick.
-    if(name=="ucom43" || name=="tlcs47" || name=="chip8")
+    if(name=="ucom43" || name=="tlcs47" || name=="chip8" || name=="pic16c5x")
         return false;
 
     //8051 also triggers false positives a lot.  Not sure why.
