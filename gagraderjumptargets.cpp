@@ -66,6 +66,9 @@ bool GAGraderJumpTargets::isCompatible(GoodASM *goodasm){
     if(name=="ucom43" || name=="tlcs47" || name=="chip8")
         return false;
 
+    //8051 also triggers false positives a lot.  Not sure why.
+    if(name=="8051") return false;
+
     //Maybe this works everywhere?
     return true;
 }
