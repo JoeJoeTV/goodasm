@@ -13,11 +13,10 @@ class GAGraderValidOps : public GAGrader
 public:
     GAGraderValidOps();
 
-    bool isValid(GoodASM *goodasm) override;        // Is it real?
+    uint64_t isValid(GoodASM *goodasm) override;        // Is it real?
     bool isCompatible(GoodASM *goodasm) override;   // Is this grader compatible?
 private:
     qreal threshold=100.0;
-
 };
 
 #endif // GAGRADERVALIDOPS_H

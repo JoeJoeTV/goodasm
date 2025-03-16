@@ -68,11 +68,6 @@ public:
 
     //These used to be private.
     uint32_t length=0;
-    /*
-    const char* opcode=0;
-    const char* opcodemask=0;
-    const char* invertmask=0;
-    */
     char opcode[GAMAXLEN]; //Opcode bytes.
     char dcmask[GAMAXLEN]; //Don't-care mask.
 
@@ -80,9 +75,6 @@ private:
     void config(QString mnemonic, uint32_t length,
                 const char *opcode,
                 const char *opcodemask, const char *invertmask);
-
-
-
 };
 
 #endif // GAMNEMONIC_H

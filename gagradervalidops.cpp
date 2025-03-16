@@ -10,14 +10,12 @@ GAGraderValidOps::GAGraderValidOps() {
 }
 
 // Is it real?
-bool GAGraderValidOps::isValid(GoodASM *goodasm){
+uint64_t GAGraderValidOps::isValid(GoodASM *goodasm){
     //Needed to set the threshold.
     isCompatible(goodasm);
 
 
     GAInstruction ins=goodasm->at(goodasm->baseaddress);
-    QString src="";
-
     uint64_t valid=0, invalid=0;
 
     //Assembly comes from source, must match data.
@@ -35,8 +33,10 @@ bool GAGraderValidOps::isValid(GoodASM *goodasm){
     }
 
     qreal ratio=((qreal)valid)/((qreal)(valid+invalid));
-    qDebug()<<"Ratio:     "<<ratio;
-    qDebug()<<"Threshold: "<<threshold;
+    if(goodasm->verbose){
+        qDebug()<<"Ratio:     "<<ratio;
+        qDebug()<<"Threshold: "<<threshold;
+    }
 
     return ratio>threshold;
 }

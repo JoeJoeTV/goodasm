@@ -48,6 +48,10 @@ public:
     void loadBinFile(QString file); //Loads a filename for disassembly.
     void clear(bool symbols=false); //Clears all data or instructions.
 
+
+    QList<QString> identify();      //Identifies languages for a binary.
+
+
     void append(GAInstruction ins); //Insert the next instruction.
 
     uint8_t byteAt(uint64_t adr);   //Grab a byte from an address.
@@ -99,13 +103,16 @@ public:
     QList<GAInstruction> instructions;   //Source listing of the program.
     enum {NONE, ASSEMBLY, DISASSEMBLY} type=NONE;
 
-private:
-    uint64_t workingadr=0;  //Working address for in-progress parsing.
 
     //Available languages and listing drivers.
     QVector<GALanguage*> languages;
     QVector<GAListing*> listings;
     QVector<GAGrader*> graders;
+
+private:
+    uint64_t workingadr=0;  //Working address for in-progress parsing.
+
+
 };
 
 

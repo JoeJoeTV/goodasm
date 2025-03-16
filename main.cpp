@@ -57,6 +57,11 @@ int main(int argc, char *argv[]){
                                    );
     parser.addOption(gradeOption);
 
+    QCommandLineOption identOption(QStringList()<<"i"<<"identify",
+                                   "In what language is this binary?"
+                                   );
+    parser.addOption(identOption);
+
     QCommandLineOption disOption(QStringList()<<"d"<<"dis",
                                  "Disassemble a binary input."
                                  );
@@ -350,7 +355,8 @@ int main(int argc, char *argv[]){
         std::cout<<goodasm->source().toStdString();
     } else if(args.count()==1
                && !parser.isSet(disOption)
-               && !parser.isSet(gradeOption)){    //Assemble from source.
+               && !parser.isSet(gradeOption)
+               && !parser.isSet(identOption)){    //Assemble from source.
         goodasm->loadFile(args[0]);
 
         if(listing)
@@ -387,13 +393,19 @@ int main(int argc, char *argv[]){
     } else if(args.count()==1 && parser.isSet(gradeOption)){  //Is this binary in this language?
         goodasm->loadBinFile(args[0]);
 
-        goodasm->setGrader("validops"); // TODO Don't hardcode this.
-        assert(goodasm->grader);
-        bool valid=goodasm->grader->isValid(goodasm);
-        bool compatible=goodasm->grader->isCompatible(goodasm);
-        qDebug()<<goodasm->grader->name<<" is "<<
-            (compatible?"compatible":"incompatible")<<"and"<<
-            (valid?"valid":"invalid");
+        goodasm->setGrader("");   //Ensure list is populated.
+
+        foreach(auto g, goodasm->graders){
+            goodasm->setGrader(g);
+            bool valid=goodasm->grader->isValid(goodasm);
+            bool compatible=goodasm->grader->isCompatible(goodasm);
+            qDebug()<<goodasm->grader->name<<" is "<<
+                (compatible?"compatible":"incompatible")<<"and"<<
+                (valid?"valid":"invalid");
+        }
+    } else if(args.count()==1 && parser.isSet(identOption)){  //In what language is the binary?
+        goodasm->loadBinFile(args[0]);
+        goodasm->identify();
     }
 
 

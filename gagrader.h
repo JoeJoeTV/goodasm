@@ -18,8 +18,9 @@ class GAGrader
 public:
     GAGrader();
     QString name="nameless";
-    virtual bool isValid(GoodASM *goodasm)=0;        // Is it real?
+    virtual uint64_t isValid(GoodASM *goodasm)=0;    // Is it real?
     virtual bool isCompatible(GoodASM *goodasm)=0;   // Is this grader compatible?
+    virtual QString mostValid(GoodASM *goodasm);     // Which lang the most likely?
 };
 
 #endif // GAGRADER_H
