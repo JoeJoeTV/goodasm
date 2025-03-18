@@ -97,7 +97,7 @@ Running `goodasm --help` will show the command line arguments,
 supported languages and other features.
 
 ```
-air% goodasm --help
+% goodasm
 Usage: goodasm [options] input
 GoodASM is an easily retargetable assembler for CISC microcontrollers.
 
@@ -111,6 +111,7 @@ Options:
   -t, --test                Selftest the selected language.
   --fuzz                    Fuzz test to find crashes.
   -g, --grade               Is this binary in the chosen language?
+  -i, --identify            In what language is this binary?
   -d, --dis                 Disassemble a binary input.
   --base <base>             Base address of an input binary.
   -o, --export <file>       Output filename.
@@ -120,6 +121,7 @@ Options:
   -L, --list                Print a listing to stdout.
   -H, --hex                 Print hex of output to stdout.
   -N, --nasm                Output is legal in NASM.
+  -F, --goodasm             Output is legal in GoodASM.
   -C                        Output is legal in C.
   -G, --golang              Output is legal in Golang.
   -Y, --yara-x              Output is legal in Yara-X.
@@ -297,6 +299,10 @@ A little less versatile than the REPL mode, we also support an
 interactive mode for iOS and Android.  Please don't do real work this
 way, but it's handy when studying an instruction set with pen and
 paper, away from a real laptop.
+
+## Identification and Grading
+
+
 
 
 ## Defining a New Language
