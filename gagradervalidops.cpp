@@ -7,6 +7,7 @@
 
 GAGraderValidOps::GAGraderValidOps() {
     name="validops";
+    stable=1;
 }
 
 // Is it real?

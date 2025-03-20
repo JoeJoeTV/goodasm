@@ -19,7 +19,8 @@ class GAGraderGrade;
 class GAGrader {
 public:
     GAGrader();
-    QString name="nameless";
+    QString name="nameless";  // Name of the test.
+    int stable=0;             // Include by default?
 
     //Definitely override these.
     virtual uint64_t isValid(GoodASM *goodasm)=0;    // Is it real?

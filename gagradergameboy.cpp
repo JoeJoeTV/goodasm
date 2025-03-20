@@ -6,6 +6,7 @@
 
 GAGraderGameBoy::GAGraderGameBoy() {
     name="gameboy";
+    stable=1;
 }
 
 

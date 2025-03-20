@@ -4,8 +4,6 @@
 #include <iostream>
 
 
-
-
 #include "goodasm.h"
 #include "galanguage.h"
 #include "gainstruction.h"
@@ -41,6 +39,8 @@
 #include "gagradervalidops.h"
 #include "gagraderjumptargets.h"
 #include "gagradergameboy.h"
+#include "gagraderz80.h"
+#include "gagradermovtarget.h"
 
 //Symbol table.
 #include "gasymboltable.h"
@@ -125,6 +125,8 @@ void GoodASM::setGrader(QString grader){
         graders.append(new GAGraderValidOps());
         graders.append(new GAGraderJumpTargets());
         graders.append(new GAGraderGameBoy());
+        graders.append(new GAGraderMovTarget());
+        graders.append(new GAGraderZ80());
     }
     this->grader=0;
     foreach(auto g, graders){
@@ -731,7 +733,8 @@ QVector<GAGraderGrade> GoodASM::identify(){
     //Collect the scores of each grader.
     foreach(auto g, graders){
         //For all languages.
-        matches.append(g->scores(this));
+        if(g->stable)
+            matches.append(g->scores(this));
     }
 
     return matches;

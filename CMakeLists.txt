@@ -33,6 +33,8 @@ set(GOODASM_SOURCES
     gagradervalidops.h gagradervalidops.cpp
     gagraderjumptargets.h gagraderjumptargets.cpp
     gagradergameboy.h gagradergameboy.cpp
+    gagraderz80.h gagraderz80.cpp
+    gagradermovtarget.h gagradermovtarget.cpp
 
     # Lexer and Parser
     gatoken.h gatoken.cpp
