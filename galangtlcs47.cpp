@@ -453,19 +453,18 @@ GALangTLCS47::GALangTLCS47() {
         ->port("\x00\x0f")
         ->regname("hl","@");
 
-    /* FIXME: This is where things get weird.  These two instructions
-     * have *disjoint* masks and an *inverted* bit.  The disjoint mask is
-     * no longer a problem, but we don't support inverted bits yet.
+    /* This is where things get weird.  These two instructions
+     * have *disjoint* masks and an *inverted* bit.  Thumb2 has the same
+     * thing.
      *
-     * The same thing happens in Thumb2, where always-set bits from Thumb1 were
-     * defined as inverted and disjoint for backward compatibility.
+     * The third parameter here is the inversion mask.
      */
-    insert(mnem("out",2,"\x3a\x80","\xff\xd0","\x00\x20")) //FIXME
+    insert(mnem("out",2,"\x3a\x80","\xff\xd0","\x00\x20"))
         ->help("Output accumulator to a port.")
         ->example("out a, %0x1f")
         ->regname("a")
         ->port("\x00\x2f");
-    insert(mnem("out",2,"\x3a\xc0","\xff\xd0","\x00\x20")) //FIXME
+    insert(mnem("out",2,"\x3a\xc0","\xff\xd0","\x00\x20"))
         ->help("Output mem[HL] to a port.")
         ->example("out @hl, %0x1f")
         ->regname("hl","@")
