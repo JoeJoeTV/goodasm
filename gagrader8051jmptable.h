@@ -3,6 +3,8 @@
 
 /* This grader looks for jump tables within 8051
  * code, as a way to confirm that the architecture is 8051.
+ * This is usually right when it matches, but it won't match
+ * code that doesn't use this technique.
  *
  * In the DirecTV H card, jump tables look like this:
  * mov dptr, #0xDEAD   ; Launcher code.

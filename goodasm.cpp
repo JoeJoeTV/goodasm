@@ -42,6 +42,7 @@
 #include "gagraderz80.h"
 #include "gagradermovtarget.h"
 #include "gagrader8051jmptable.h"
+#include "gagrader8051pushpop.h"
 
 //Symbol table.
 #include "gasymboltable.h"
@@ -129,6 +130,7 @@ void GoodASM::setGrader(QString grader){
         graders.append(new GAGraderMovTarget());
         graders.append(new GAGraderZ80());
         graders.append(new GAGrader8051JmpTable());
+        graders.append(new GAGrader8051PushPop());
     }
     this->grader=0;
     foreach(auto g, graders){

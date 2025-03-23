@@ -8,7 +8,9 @@
 
 GAGrader8051JmpTable::GAGrader8051JmpTable() {
     name="8051jmptable";
-    stable=true;
+
+    //8051pushpop is more reliable.
+    stable=false;
 }
 
 

@@ -389,17 +389,22 @@ int main(int argc, char *argv[]){
         goodasm->loadBinFile(args[0]);
 
         goodasm->setGrader("");   //Ensure list is populated.
+        int valids=0, invalids=0;
         foreach(auto g, goodasm->graders){
             goodasm->setGrader(g);
             bool compatible=goodasm->grader->isCompatible(goodasm->lang);
-            if(compatible){
+            if(compatible && goodasm->grader->stable){
                 bool valid=goodasm->grader->isValid(goodasm);
                 printf("%s\t%s\n",
                        goodasm->grader->name.toStdString().c_str(),
                        (valid?"valid":"invalid")
                        );
+                if(valid) valids++;
+                else invalids++;
             }
         }
+        if(valids>invalids) return 0;
+        else return 1;
     } else if(args.count()==1 && parser.isSet(identOption)){  //In what language is the binary?
         goodasm->loadBinFile(args[0]);
         QVector<GAGraderGrade> grades=goodasm->identify();
@@ -411,8 +416,6 @@ int main(int argc, char *argv[]){
                    );
         }
     }
-
-
 
     errorcount=goodasm->printErrors();
     delete goodasm;
