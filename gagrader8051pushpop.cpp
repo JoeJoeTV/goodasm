@@ -49,13 +49,10 @@ uint64_t GAGrader8051PushPop::isValid(GoodASM *goodasm){
             if((s==push || s==pop) && stack.count()>0){
                 s=pop;  // Popping.
                 QString p=stack.pop();
-                if(p==ins.params[0]){
+                if(p==ins.params[0])
                     depth++;
-                }else{
-                    qDebug()<<p<<"!="<<ins.params[0]<<"at"<<ins.adr;
-                }
-
-
+                else
+                    s=off;
             }else
                 s=off; //Off the rails.
         }
@@ -70,6 +67,10 @@ uint64_t GAGrader8051PushPop::isValid(GoodASM *goodasm){
 // Is this grader compatible?
 bool GAGrader8051PushPop::isCompatible(GALanguage *lang){
     //Only works for 8051.
-    return lang->name=="8051";
+    QString n=lang->name;
+    return n=="8051";
+
+    //Also works for Z80 and SM83, but cannot distinguish them.
+    //|| n=="z80" || n=="sm83";
 }
 

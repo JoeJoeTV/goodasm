@@ -48,5 +48,6 @@ uint64_t GAGrader8051JmpTable::isValid(GoodASM *goodasm){
 // Is this grader compatible?
 bool GAGrader8051JmpTable::isCompatible(GALanguage *lang){
     //Only works for 8051.
-    return lang->name=="8051";
+    QString n=lang->name;
+    return n=="8051";
 }
