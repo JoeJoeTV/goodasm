@@ -110,19 +110,19 @@ include(GNUInstallDirs)
 
 # This defines the CLI client.
 if(WIN32 OR (LINUX AND NOT ANDROID) OR (APPLE AND NOT IOS) )
-    qt_add_executable(goodasm
-        main.cpp
-        ${GOODASM_SOURCES}
-    )
     qt_add_library(libgoodasm STATIC
         #main.cpp
         ${GOODASM_SOURCES}
     )
+    qt_add_executable(goodasm
+        main.cpp
+        #${GOODASM_SOURCES}
+    )
     target_link_libraries(libgoodasm PRIVATE Qt6::Quick)
     if(WIN32)
-        target_link_libraries(goodasm PRIVATE Qt6::Quick)
+        target_link_libraries(goodasm PRIVATE Qt6::Quick libgoodasm)
     else()
-        target_link_libraries(goodasm PRIVATE Qt6::Quick readline)
+        target_link_libraries(goodasm PRIVATE Qt6::Quick libgoodasm readline)
     endif()
 
     install(TARGETS ${APPS} DESTINATION bin)
