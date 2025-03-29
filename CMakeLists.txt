@@ -61,6 +61,7 @@ set(GOODASM_SOURCES
     galangz80.h galangz80.cpp
     galang8086.h galang8086.cpp
     galangfcard.h galangfcard.cpp
+    galangh83.h galangh83.cpp
 )
 
 

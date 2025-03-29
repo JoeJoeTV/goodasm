@@ -217,6 +217,10 @@ int main(int argc, char *argv[]){
                                  "Chip-8 (broken)"
                                  );
     parser.addOption(langChip8);
+    QCommandLineOption langH83(QStringList()<<"h83",
+                                 "Renesas H83 (alpha)"
+                                 );
+    parser.addOption(langH83);
 
 
     if(argc==1)
@@ -252,6 +256,8 @@ int main(int argc, char *argv[]){
         language="chip8";
     else if(parser.isSet(langZ80))
         language="z80";
+    else if(parser.isSet(langH83))
+        language="h83";
 
     //We allocate this dynamically to test that we free properly.
     GoodASM *goodasm=new GoodASM(language);

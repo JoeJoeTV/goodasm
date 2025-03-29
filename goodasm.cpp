@@ -24,6 +24,7 @@
 #include "galangchip8.h"
 #include "galangz80.h"
 #include "galangfcard.h"
+#include "galangh83.h"
 
 //Listings
 #include "galistingdefault.h"
@@ -74,6 +75,7 @@ void GoodASM::setLanguage(QString language){
         languages.append(new GALangChip8());
         languages.append(new GALangZ80());
         languages.append(new GALangFCard());
+        languages.append(new GALangH83());
     }
 
 
