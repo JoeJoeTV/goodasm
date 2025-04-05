@@ -218,7 +218,7 @@ int main(int argc, char *argv[]){
                                  );
     parser.addOption(langChip8);
     QCommandLineOption lang8080(QStringList()<<"8080",
-                               "Intel 8080 (broken)"
+                               "Intel 8080 (alpha)"
                                );
     parser.addOption(lang8080);
 

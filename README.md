@@ -43,7 +43,7 @@ used for real projects and compared against competing assemblers for
 accuracy.  `partial` languages are not yet complete, and you should
 check the issue tracker for their status.
 
-Source code and binaries will be publicly released at
+Source code and binaries were publicly released at
 [DistrictCon](https://www.districtcon.org/) on Feb 21, 2025.
 
 ## Building
