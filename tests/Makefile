@@ -13,6 +13,7 @@ all:
 	make -C fcard clean all
 	make -C chip8 clean all
 	make -C z80 clean all
+	make -C 8080 clean all
 	make -C weird clean all
 	make selftests fuzz
 
@@ -29,6 +30,8 @@ clean:
 	make -C fcard clean
 	make -C chip8 clean
 	make -C z80 clean
+	make -C 8080 clean
+	make -C weird clean
 
 selftests:
 # Passing self-tests.
@@ -42,6 +45,7 @@ selftests:
 	goodasm --test --6805
 	goodasm --test --chip8
 	goodasm --test --z80
+	goodasm --test --8080
 
 
 # Failing self-tests.
@@ -60,7 +64,8 @@ fuzz:
 	goodasm --fuzz --6805
 	goodasm --fuzz --chip8
 	goodasm --fuzz --z80
+	goodasm --fuzz --8080
 	goodasm --fuzz --pic16c5x
-# Identitify fuzzing.
+# Identify fuzzing.
 	goodasm --fuzz -i
 

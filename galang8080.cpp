@@ -19,7 +19,7 @@ GALang8080::GALang8080() {
     GAMnemonic* m;
     endian=LITTLE;  // Lower bits come in earlier bytes.
     name="8080";
-    maxbytes=4;
+    maxbytes=3;
 
     //Register names are illegal as symbol names.
     regnames.clear();
@@ -380,6 +380,13 @@ GALang8080::GALang8080() {
         ->help("Halt Until Interrupted")
         ->example("halt")
         ->prioritize();
+
+    //FIXME: Remove this.
+    maxbytes=5;
+    insert(mnem("fake", 5, "\x10\x00\x00\x00\x00", "\xff\x00\x00\x00\x00"))
+        ->help("Halt Until Interrupted")
+        ->example("fake #0x10")
+        ->imm("\x00\xff\xff\xff\xff");
 }
 
 
