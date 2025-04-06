@@ -1889,7 +1889,7 @@ GALangH83::GALangH83() {
         ->help("xor.l #xx:32, rd")
         ->example("xor.l #0x12345678, er2")
         ->imm("\x00\x00\xff\xff\xff\xff")
-        ->regh83_32("\x00\x07\x00\x00");
+        ->regh83_32("\x00\x07\x00\x00\x00\x00");
     insert(mnem("xor.l", 4, "\x01\xf0\x65\x00", "\xff\xff\xff\x88"))
         ->help("xor.l ers, erd")
         ->example("xor.l er1, er5")
