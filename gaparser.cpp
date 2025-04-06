@@ -62,11 +62,11 @@ uint64_t GAParser::str2uint(QString value, bool *okay){
 
     //First start with a literal in base 16 or 10.
     if(value.startsWith("0x"))
-        val=value.toInt(okay, 16);
+        val=value.toUInt(okay, 16);
     else if(value.startsWith("0b"))
-        val=value.mid(2).toInt(okay, 2);  //FIXME: Crop first two symbols first.
+        val=value.mid(2).toUInt(okay, 2);  //FIXME: Crop first two symbols first.
     else
-        val=value.toInt(okay, 10);
+        val=value.toUInt(okay, 10);
     return val; //Caller better check okay.
 }
 

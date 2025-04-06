@@ -488,7 +488,7 @@ GALangSM83::GALangSM83() {
         ->regname("hl")
         ->sm83reg16("\x30");
     insert(mnem("add", 2, "\xe8\x00", "\xff\x00"))
-        ->help("Decrement reg16.")
+        ->help("Add a simm8 into reg16.")
         ->example("add sp, #-0x16")
         ->regname("sp")
         ->simm("\x00\xff");

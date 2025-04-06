@@ -217,6 +217,10 @@ int main(int argc, char *argv[]){
                                  "Chip-8 (broken)"
                                  );
     parser.addOption(langChip8);
+    QCommandLineOption lang8080(QStringList()<<"8080",
+                               "Intel 8080 (alpha)"
+                               );
+    parser.addOption(lang8080);
     QCommandLineOption langH83(QStringList()<<"h83",
                                  "Renesas H83 (alpha)"
                                  );
@@ -256,6 +260,8 @@ int main(int argc, char *argv[]){
         language="chip8";
     else if(parser.isSet(langZ80))
         language="z80";
+    else if(parser.isSet(lang8080))
+        language="8080";
     else if(parser.isSet(langH83))
         language="h83";
 

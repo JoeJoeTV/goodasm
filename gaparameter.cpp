@@ -52,18 +52,20 @@ int GAParameter::match(GAParserOperand *op, int len){
      * zero for unknown symbols on the first pass, then repeating
      * passes until the hash of all symbols remains the same for two passes.
      */
-    int64_t val=op->int64(false)-offset;
+
     if(!isSigned){
+        int64_t max=
+            (((uint64_t) 1)<<rawbitcount(len));
+        uint64_t val=op->uint64(false)-offset;
         //Signed value illegal in unsigned parameter.
         if(val<0) return 0;
-        //Values too large are a problem.
-        //if(val& ~(1<<rawbitcount(len))) return 0;
-        if(val >= ~(-1& ~((1<<rawbitcount(len))))) return 0;
+        if(val >= max) return 0;
     }else{
+        int64_t val=op->int64(false)-offset;
         //Positive values must fit range.
-        if(val >= ~(-1& ~((1<<(rawbitcount(len)-1))))) return 0;
+        if(val >= ~(((int64_t) -1)& ~((((int64_t) 1)<<(rawbitcount(len)-1))))) return 0;
         //Negative values must also fit range.
-        if(val<0 && (val| ~(1<<(rawbitcount(len)-1)))!=-1) return 0;
+        if(val<0 && (val| ~(((int64_t) 1)<<(rawbitcount(len)-1)))!=-1) return 0;
     }
 
     //We're good if we get here.
