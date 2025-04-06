@@ -8,12 +8,6 @@
 // Keep things tidy.
 #define mnem new GAMnemonic
 
-// H83 32-Bit Immediate Operand.
-#define imm32(x) insert(new GAParameterH83Imm32((x)))
-
-// H83 32-Bit Absolute Operand.
-#define abs32(x) insert(new GAParameterH83Abs32((x)))
-
 // H83 Constant Operand.
 #define h83_const(x) insert(new GAParameterH83Const(x))
 
@@ -82,7 +76,7 @@ GALangH83::GALangH83() {
     insert(mnem("add.l", 6, "\x7a\x10\x00\x00\x00\x00", "\xff\xf8\x00\x00\x00\x00"))
         ->help("add.l #xx:32, erd")
         ->example("add.l #0x12345678, er4")
-        ->imm32("\x00\x00\xff\xff\xff\xff")
+        ->imm("\x00\x00\xff\xff\xff\xff")
         ->regh83_32("\x00\x07\x00\x00\x00\x00");
     insert(mnem("add.l", 2, "\x0a\x80", "\xff\x88"))
         ->help("add.l ers, erd")
@@ -143,7 +137,7 @@ GALangH83::GALangH83() {
     insert(mnem("and.l", 6, "\x7a\x60\x00\x00\x00\x00", "\xff\xf8\x00\x00\x00\x00"))
         ->help("and.l #xx:32, erd")
         ->example("and.l #0x12345678, er2")
-        ->imm32("\x00\x00\xff\xff\xff\xff")
+        ->imm("\x00\x00\xff\xff\xff\xff")
         ->regh83_32("\x00\x07\x00\x00\x00\x00");
     insert(mnem("and.l", 4, "\x01\xf0\x66\x00", "\xff\xff\xff\x88"))
         ->help("and.l rs, rd")
@@ -188,7 +182,7 @@ GALangH83::GALangH83() {
         ->help("band #xx:3, @aa:32")
         ->example("band #3, @0x12345678")
         ->imm("\x00\x00\x00\x00\x00\x00\x00\x70")
-        ->abs32("\x00\x00\xff\xff\xff\xff\x00\x00");
+        ->abs("\x00\x00\xff\xff\xff\xff\x00\x00");
 
     // BCC
     insert(mnem("bra", 2, "\x40\x00", "\xff\x00"))
@@ -346,7 +340,7 @@ GALangH83::GALangH83() {
         ->help("bclr #xx:3, @aa:32")
         ->example("bclr #5, @0x12345678")
         ->imm("\x00\x00\x00\x00\x00\x00\x00\x70")
-        ->abs32("\x00\x00\xff\xff\xff\xff\x00\x00");
+        ->abs("\x00\x00\xff\xff\xff\xff\x00\x00");
     insert(mnem("bclr", 2, "\x62\x00", "\xff\x00"))
         ->help("bclr rn, rd")
         ->example("bclr r2l, r0h")
@@ -371,7 +365,7 @@ GALangH83::GALangH83() {
         ->help("bclr rn, @aa:32")
         ->example("bclr r0h, @0x12345678")
         ->regh83_8("\x00\x00\x00\x00\x00\x00\x00\xf0")
-        ->abs32("\x00\x00\xff\xff\xff\xff\x00\x00");
+        ->abs("\x00\x00\xff\xff\xff\xff\x00\x00");
 
     // BIAND
     insert(mnem("biand", 2, "\x76\x80", "\xff\x80"))
@@ -398,7 +392,7 @@ GALangH83::GALangH83() {
         ->help("biand #xx:3, @aa:32")
         ->example("biand #3, @0x12345678")
         ->imm("\x00\x00\x00\x00\x00\x00\x00\x70")
-        ->abs32("\x00\x00\xff\xff\xff\xff\x00\x00");
+        ->abs("\x00\x00\xff\xff\xff\xff\x00\x00");
 
     // BILD
     insert(mnem("bild", 2, "\x77\x80", "\xff\x80"))
@@ -425,7 +419,7 @@ GALangH83::GALangH83() {
         ->help("bild #xx:3, @aa:32")
         ->example("bild #3, @0x12345678")
         ->imm("\x00\x00\x00\x00\x00\x00\x00\x70")
-        ->abs32("\x00\x00\xff\xff\xff\xff\x00\x00");
+        ->abs("\x00\x00\xff\xff\xff\xff\x00\x00");
 
     // BIOR
     insert(mnem("bior", 2, "\x74\x80", "\xff\x80"))
@@ -452,7 +446,7 @@ GALangH83::GALangH83() {
         ->help("bior #xx:3, @aa:32")
         ->example("bior #3, @0x12345678")
         ->imm("\x00\x00\x00\x00\x00\x00\x00\x70")
-        ->abs32("\x00\x00\xff\xff\xff\xff\x00\x00");
+        ->abs("\x00\x00\xff\xff\xff\xff\x00\x00");
 
     // BIST
     insert(mnem("bist", 2, "\x67\x80", "\xff\x80"))
@@ -479,7 +473,7 @@ GALangH83::GALangH83() {
         ->help("bist #xx:3, @aa:32")
         ->example("bist #3, @0x12345678")
         ->imm("\x00\x00\x00\x00\x00\x00\x00\x70")
-        ->abs32("\x00\x00\xff\xff\xff\xff\x00\x00");
+        ->abs("\x00\x00\xff\xff\xff\xff\x00\x00");
 
     // BIXOR
     insert(mnem("bixor", 2, "\x75\x80", "\xff\x80"))
@@ -506,7 +500,7 @@ GALangH83::GALangH83() {
         ->help("bixor #xx:3, @aa:32")
         ->example("bixor #3, @0x12345678")
         ->imm("\x00\x00\x00\x00\x00\x00\x00\x70")
-        ->abs32("\x00\x00\xff\xff\xff\xff\x00\x00");
+        ->abs("\x00\x00\xff\xff\xff\xff\x00\x00");
 
     // BLD
     insert(mnem("bld", 2, "\x77\x00", "\xff\x80"))
@@ -533,7 +527,7 @@ GALangH83::GALangH83() {
         ->help("bld #xx:3, @aa:32")
         ->example("bld #3, @0x12345678")
         ->imm("\x00\x00\x00\x00\x00\x00\x00\x70")
-        ->abs32("\x00\x00\xff\xff\xff\xff\x00\x00");
+        ->abs("\x00\x00\xff\xff\xff\xff\x00\x00");
 
     // BNOT
     insert(mnem("bnot", 2, "\x71\x00", "\xff\x80"))
@@ -560,7 +554,7 @@ GALangH83::GALangH83() {
         ->help("bnot #xx:3, @aa:32")
         ->example("bnot #3, @0x12345678")
         ->imm("\x00\x00\x00\x00\x00\x00\x00\x70")
-        ->abs32("\x00\x00\xff\xff\xff\xff\x00\x00");
+        ->abs("\x00\x00\xff\xff\xff\xff\x00\x00");
     insert(mnem("bnot", 2, "\x61\x00", "\xff\x00"))
         ->help("bnot rn, rd")
         ->example("bnot r2l, r3h")
@@ -585,7 +579,7 @@ GALangH83::GALangH83() {
         ->help("bnot rn, @aa:32")
         ->example("bnot r4l, @0x12345678")
         ->regh83_8("\x00\x00\x00\x00\x00\x00\x00\xf0")
-        ->abs32("\x00\x00\xff\xff\xff\xff\x00\x00");
+        ->abs("\x00\x00\xff\xff\xff\xff\x00\x00");
 
     // BOR
     insert(mnem("bor", 2, "\x74\x00", "\xff\x80"))
@@ -612,7 +606,7 @@ GALangH83::GALangH83() {
         ->help("bor #xx:3, @aa:32")
         ->example("bor #3, @0x12345678")
         ->imm("\x00\x00\x00\x00\x00\x00\x00\x70")
-        ->abs32("\x00\x00\xff\xff\xff\xff\x00\x00");
+        ->abs("\x00\x00\xff\xff\xff\xff\x00\x00");
 
     // BSET
     insert(mnem("bset", 2, "\x70\x00", "\xff\x80"))
@@ -639,7 +633,7 @@ GALangH83::GALangH83() {
         ->help("bset #xx:3, @aa:32")
         ->example("bset #3, @0x12345678")
         ->imm("\x00\x00\x00\x00\x00\x00\x00\x70")
-        ->abs32("\x00\x00\xff\xff\xff\xff\x00\x00");
+        ->abs("\x00\x00\xff\xff\xff\xff\x00\x00");
     insert(mnem("bset", 2, "\x60\x00", "\xff\x00"))
         ->help("bset rn, rd")
         ->example("bset r2l, r3h")
@@ -664,7 +658,7 @@ GALangH83::GALangH83() {
         ->help("bset rn, @aa:32")
         ->example("bset r2l, @0x12345678")
         ->regh83_8("\x00\x00\x00\x00\x00\x00\x00\xf0")
-        ->abs32("\x00\x00\xff\xff\xff\xff\x00\x00");
+        ->abs("\x00\x00\xff\xff\xff\xff\x00\x00");
 
     // BSR
     insert(mnem("bsr", 2, "\x55\x00", "\xff\x00"))
@@ -701,7 +695,7 @@ GALangH83::GALangH83() {
         ->help("bst #xx:3, @aa:32")
         ->example("bst #3, @0x12345678")
         ->imm("\x00\x00\x00\x00\x00\x00\x00\x70")
-        ->abs32("\x00\x00\xff\xff\xff\xff\x00\x00");
+        ->abs("\x00\x00\xff\xff\xff\xff\x00\x00");
 
     // BTST
     insert(mnem("btst", 2, "\x73\x00", "\xff\x80"))
@@ -728,7 +722,7 @@ GALangH83::GALangH83() {
         ->help("btst #xx:3, @aa:32")
         ->example("btst #3, @0x12345678")
         ->imm("\x00\x00\x00\x00\x00\x00\x00\x70")
-        ->abs32("\x00\x00\xff\xff\xff\xff\x00\x00");
+        ->abs("\x00\x00\xff\xff\xff\xff\x00\x00");
     insert(mnem("btst", 2, "\x63\x00", "\xff\x00"))
         ->help("btst rn, rd")
         ->example("btst r2l, r3h")
@@ -753,7 +747,7 @@ GALangH83::GALangH83() {
         ->help("btst rn, @aa:32")
         ->example("btst r2l, @0x12345678")
         ->regh83_8("\x00\x00\x00\x00\x00\x00\x00\xf0")
-        ->abs32("\x00\x00\xff\xff\xff\xff\x00\x00");
+        ->abs("\x00\x00\xff\xff\xff\xff\x00\x00");
 
     // BXOR
     insert(mnem("bxor", 2, "\x75\x00", "\xff\x80"))
@@ -780,7 +774,7 @@ GALangH83::GALangH83() {
         ->help("bxor #xx:3, @aa:32")
         ->example("bxor #3, @0x12345678")
         ->imm("\x00\x00\x00\x00\x00\x00\x00\x70")
-        ->abs32("\x00\x00\xff\xff\xff\xff\x00\x00");
+        ->abs("\x00\x00\xff\xff\xff\xff\x00\x00");
 
     // CLRMAC
     insert(mnem("clrmac", 2, "\x01\xa0", "\xff\xff"))
@@ -811,7 +805,7 @@ GALangH83::GALangH83() {
     insert(mnem("cmp.l", 6, "\x7a\x20\x00\x00\x00\x00", "\xff\xf8\x00\x00\x00\x00"))
         ->help("cmp.l #xx:32, erd")
         ->example("cmp.l #0x12345678, er3")
-        ->imm32("\x00\x00\xff\xff\xff\xff")
+        ->imm("\x00\x00\xff\xff\xff\xff")
         ->regh83_32("\x00\x07\x00\x00\x00\x00");
     insert(mnem("cmp.l", 2, "\x1f\x80", "\xff\x88"))
         ->help("cmp.l ers, erd")
@@ -1015,7 +1009,7 @@ GALangH83::GALangH83() {
         ->help("ldc (d:32, ers), ccr")
         ->example("ldc (#0x12345678, er2), ccr");
     pg = m->group('(');
-    pg->imm32("\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff");
+    pg->imm("\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff");
     pg->regh83_32("\x00\x00\x00\x70\x00\x00\x00\x00\x00\x00");
     m->regname("ccr");
     // TODO: Should be `ldc @(d:32, ers), exr`.
@@ -1023,7 +1017,7 @@ GALangH83::GALangH83() {
         ->help("ldc (d:32, ers), exr")
         ->example("ldc (#0x12345678, er2), exr");
     pg = m->group('(');
-    pg->imm32("\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff");
+    pg->imm("\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff");
     pg->regh83_32("\x00\x00\x00\x70\x00\x00\x00\x00\x00\x00");
     m->regname("exr");
     insert(mnem("ldc", 4, "\x01\x40\x6d\x00", "\xff\xff\xff\x8f"))
@@ -1049,12 +1043,12 @@ GALangH83::GALangH83() {
     insert(mnem("ldc", 8, "\x01\x40\x6b\x20\x00\x00\x00\x00", "\xff\xff\xff\xff\x00\x00\x00\x00"))
         ->help("ldc @aa:32, ccr")
         ->example("ldc @0x12345678, ccr")
-        ->abs32("\x00\x00\x00\x00\xff\xff\xff\xff")
+        ->abs("\x00\x00\x00\x00\xff\xff\xff\xff")
         ->regname("ccr");
     insert(mnem("ldc", 8, "\x01\x41\x6b\x20\x00\x00\x00\x00", "\xff\xff\xff\xff\x00\x00\x00\x00"))
         ->help("ldc @aa:32, exr")
         ->example("ldc @0x12345678, exr")
-        ->abs32("\x00\x00\x00\x00\xff\xff\xff\xff")
+        ->abs("\x00\x00\x00\x00\xff\xff\xff\xff")
         ->regname("exr");
 
     // TODO: LDM
@@ -1107,7 +1101,7 @@ GALangH83::GALangH83() {
         ->help("mov.b (d:32, ers), rd")
         ->example("mov.b (#0x12345678, er0), r7h");
     pg = m->group('(');
-    pg->imm32("\x00\x00\x00\x00\xff\xff\xff\xff");
+    pg->imm("\x00\x00\x00\x00\xff\xff\xff\xff");
     pg->regh83_32("\x00\x70\x00\x00\x00\x00\x00\x00");
     m->regh83_8("\x00\x00\x00\x0f\x00\x00\x00\x00");
     insert(mnem("mov.b", 2, "\x6c\x00", "\xff\x80"))
@@ -1128,7 +1122,7 @@ GALangH83::GALangH83() {
     insert(mnem("mov.b", 6, "\x6a\x20\x00\x00\x00\x00", "\xff\xf0\x00\x00\x00\x00"))
         ->help("mov.b @aa:32, rd")
         ->example("mov.b @0x12345678, r5l")
-        ->abs32("\x00\x00\xff\xff\xff\xff")
+        ->abs("\x00\x00\xff\xff\xff\xff")
         ->regh83_8("\x00\x0f\x00\x00\x00\x00");
     insert(mnem("mov.b", 2, "\x68\x80", "\xff\x80"))
         ->help("mov.b rs, @erd")
@@ -1149,7 +1143,7 @@ GALangH83::GALangH83() {
         ->example("mov.b r7h, (#0x12345678, er0)");
     m->regh83_8("\x00\x00\x00\x0f\x00\x00\x00\x00");
     pg = m->group('(');
-    pg->imm32("\x00\x00\x00\x00\xff\xff\xff\xff");
+    pg->imm("\x00\x00\x00\x00\xff\xff\xff\xff");
     pg->regh83_32("\x00\x70\x00\x00\x00\x00\x00\x00");
     insert(mnem("mov.b", 2, "\x6c\x80", "\xff\x80"))
         ->help("mov.b rs, @-erd")
@@ -1170,7 +1164,7 @@ GALangH83::GALangH83() {
         ->help("mov.b rs, @aa:32")
         ->example("mov.b r7l, @0x12345678")
         ->regh83_8("\x00\x0f\x00\x00\x00\x00")
-        ->abs32("\x00\x00\xff\xff\xff\xff");
+        ->abs("\x00\x00\xff\xff\xff\xff");
     insert(mnem("mov.w", 4, "\x79\x00\x00\x00", "\xff\xf0\x00\x00"))
         ->help("mov.w #xx:16, rd")
         ->example("mov.w #0x1234, e2")
@@ -1199,7 +1193,7 @@ GALangH83::GALangH83() {
         ->help("mov.w (d:32, ers), rd")
         ->example("mov.w (#0x12345678, er3), r5l");
     pg = m->group('(');
-    pg->imm32("\x00\x00\x00\x00\xff\xff\xff\xff");
+    pg->imm("\x00\x00\x00\x00\xff\xff\xff\xff");
     pg->regh83_32("\x00\x70\x00\x00\x00\x00\x00\x00");
     m->regh83_8("\x00\x00\x00\x0f\x00\x00\x00\x00");
     insert(mnem("mov.w", 2, "\x6d\x00", "\xff\x80"))
@@ -1215,7 +1209,7 @@ GALangH83::GALangH83() {
     insert(mnem("mov.w", 6, "\x6b\x20\x00\x00\x00\x00", "\xff\xf0\x00\x00\x00\x00"))
         ->help("mov.w @aa:32, rd")
         ->example("mov.w @12345678, r6")
-        ->abs32("\x00\x00\xff\xff\xff\xff")
+        ->abs("\x00\x00\xff\xff\xff\xff")
         ->regh83_16("\x00\x0f\x00\x00\x00\x00");
     insert(mnem("mov.w", 2, "\x69\x80", "\xff\x80"))
         ->help("mov.w rs, @erd")
@@ -1236,7 +1230,7 @@ GALangH83::GALangH83() {
         ->example("mov.w r2h, (#0x12345678, er1)");
     m->regh83_8("\x00\x00\x00\x0f\x00\x00\x00\x00");
     pg = m->group('(');
-    pg->imm32("\x00\x00\x00\x00\xff\xff\xff\xff");
+    pg->imm("\x00\x00\x00\x00\xff\xff\xff\xff");
     pg->regh83_32("\x00\x70\x00\x00\x00\x00\x00\x00");
     insert(mnem("mov.w", 2, "\x6d\x80", "\xff\x80"))
         ->help("mov.w rs, @-erd")
@@ -1252,11 +1246,11 @@ GALangH83::GALangH83() {
         ->help("mov.w rs, @aa:32")
         ->example("mov.w r4, @0x12345678")
         ->regh83_16("\x00\x0f\x00\x00\x00\x00")
-        ->abs32("\x00\x00\xff\xff\xff\xff");
+        ->abs("\x00\x00\xff\xff\xff\xff");
     insert(mnem("mov.l", 6, "\x7a\x00\x00\x00\x00\x00", "\xff\xf8\x00\x00\x00\x00"))
         ->help("mov.l #xx:32, erd")
         ->example("mov.l #0x12345678, er2")
-        ->imm32("\x00\x00\xff\xff\xff\xff")
+        ->imm("\x00\x00\xff\xff\xff\xff")
         ->regh83_32("\x00\x07\x00\x00\x00\x00");
     insert(mnem("mov.l", 2, "\x0f\x80", "\xff\x88"))
         ->help("mov.l ers, erd")
@@ -1281,7 +1275,7 @@ GALangH83::GALangH83() {
         ->help("mov.l (d:32, ers), erd")
         ->example("mov.l (#0x123456, er6), er1");
     pg = m->group('(');
-    pg->imm32("\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff");
+    pg->imm("\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff");
     pg->regh83_32("\x00\x00\x00\x70\x00\x00\x00\x00\x00\x00");
     m->regh83_32("\x00\x00\x00\x00\x00\x07\x00\x00\x00\x00");
     insert(mnem("mov.l", 4, "\x01\x00\x6d\x00", "\xff\xff\xff\x88"))
@@ -1297,7 +1291,7 @@ GALangH83::GALangH83() {
     insert(mnem("mov.l", 8, "\x01\x00\x6b\x20\x00\x00\x00\x00", "\xff\xff\xff\xf8\x00\x00\x00\x00"))
         ->help("mov.l @aa:32, erd")
         ->example("mov.l @0x12345678, er3")
-        ->abs32("\x00\x00\x00\x00\xff\xff\xff\xff")
+        ->abs("\x00\x00\x00\x00\xff\xff\xff\xff")
         ->regh83_32("\x00\x00\x00\x07\x00\x00\x00\x00");
     insert(mnem("mov.l", 4, "\x01\x00\x69\x80", "\xff\xff\xff\x88"))
         ->help("mov.l ers, @erd")
@@ -1318,7 +1312,7 @@ GALangH83::GALangH83() {
         ->example("mov.l er4, (#0x12345678, er2)");
     m->regh83_32("\x00\x00\x00\x00\x00\x07\x00\x00\x00\x00");
     pg = m->group('(');
-    pg->imm32("\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff");
+    pg->imm("\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff");
     pg->regh83_32("\x00\x00\x00\x70\x00\x00\x00\x00\x00\x00");
     insert(mnem("mov.l", 4, "\x01\x00\x6d\x80", "\xff\xff\xff\x88"))
         ->help("mov.l ers, @-erd")
@@ -1334,7 +1328,7 @@ GALangH83::GALangH83() {
         ->help("mov.l ers, @aa:32")
         ->example("mov.l er6, @0x12345678")
         ->regh83_32("\x00\x00\x00\x07\x00\x00\x00\x00")
-        ->abs32("\x00\x00\x00\x00\xff\xff\xff\xff");
+        ->abs("\x00\x00\x00\x00\xff\xff\xff\xff");
 
     // MOVFPE
     insert(mnem("movfpe", 4, "\x6a\x40\x00\x00", "\xff\xf0\x00\x00"))
@@ -1431,7 +1425,7 @@ GALangH83::GALangH83() {
     insert(mnem("or.l", 6, "\x7a\x40\x00\x00\x00\x00", "\xff\xf8\x00\x00\x00\x00"))
         ->help("or.l #xx:32, rd")
         ->example("or.l #0x12345678, er1")
-        ->imm32("\x00\x00\xff\xff\xff\xff")
+        ->imm("\x00\x00\xff\xff\xff\xff")
         ->regh83_32("\x00\x07\x00\x00\x00\x00");
     insert(mnem("or.l", 4, "\x01\xf0\x64\x00", "\xff\xff\xff\x88"))
         ->help("or.l ers, erd")
@@ -1765,7 +1759,7 @@ GALangH83::GALangH83() {
         ->example("stc ccr, (#0x12345678, er0)");
     m->regname("ccr");
     pg = m->group('(');
-    pg->imm32("\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff");
+    pg->imm("\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff");
     pg->regh83_32("\x00\x00\x00\x70\x00\x00\x00\x00\x00\x00");
     // TODO: Should be `stc exr, @(d:32, erd)`.
     m = insert(mnem("stc", 10, "\x01\x41\x78\x00\x6b\xa0\x00\x00\x00\x00", "\xff\xff\xff\x8f\xff\xff\x00\x00\x00\x00"))
@@ -1773,7 +1767,7 @@ GALangH83::GALangH83() {
         ->example("stc exr, (#0x12345678, er0)");
     m->regname("exr");
     pg = m->group('(');
-    pg->imm32("\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff");
+    pg->imm("\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff");
     pg->regh83_32("\x00\x00\x00\x70\x00\x00\x00\x00\x00\x00");
     insert(mnem("stc", 4, "\x01\x40\x6d\x80", "\xff\xff\xff\x8f"))
         ->help("stc ccr, @-erd")
@@ -1799,12 +1793,12 @@ GALangH83::GALangH83() {
         ->help("stc ccr, @aa:32")
         ->example("stc ccr, @0x12345678")
         ->regname("ccr")
-        ->abs32("\x00\x00\x00\x00\xff\xff\xff\xff");
+        ->abs("\x00\x00\x00\x00\xff\xff\xff\xff");
     insert(mnem("stc", 8, "\x01\x41\x6b\xa0\x00\x00\x00\x00", "\xff\xff\xff\xff\x00\x00\x00\x00"))
         ->help("stc exr, @aa:32")
         ->example("stc exr, @0x12345678")
         ->regname("exr")
-        ->abs32("\x00\x00\x00\x00\xff\xff\xff\xff");
+        ->abs("\x00\x00\x00\x00\xff\xff\xff\xff");
 
     // TODO: STM
 
@@ -1827,7 +1821,7 @@ GALangH83::GALangH83() {
     insert(mnem("sub.l", 6, "\x7a\x30\x00\x00\x00\x00", "\xff\xf8\x00\x00\x00\x00"))
         ->help("sub.l #xx;32, erd")
         ->example("sub.l #0x12345678, er0")
-        ->imm32("\x00\x00\xff\xff\xff\xff")
+        ->imm("\x00\x00\xff\xff\xff\xff")
         ->regh83_32("\x00\x07\x00\x00\x00\x00");
     insert(mnem("sub.l", 2, "\x1a\x80", "\xff\x88"))
         ->help("sub.l ers, erd")
@@ -1894,7 +1888,7 @@ GALangH83::GALangH83() {
     insert(mnem("xor.l", 6, "\x7a\x50\x00\x00\x00\x00", "\xff\xf8\x00\x00\x00\x00"))
         ->help("xor.l #xx:32, rd")
         ->example("xor.l #0x12345678, er2")
-        ->imm32("\x00\x00\xff\xff\xff\xff")
+        ->imm("\x00\x00\xff\xff\xff\xff")
         ->regh83_32("\x00\x07\x00\x00");
     insert(mnem("xor.l", 4, "\x01\xf0\x65\x00", "\xff\xff\xff\x88"))
         ->help("xor.l ers, erd")
@@ -1914,50 +1908,6 @@ GALangH83::GALangH83() {
         ->imm("\x00\x00\x00\xff")
         ->regname("exr");
 };
-
-// H83 32-bit Immediate Operand.
-GAParameterH83Imm32::GAParameterH83Imm32(const char* mask) {
-    setMask(mask);
-}
-
-int GAParameterH83Imm32::match(GAParserOperand *op, int len) {
-    if (op->prefix != prefix || op->suffix != suffix)
-        return 0;
-
-    return 1;
-}
-
-QString GAParameterH83Imm32::decode(GALanguage *lang, uint64_t adr, const char* bytes, int inslen) {
-    uint64_t p = rawdecode(lang,adr,bytes,inslen);
-    return QString::asprintf("#0x%04x", (unsigned int)p);
-}
-
-void GAParameterH83Imm32::encode(GALanguage *lang, uint64_t adr, QByteArray &bytes, GAParserOperand op, int inslen) {
-    int64_t val = op.uint64(true);
-    rawencode(lang,adr,bytes,op,inslen,val);
-}
-
-// H83 32-bit Absolute Operand.
-GAParameterH83Abs32::GAParameterH83Abs32(const char* mask) {
-    setMask(mask);
-}
-
-int GAParameterH83Abs32::match(GAParserOperand *op, int len) {
-    if (op->prefix != prefix || op->suffix != suffix)
-        return 0;
-
-    return 1;
-}
-
-QString GAParameterH83Abs32::decode(GALanguage *lang, uint64_t adr, const char* bytes, int inslen) {
-    uint64_t p = rawdecode(lang,adr,bytes,inslen);
-    return QString::asprintf("#0x%04x", (unsigned int)p);
-}
-
-void GAParameterH83Abs32::encode(GALanguage *lang, uint64_t adr, QByteArray &bytes, GAParserOperand op, int inslen) {
-    int64_t val = op.uint64(true);
-    rawencode(lang,adr,bytes,op,inslen,val);
-}
 
 // H83 Constant Operand.
 GAParameterH83Const::GAParameterH83Const(unsigned int value) {

@@ -14,32 +14,6 @@ public:
     GALangH83();
 };
 
-// H83 32-bit Immediate Operand.
-class GAParameterH83Imm32 : public GAParameter {
-public:
-    GAParameterH83Imm32(const char* mask);
-    int match(GAParserOperand *op, int len) override;
-
-    QString decode(GALanguage *lang, uint64_t adr, const char* bytes, int inslen) override;
-    void encode(GALanguage *lang, uint64_t adr, QByteArray &bytes, GAParserOperand op, int inslen);
-
-    QString prefix = "#";
-    QString suffix = "";
-};
-
-// H83 32-bit Absolute Operand.
-class GAParameterH83Abs32 : public GAParameter {
-public:
-    GAParameterH83Abs32(const char* mask);
-    int match(GAParserOperand *op, int len) override;
-
-    QString decode(GALanguage *lang, uint64_t adr, const char* bytes, int inslen) override;
-    void encode(GALanguage *lang, uint64_t adr, QByteArray &bytes, GAParserOperand op, int inslen);
-
-    QString prefix = "@";
-    QString suffix = "";
-};
-
 // H83 Constant Operand.
 class GAParameterH83Const : public GAParameter {
 public:
