@@ -221,6 +221,10 @@ int main(int argc, char *argv[]){
                                "Intel 8080 (alpha)"
                                );
     parser.addOption(lang8080);
+    QCommandLineOption langH83(QStringList()<<"h83",
+                                 "Renesas H83 (alpha)"
+                                 );
+    parser.addOption(langH83);
 
 
     if(argc==1)
@@ -258,6 +262,8 @@ int main(int argc, char *argv[]){
         language="z80";
     else if(parser.isSet(lang8080))
         language="8080";
+    else if(parser.isSet(langH83))
+        language="h83";
 
     //We allocate this dynamically to test that we free properly.
     GoodASM *goodasm=new GoodASM(language);
