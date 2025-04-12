@@ -166,6 +166,11 @@ GALang8080::GALang8080() {
 
 
     //Immediate Instructions, page 25.
+    insert(mnem("lxi", 3, "\x01\x00\x00", "\xcf\x00\x00"))
+        ->help("Load 16-bit immediate.")
+        ->example("lxi sp, #0xffff")
+        ->rp2sp("\x30\x00\x00")
+        ->imm("\x00\xff\xff");
     insert(mnem("mvi", 2, "\x06\x00", "\xc7\x00"))
         ->help("Move immediate data.")
         ->example("mvi a, #0xff")
