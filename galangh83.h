@@ -21,7 +21,7 @@ public:
     int match(GAParserOperand *op, int len) override;
 
     QString decode(GALanguage *lang, uint64_t adr, const char* bytes, int inslen) override;
-    void encode(GALanguage *lang, uint64_t adr, QByteArray &bytes, GAParserOperand op, int inslen);
+    void encode(GALanguage *lang, uint64_t adr, QByteArray &bytes, GAParserOperand op, int inslen) override;
 
     unsigned int const_value;
     QString prefix = "#";
