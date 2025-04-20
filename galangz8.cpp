@@ -266,6 +266,102 @@ GALangZ8::GALangZ8() {
         ->z8RR("\x00\xff"); //offset=2 to account for length.
 
     //page 191
+    insert(mnem("ld", 2, "\x0c\x00", "\x0f\x00"))
+        ->help("Load")
+        ->example("ld r6, #0xff")
+        ->z8r("\xf0\x00")   //dest
+        ->z8IM("\x00\xff"); //src
+    insert(mnem("ld", 2, "\x08\x00", "\x0f\x00"))
+        ->help("Load")
+        ->example("ld r6, 0xff")
+        ->z8r("\xf0\x00")   //dest
+        ->z8R("\x00\xff");  //src
+    insert(mnem("ld", 2, "\x09\x00", "\x0f\x00"))
+        ->help("Load")
+        ->example("ld 0xff, r6")
+        ->z8R("\x00\xff")   //dest
+        ->z8r("\xf0\x00");  //src
+
+    insert(mnem("ld", 2, "\xe3\x00", "\xff\x00"))
+        ->help("Load")
+        ->example("ld r7, @r6")
+        ->z8r("\x00\xf0")   //dest
+        ->z8ir("\x00\x0f");  //src
+    insert(mnem("ld", 2, "\xf3\x00", "\xff\x00"))
+        ->help("Load")
+        ->example("ld @r7, r6")
+        ->z8ir("\x00\xf0")   //dest
+        ->z8r("\x00\x0f");  //src
+
+    insert(mnem("ld", 3, "\xe4\x00\x00", "\xff\x00\x00"))
+        ->help("Load")
+        ->example("ld 0x34, 0xff")
+        ->z8R("\x00\x00\xff")   //dest
+        ->z8R("\x00\xff\x00");  //src
+    insert(mnem("ld", 3, "\xe5\x00\x00", "\xff\x00\x00"))
+        ->help("Load")
+        ->example("ld 0x34, @0xff")
+        ->z8R("\x00\x00\xff")   //dest
+        ->z8IR("\x00\xff\x00");  //src
+
+    insert(mnem("ld", 3, "\xe6\x00\x00", "\xff\x00\x00"))
+        ->help("Load")
+        ->example("ld 0x34, #0xff")
+        ->z8R("\x00\xff\x00")   //dest
+        ->z8IM("\x00\x00\xff");  //src
+    insert(mnem("ld", 3, "\xe7\x00\x00", "\xff\x00\x00"))
+        ->help("Load")
+        ->example("ld @0x34, #0xff")
+        ->z8IR("\x00\xff\x00")   //dest
+        ->z8IM("\x00\x00\xff");  //src
+
+    insert(mnem("ld", 3, "\xf5\x00\x00", "\xff\x00\x00"))
+        ->help("Load")
+        ->example("ld @0x34, 0xff")
+        ->z8IR("\x00\x00\xff")   //dest
+        ->z8R("\x00\xff\x00");  //src
+
+
+    insert(mnem("ld", 3, "\xc7\x00\x00", "\xff\x00\x00"))
+        ->help("Load")
+        ->example("ld r5, (0xff, r7)")
+        ->z8r("\x00\xf0\x00")   //dest
+        ->group('(') //src
+        ->z8R("\x00\x00\xff")
+        ->z8r("\x00\x0f\x00");
+    auto m=insert(mnem("ld", 3, "\xd7\x00\x00", "\xff\x00\x00"))
+                 ->help("Load")
+                 ->example("ld (0xff, r7), r5");
+    m->group('(') //dest
+        ->z8R("\x00\x00\xff")
+        ->z8r("\x00\x0f\x00");
+    m->z8r("\x00\xf0\x00");   //dest
+
+    //page 195
+
+    insert(mnem("ldc", 2, "\xc2\x00", "\xff\x00"))
+        ->help("Load Constant (Program Memory)")
+        ->example("ldc r7, @rr8")
+        ->z8r("\x00\xf0")   //dest
+        ->z8irr("\x00\x0f");  //src
+    insert(mnem("ldc", 2, "\xd2\x00", "\xff\x00"))
+        ->help("Load Constant (Program Memory)")
+        ->example("ldc @rr6, r8")
+        ->z8irr("\x00\xf0")   //dest
+        ->z8r("\x00\x0f");  //src
+
+    //FIXME: irr type needs doubled r.
+    insert(mnem("ldci", 2, "\xc3\x00", "\xff\x00"))
+        ->help("Load Constant Autoincrement (Program Memory)")
+        ->example("ldci @r7, @rr8")
+        ->z8ir("\x00\xf0")   //dest
+        ->z8irr("\x00\x0f");  //src
+    insert(mnem("ldci", 2, "\xd3\x00", "\xff\x00"))
+        ->help("Load Constant Autoincrement (Program Memory)")
+        ->example("ldci @rr6, @r8")
+        ->z8irr("\x00\xf0")   //dest
+        ->z8ir("\x00\x0f");  //src
+
 }
 
 
@@ -283,10 +379,10 @@ GAParameterZ8Reg4::GAParameterZ8Reg4(const char* mask, bool indirect, bool pair)
 int GAParameterZ8Reg4::match(GAParserOperand *op, int len){
     if(op->prefix!=prefix)
         return 0;
-    if(!op->value.startsWith("r"))
+    if(!op->value.startsWith(pair?"rr":"r"))
         return 0;
 
-    QString v=op->value.mid(1, op->value.length()-1);
+    QString v=op->value.mid(pair?2:1, op->value.length()-1);
     bool okay=false;
     uint64_t val=v.toInt(&okay);
     if(!okay) return 0;
@@ -300,7 +396,7 @@ QString GAParameterZ8Reg4::decode(GALanguage *lang, uint64_t adr, const char *by
     assert(r<16); //Reg count on this architecture.
 
     QString rendering=prefix
-                        +"r"+QString::number(r)
+                        +(pair?"rr":"r")+QString::number(r)
                         +suffix;
     return rendering;
 }
@@ -310,7 +406,7 @@ void GAParameterZ8Reg4::encode(GALanguage *lang,
             int inslen
             ){
 
-    QString v=op.value.mid(1, op.value.length()-1);
+    QString v=op.value.mid(pair?2:1, op.value.length()-1);
     bool okay=false;
     uint64_t val=v.toInt(&okay);
     assert(okay);
@@ -337,9 +433,9 @@ GAParameterZ8Reg8::GAParameterZ8Reg8(const char* mask, bool indirect, bool pair)
 int GAParameterZ8Reg8::match(GAParserOperand *op, int len){
     if(op->prefix!=prefix)
         return 0;
-    if(op->value.startsWith("r")){
+    if(op->value.startsWith(pair?"rr":"r")){
         // 4-bit register, encoded as 0xE0|regnum.
-        QString v=op->value.mid(1, op->value.length()-1);
+        QString v=op->value.mid(pair?2:1, op->value.length()-1);
         bool okay=false;
         uint64_t val=v.toInt(&okay);
         if(!okay) return 0;
@@ -361,11 +457,12 @@ QString GAParameterZ8Reg8::decode(GALanguage *lang, uint64_t adr, const char *by
     assert(r<256); //Reg count on this architecture.
 
     QString rendering="ERROR";
-    if((r&0xE0)==0xE0){
+    if((r&0xF0)==0xE0){
         //4-bit registers use E in the upper nybble when represented in 8 bits.
         r&=0x0f;
         return prefix
-               +"r"+QString::number(r)
+               +(pair?"rr":"r")
+               +QString::number(r)
                +suffix;
     }else{
         //FIXME, should be cleaner.
@@ -381,9 +478,9 @@ void GAParameterZ8Reg8::encode(GALanguage *lang,
                                int inslen
                                ){
     //4 bit.
-    if(op.value.startsWith("r")){
+    if(op.value.startsWith(pair?"rr":"r")){
         // 4-bit register, encoded as 0xE0|regnum.
-        QString v=op.value.mid(1, op.value.length()-1);
+        QString v=op.value.mid(pair?2:1, op.value.length()-1);
         bool okay=false;
         uint64_t val=v.toInt(&okay);
         assert(okay);
