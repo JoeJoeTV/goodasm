@@ -189,6 +189,10 @@ int main(int argc, char *argv[]){
                                "Zilog Z80 (stable)"
                                );
     parser.addOption(langZ80);
+    QCommandLineOption langZ8(QStringList()<<"z8",
+                               "Zilog Z8 (broken)"
+                               );
+    parser.addOption(langZ8);
     QCommandLineOption langTLCS47(QStringList()<<"tlcs47",
                                   "Toshiba TLCS47 (alpha)"
                                   );
@@ -260,6 +264,8 @@ int main(int argc, char *argv[]){
         language="chip8";
     else if(parser.isSet(langZ80))
         language="z80";
+    else if(parser.isSet(langZ8))
+        language="z8";
     else if(parser.isSet(lang8080))
         language="8080";
     else if(parser.isSet(langH83))
