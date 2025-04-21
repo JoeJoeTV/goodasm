@@ -354,10 +354,12 @@ QString GoodASM::source(){
 
 // All the self testing.
 bool GoodASM::selftest_all(){
-    return selftest_examples()
-           && selftest_collisions()
-           && selftest_overlap()
-           && selftest_length();
+    bool toret=
+        selftest_examples()
+                 && selftest_collisions()
+                 && selftest_overlap()
+                 && selftest_length();
+    return toret;
 }
 
 
@@ -419,6 +421,12 @@ bool GoodASM::selftest_examples(){
             qDebug()<<"TEST: "<<lineinput;
             passes++;
 
+            //Must come before we attempt disassmbly, or we'll miss the missing symbols.
+            if(!symbols.complete()){
+                qDebug()<<"FAIL: "<<lineinput;
+                qDebug()<<"Undefined symbols: "<<symbols.missingSymbols();
+                fails++;
+            }
 
             QByteArray a=bytes;
             load(a);
@@ -435,10 +443,7 @@ bool GoodASM::selftest_examples(){
                 fails++;
             }
 
-            if(!symbols.complete()){
-                qDebug()<<"Undefined symbols: "<<symbols.missingSymbols();
-                fails++;
-            }
+
         }else{
             qDebug()<<"FAIL: "
                      <<(lineinput!=""?lineinput:m->name);
@@ -447,9 +452,7 @@ bool GoodASM::selftest_examples(){
         clear();
     }
 
-    if(!fails)
-        return true;
-    return false;
+    return(!fails);
 }
 
 // Are there collisions?

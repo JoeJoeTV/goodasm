@@ -110,7 +110,7 @@ GALangZ8::GALangZ8() {
         ->adr("\x00\xff\xff");
     insert(mnem("call", 2, "\xd4\x00", "\xff\x00"))
         ->help("Call a function.")
-        ->example("call @r6")
+        ->example("call @rr6")
         ->z8IRR("\x00\xff");
 
     //page 166
@@ -256,7 +256,7 @@ GALangZ8::GALangZ8() {
         ->z8DA("\x00\xff\xff");
     insert(mnem("jp", 2, "\x30\x00", "\xff\x00"))
         ->help("Unconditional jump.")
-        ->example("jp @r6")
+        ->example("jp @rr6")
         ->z8IRR("\x00\xff");
 
     insert(mnem("jr", 2, "\x0b\x00", "\x0f\x00"))
@@ -838,7 +838,7 @@ void GAParameterZ8Reg8::encode(GALanguage *lang,
 
     //8 bit, just the number.
     rawencode(lang, adr, bytes, op, inslen,
-              op.uint64(false));
+              op.uint64(true));
 }
 
 
