@@ -238,11 +238,7 @@ GALangZ8::GALangZ8() {
         ->help("Increment word.")
         ->example("incw @0x34")
         ->z8IR("\x00\xff");
-    /* Bad example from page 185.
-    insert(mnem("incw", 2, "\xa0\x00", "\xff\x00"))
-        ->help("Increment word.")
-        ->example("incw 0x34")
-        ->z8R("\x00\xff"); */
+    //Page 185 lists an R variant of this instruction, but I don't think it's real.
 
     //Page 187 mistakenly says 8F as the opcode, but that is di.
     insert(mnem("iret", 1, "\xbf", "\xff"))
