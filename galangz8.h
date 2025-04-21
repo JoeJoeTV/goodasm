@@ -2,7 +2,12 @@
 #define GALANGZ8_H
 
 /* This implements Zilog's Z8 instruction set, not to be confused
- * with Z80.
+ * with Z80.  It is documented in the Z8 CPU User Manual, but I am
+ * not exagerrating when I say that the document is full of shameless
+ * lies.  Where you think it's wrong, double-check against the MAME
+ * source code, as those gentlemen get their details right!
+ *
+ * --Travis
  */
 
 #include "galanguage.h"

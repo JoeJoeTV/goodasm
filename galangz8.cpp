@@ -349,8 +349,6 @@ GALangZ8::GALangZ8() {
         ->example("ldc @rr6, r8")
         ->z8irr("\x00\xf0")   //dest
         ->z8r("\x00\x0f");  //src
-
-    //FIXME: irr type needs doubled r.
     insert(mnem("ldci", 2, "\xc3\x00", "\xff\x00"))
         ->help("Load Constant Autoincrement (Program Memory)")
         ->example("ldci @r7, @rr8")
@@ -362,6 +360,354 @@ GALangZ8::GALangZ8() {
         ->z8irr("\x00\xf0")   //dest
         ->z8ir("\x00\x0f");  //src
 
+    //Load Constant Autoincrement
+
+    insert(mnem("lde", 2, "\x82\x00", "\xff\x00"))
+        ->help("Load External Data")
+        ->example("lde r7, @rr8")
+        ->z8r("\x00\xf0")     //dest
+        ->z8irr("\x00\x0f");  //src
+    insert(mnem("lde", 2, "\x92\x00", "\xff\x00"))
+        ->help("Load External Data")
+        ->example("lde @rr6, r8")
+        ->z8irr("\x00\xf0")   //dest
+        ->z8r("\x00\x0f");    //src
+    insert(mnem("ldei", 2, "\x83\x00", "\xff\x00"))
+        ->help("Load External Data Autoincrement")
+        ->example("ldei @r7, @rr8")
+        ->z8ir("\x00\xf0")    //dest
+        ->z8irr("\x00\x0f");  //src
+    insert(mnem("ldei", 2, "\x93\x00", "\xff\x00"))
+        ->help("Load External Data Autoincrement")
+        ->example("ldei @rr6, @r8")
+        ->z8irr("\x00\xf0")   //dest
+        ->z8ir("\x00\x0f");   //src
+
+    insert(mnem("nop", 1, "\xff", "\xff"))
+        ->help("No Operation")
+        ->example("nop");
+
+    //page 204
+
+    insert(mnem("and", 2, "\x52\x00", "\xff\x00"))
+        ->help("Logical AND.")
+        ->example("and r1, r2")
+        ->z8r("\x00\xf0")  //dst
+        ->z8r("\x00\x0f"); //src
+    insert(mnem("and", 2, "\x53\x00\x00", "\xff\x00\x00"))
+        ->help("Logical AND.")
+        ->example("and r1, @r2")
+        ->z8r("\x00\xf0")   //dst
+        ->z8ir("\x00\x0f"); //src
+    insert(mnem("and", 3, "\x54\x00\x00", "\xff\x00\x00"))
+        ->help("Logical AND.")
+        ->example("and r5, 0x26")
+        ->z8R("\x00\x00\xff")  //dst
+        ->z8R("\x00\xff\x00"); //src
+    insert(mnem("and", 3, "\x55\x00\x00", "\xff\x00\x00"))
+        ->help("Logical AND.")
+        ->example("and r6, @0x22")
+        ->z8R("\x00\x00\xff")  //dst
+        ->z8IR("\x00\xff\x00"); //src
+    insert(mnem("and", 3, "\x56\x00\x00", "\xff\x00\x00"))
+        ->help("Logical AND.")
+        ->example("and r6, #0xff")
+        ->z8R("\x00\xff\x00")  //dst
+        ->z8IM("\x00\x00\xff"); //src
+    insert(mnem("and", 3, "\x57\x00\x00", "\xff\x00\x00"))
+        ->help("Logical AND.")
+        ->example("and @0x22, #0xff")
+        ->z8IR("\x00\xff\x00")  //dst
+        ->z8IM("\x00\x00\xff"); //src
+
+    insert(mnem("or", 2, "\x42\x00", "\xff\x00"))
+        ->help("Logical OR.")
+        ->example("or r1, r2")
+        ->z8r("\x00\xf0")  //dst
+        ->z8r("\x00\x0f"); //src
+    insert(mnem("or", 2, "\x43\x00\x00", "\xff\x00\x00"))
+        ->help("Logical OR.")
+        ->example("or r1, @r2")
+        ->z8r("\x00\xf0")   //dst
+        ->z8ir("\x00\x0f"); //src
+    insert(mnem("or", 3, "\x44\x00\x00", "\xff\x00\x00"))
+        ->help("Logical OR.")
+        ->example("or r5, 0x26")
+        ->z8R("\x00\x00\xff")  //dst
+        ->z8R("\x00\xff\x00"); //src
+    insert(mnem("or", 3, "\x45\x00\x00", "\xff\x00\x00"))
+        ->help("Logical OR.")
+        ->example("or r6, @0x22")
+        ->z8R("\x00\x00\xff")  //dst
+        ->z8IR("\x00\xff\x00"); //src
+    insert(mnem("or", 3, "\x46\x00\x00", "\xff\x00\x00"))
+        ->help("Logical OR.")
+        ->example("or r6, #0xff")
+        ->z8R("\x00\xff\x00")  //dst
+        ->z8IM("\x00\x00\xff"); //src
+    insert(mnem("or", 3, "\x47\x00\x00", "\xff\x00\x00"))
+        ->help("Logical OR.")
+        ->example("or @0x22, #0xff")
+        ->z8IR("\x00\xff\x00")  //dst
+        ->z8IM("\x00\x00\xff"); //src
+
+    //page 210
+    insert(mnem("xor", 2, "\xb2\x00", "\xff\x00"))
+        ->help("Logical XOR.")
+        ->example("xor r1, r2")
+        ->z8r("\x00\xf0")  //dst
+        ->z8r("\x00\x0f"); //src
+    insert(mnem("xor", 2, "\xb3\x00\x00", "\xff\x00\x00"))
+        ->help("Logical XOR.")
+        ->example("xor r1, @r2")
+        ->z8r("\x00\xf0")   //dst
+        ->z8ir("\x00\x0f"); //src
+    insert(mnem("xor", 3, "\xb4\x00\x00", "\xff\x00\x00"))
+        ->help("Logical XOR.")
+        ->example("xor r5, 0x26")
+        ->z8R("\x00\x00\xff")  //dst
+        ->z8R("\x00\xff\x00"); //src
+    insert(mnem("xor", 3, "\xb5\x00\x00", "\xff\x00\x00"))
+        ->help("Logical XOR.")
+        ->example("xor r6, @0x22")
+        ->z8R("\x00\x00\xff")  //dst
+        ->z8IR("\x00\xff\x00"); //src
+    insert(mnem("xor", 3, "\xb6\x00\x00", "\xff\x00\x00"))
+        ->help("Logical XOR.")
+        ->example("xor r6, #0xff")
+        ->z8R("\x00\xff\x00")  //dst
+        ->z8IM("\x00\x00\xff"); //src
+    insert(mnem("xor", 3, "\xb7\x00\x00", "\xff\x00\x00"))
+        ->help("Logical XOR.")
+        ->example("xor @0x22, #0xff")
+        ->z8IR("\x00\xff\x00")  //dst
+        ->z8IM("\x00\x00\xff"); //src
+
+
+    insert(mnem("pop", 2, "\x50\x00", "\xff\x00"))
+        ->help("Pop from stack.")
+        ->example("pop 0x34")
+        ->z8R("\x00\xff");
+    insert(mnem("pop", 2, "\x51\x00", "\xff\x00"))
+        ->help("Pop from stack.")
+        ->example("pop @0xA5")
+        ->z8IR("\x00\xff");
+    insert(mnem("push", 2, "\x70\x00", "\xff\x00"))
+        ->help("Push to stack.")
+        ->example("push 0x34")
+        ->z8R("\x00\xff");
+    insert(mnem("push", 2, "\x71\x00", "\xff\x00"))
+        ->help("Push to stack.")
+        ->example("push @0xA5")
+        ->z8IR("\x00\xff");
+
+
+    insert(mnem("rcf", 1, "\xcf", "\xff"))
+        ->help("Reset Carry Flag")
+        ->example("rcf");
+    insert(mnem("ret", 1, "\xaf", "\xff"))
+        ->help("Return")
+        ->example("ret");
+
+
+    insert(mnem("rl", 2, "\x90\x00", "\xff\x00"))
+        ->help("Rotate Left.")
+        ->example("rl 0x34")
+        ->z8R("\x00\xff");
+    insert(mnem("rl", 2, "\x91\x00", "\xff\x00"))
+        ->help("Rotate Left.")
+        ->example("rl @0xA5")
+        ->z8IR("\x00\xff");
+    insert(mnem("rlc", 2, "\x10\x00", "\xff\x00"))
+        ->help("Rotate Left Through Carry.")
+        ->example("rlc 0x34")
+        ->z8R("\x00\xff");
+    insert(mnem("rlc", 2, "\x11\x00", "\xff\x00"))
+        ->help("Rotate Left Through Carry.")
+        ->example("rlc @0xA5")
+        ->z8IR("\x00\xff");
+
+    insert(mnem("rr", 2, "\xe0\x00", "\xff\x00"))
+        ->help("Rotate Right.")
+        ->example("rr 0x34")
+        ->z8R("\x00\xff");
+    insert(mnem("rr", 2, "\xe1\x00", "\xff\x00"))
+        ->help("Rotate Right.")
+        ->example("rr @0xA5")
+        ->z8IR("\x00\xff");
+    insert(mnem("rrc", 2, "\xc0\x00", "\xff\x00"))
+        ->help("Rotate Right Through Carry.")
+        ->example("rrc 0x34")
+        ->z8R("\x00\xff");
+    insert(mnem("rrc", 2, "\xc1\x00", "\xff\x00"))
+        ->help("Rotate Right Through Carry.")
+        ->example("rrc @0xA5")
+        ->z8IR("\x00\xff");
+
+    //page 227
+    insert(mnem("scf", 1, "\xdf", "\xff"))
+        ->help("Set Carry Flag.")
+        ->example("scf");
+
+    insert(mnem("srp", 2, "\x31\x00", "\xff\x00"))
+        ->help("Set Register Pointer.")
+        ->example("srp #0xf0")
+        ->z8IM("\x00\xff");
+
+
+    insert(mnem("sra", 2, "\xd0\x00", "\xff\x00"))
+        ->help("Shift Right Arithmetic.")
+        ->example("sra 0x34")
+        ->z8RR("\x00\xff");
+    insert(mnem("sra", 2, "\xd1\x00", "\xff\x00"))
+        ->help("Shift Right Arithmetic.")
+        ->example("sra @0x34")
+        ->z8IR("\x00\xff");
+
+    insert(mnem("stop", 1, "\x6f", "\xff"))
+        ->help("Stops main clock. (NOP first.)")
+        ->example("stop");
+
+
+    insert(mnem("sub", 2, "\x22\x00", "\xff\x00"))
+        ->help("Subtract.")
+        ->example("sub r1, r2")
+        ->z8r("\x00\xf0")  //dst
+        ->z8r("\x00\x0f"); //src
+    insert(mnem("sub", 2, "\x23\x00\x00", "\xff\x00\x00"))
+        ->help("Subtract.")
+        ->example("sub r1, @r2")
+        ->z8r("\x00\xf0")   //dst
+        ->z8ir("\x00\x0f"); //src
+    insert(mnem("sub", 3, "\x24\x00\x00", "\xff\x00\x00"))
+        ->help("Subtract.")
+        ->example("sub r5, 0x26")
+        ->z8R("\x00\x00\xff")  //dst
+        ->z8R("\x00\xff\x00"); //src
+    insert(mnem("sub", 3, "\x25\x00\x00", "\xff\x00\x00"))
+        ->help("Subtract.")
+        ->example("sub r6, @0x22")
+        ->z8R("\x00\x00\xff")  //dst
+        ->z8IR("\x00\xff\x00"); //src
+    insert(mnem("sub", 3, "\x26\x00\x00", "\xff\x00\x00"))
+        ->help("Subtract.")
+        ->example("sub r6, #0xff")
+        ->z8R("\x00\xff\x00")  //dst
+        ->z8IM("\x00\x00\xff"); //src
+    insert(mnem("sub", 3, "\x27\x00\x00", "\xff\x00\x00"))
+        ->help("Subtract.")
+        ->example("sub @0x22, #0xff")
+        ->z8IR("\x00\xff\x00")  //dst
+        ->z8IM("\x00\x00\xff"); //src
+
+    insert(mnem("sbc", 2, "\x32\x00", "\xff\x00"))
+        ->help("Subtract w/ carry.")
+        ->example("sbc r1, r2")
+        ->z8r("\x00\xf0")  //dst
+        ->z8r("\x00\x0f"); //src
+    insert(mnem("sbc", 2, "\x33\x00\x00", "\xff\x00\x00"))
+        ->help("Subtract w/ carry.")
+        ->example("sbc r1, @r2")
+        ->z8r("\x00\xf0")   //dst
+        ->z8ir("\x00\x0f"); //src
+    insert(mnem("sbc", 3, "\x34\x00\x00", "\xff\x00\x00"))
+        ->help("Subtract w/ carry.")
+        ->example("sbc r5, 0x26")
+        ->z8R("\x00\x00\xff")  //dst
+        ->z8R("\x00\xff\x00"); //src
+    insert(mnem("sbc", 3, "\x35\x00\x00", "\xff\x00\x00"))
+        ->help("Subtract w/ carry.")
+        ->example("sbc r6, @0x22")
+        ->z8R("\x00\x00\xff")  //dst
+        ->z8IR("\x00\xff\x00"); //src
+    insert(mnem("sbc", 3, "\x36\x00\x00", "\xff\x00\x00"))
+        ->help("Subtract w/ carry.")
+        ->example("sbc r6, #0xff")
+        ->z8R("\x00\xff\x00")  //dst
+        ->z8IM("\x00\x00\xff"); //src
+    insert(mnem("sbc", 3, "\x37\x00\x00", "\xff\x00\x00"))
+        ->help("Subtract w/ carry.")
+        ->example("sbc @0x22, #0xff")
+        ->z8IR("\x00\xff\x00")  //dst
+        ->z8IM("\x00\x00\xff"); //src
+
+
+    insert(mnem("swap", 2, "\xf0\x00", "\xff\x00"))
+        ->help("Swap Nybbles.")
+        ->example("swap 0x34")
+        ->z8RR("\x00\xff");
+    insert(mnem("swap", 2, "\xf1\x00", "\xff\x00"))
+        ->help("Swap Nybbles.")
+        ->example("swap @0x34")
+        ->z8IR("\x00\xff");
+
+
+    insert(mnem("tcm", 2, "\x62\x00", "\xff\x00"))
+        ->help("Test Complement under Mask.")
+        ->example("tcm r1, r2")
+        ->z8r("\x00\xf0")  //dst
+        ->z8r("\x00\x0f"); //src
+    insert(mnem("tcm", 2, "\x63\x00\x00", "\xff\x00\x00"))
+        ->help("Test Complement under Mask.")
+        ->example("tcm r1, @r2")
+        ->z8r("\x00\xf0")   //dst
+        ->z8ir("\x00\x0f"); //src
+    insert(mnem("tcm", 3, "\x64\x00\x00", "\xff\x00\x00"))
+        ->help("Test Complement under Mask.")
+        ->example("tcm r5, 0x26")
+        ->z8R("\x00\x00\xff")  //dst
+        ->z8R("\x00\xff\x00"); //src
+    insert(mnem("tcm", 3, "\x65\x00\x00", "\xff\x00\x00"))
+        ->help("Test Complement under Mask.")
+        ->example("tcm r6, @0x22")
+        ->z8R("\x00\x00\xff")  //dst
+        ->z8IR("\x00\xff\x00"); //src
+    insert(mnem("tcm", 3, "\x66\x00\x00", "\xff\x00\x00"))
+        ->help("Test Complement under Mask.")
+        ->example("tcm r6, #0xff")
+        ->z8R("\x00\xff\x00")  //dst
+        ->z8IM("\x00\x00\xff"); //src
+    insert(mnem("tcm", 3, "\x67\x00\x00", "\xff\x00\x00"))
+        ->help("Test Complement under Mask.")
+        ->example("tcm @0x22, #0xff")
+        ->z8IR("\x00\xff\x00")  //dst
+        ->z8IM("\x00\x00\xff"); //src
+
+    insert(mnem("tm", 2, "\x72\x00", "\xff\x00"))
+        ->help("Test under Mask.")
+        ->example("tm r1, r2")
+        ->z8r("\x00\xf0")  //dst
+        ->z8r("\x00\x0f"); //src
+    insert(mnem("tm", 2, "\x73\x00\x00", "\xff\x00\x00"))
+        ->help("Test under Mask.")
+        ->example("tm r1, @r2")
+        ->z8r("\x00\xf0")   //dst
+        ->z8ir("\x00\x0f"); //src
+    insert(mnem("tm", 3, "\x74\x00\x00", "\xff\x00\x00"))
+        ->help("Test under Mask.")
+        ->example("tm r5, 0x26")
+        ->z8R("\x00\x00\xff")  //dst
+        ->z8R("\x00\xff\x00"); //src
+    insert(mnem("tm", 3, "\x75\x00\x00", "\xff\x00\x00"))
+        ->help("Test under Mask.")
+        ->example("tm r6, @0x22")
+        ->z8R("\x00\x00\xff")  //dst
+        ->z8IR("\x00\xff\x00"); //src
+    insert(mnem("tm", 3, "\x76\x00\x00", "\xff\x00\x00"))
+        ->help("Test under Mask.")
+        ->example("tm r6, #0xff")
+        ->z8R("\x00\xff\x00")  //dst
+        ->z8IM("\x00\x00\xff"); //src
+    insert(mnem("tm", 3, "\x77\x00\x00", "\xff\x00\x00"))
+        ->help("Test under Mask.")
+        ->example("tm @0x22, #0xff")
+        ->z8IR("\x00\xff\x00")  //dst
+        ->z8IM("\x00\x00\xff"); //src
+
+
+    insert(mnem("wdt", 1, "\x5f", "\xff"))
+        ->help("Watch Dog Timer.")
+        ->example("wdt");
 }
 
 
