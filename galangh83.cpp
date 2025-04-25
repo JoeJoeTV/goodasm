@@ -1,7 +1,6 @@
 #include "galangh83.h"
 #include "gaparameter.h"
 #include "gamnemonic.h"
-#include "goodasm.h"
 
 #include <QDebug>
 
