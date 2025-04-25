@@ -46,6 +46,7 @@ selftests:
 	goodasm --test --chip8
 	goodasm --test --z80
 	goodasm --test --8080
+	goodasm --test --h83
 
 
 # Failing self-tests.
@@ -66,6 +67,7 @@ fuzz:
 	goodasm --fuzz --z80
 	goodasm --fuzz --8080
 	goodasm --fuzz --pic16c5x
+	goodasm --fuzz --h83
 # Identify fuzzing.
 	goodasm --fuzz -i
 
