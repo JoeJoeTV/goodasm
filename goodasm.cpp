@@ -23,6 +23,7 @@
 #include "galangsm83.h"
 #include "galangchip8.h"
 #include "galangz80.h"
+#include "galangz8.h"
 #include "galangfcard.h"
 #include "galang8080.h"
 #include "galangh83.h"
@@ -75,6 +76,7 @@ void GoodASM::setLanguage(QString language){
         languages.append(new GALangSM83());  //GameBoy.
         languages.append(new GALangChip8());
         languages.append(new GALangZ80());
+        languages.append(new GALangZ8());
         languages.append(new GALangFCard());
         languages.append(new GALang8080());
         languages.append(new GALangH83());
@@ -352,10 +354,12 @@ QString GoodASM::source(){
 
 // All the self testing.
 bool GoodASM::selftest_all(){
-    return selftest_examples()
-           && selftest_collisions()
-           && selftest_overlap()
-           && selftest_length();
+    bool toret=
+        selftest_examples()
+                 && selftest_collisions()
+                 && selftest_overlap()
+                 && selftest_length();
+    return toret;
 }
 
 
@@ -417,6 +421,12 @@ bool GoodASM::selftest_examples(){
             qDebug()<<"TEST: "<<lineinput;
             passes++;
 
+            //Must come before we attempt disassmbly, or we'll miss the missing symbols.
+            if(!symbols.complete()){
+                qDebug()<<"FAIL: "<<lineinput;
+                qDebug()<<"Undefined symbols: "<<symbols.missingSymbols();
+                fails++;
+            }
 
             QByteArray a=bytes;
             load(a);
@@ -433,10 +443,7 @@ bool GoodASM::selftest_examples(){
                 fails++;
             }
 
-            if(!symbols.complete()){
-                qDebug()<<"Undefined symbols: "<<symbols.missingSymbols();
-                fails++;
-            }
+
         }else{
             qDebug()<<"FAIL: "
                      <<(lineinput!=""?lineinput:m->name);
@@ -445,9 +452,7 @@ bool GoodASM::selftest_examples(){
         clear();
     }
 
-    if(!fails)
-        return true;
-    return false;
+    return(!fails);
 }
 
 // Are there collisions?
