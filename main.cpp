@@ -38,7 +38,7 @@ int main(int argc, char *argv[]){
                                    );
     parser.addOption(cheatOption);
 
-    QCommandLineOption opcodetableOption(QStringList()<<"opcodetable",
+    QCommandLineOption opcodetableOption(QStringList()<<"T"<<"opcodetable",
                                    "Print a table of opcodes."
                                    );
     parser.addOption(opcodetableOption);
@@ -148,6 +148,15 @@ int main(int argc, char *argv[]){
                                       "List bits in output."
                                       );
     parser.addOption(listbitsOption);
+    QCommandLineOption listdbitsOption(QStringList()<<"D"<<"dbits",
+                                       "List damage bits in output."
+                                       );
+    parser.addOption(listdbitsOption);
+    QCommandLineOption damageOption(QStringList()<<"damage",
+                                 "Damage filename.",
+                                 "mask.bin"
+                                 );
+    parser.addOption(damageOption);
 
     QCommandLineOption autocommentOption(QStringList()<<"A"<<"auto",
                                          "Comment with cheat sheet when available."
@@ -190,7 +199,7 @@ int main(int argc, char *argv[]){
                                );
     parser.addOption(langZ80);
     QCommandLineOption langZ8(QStringList()<<"z8",
-                               "Zilog Z8 (broken)"
+                               "Zilog Z8 (beta)"
                                );
     parser.addOption(langZ8);
     QCommandLineOption langTLCS47(QStringList()<<"tlcs47",
@@ -312,6 +321,10 @@ int main(int argc, char *argv[]){
         goodasm->listbits=true;
         goodasm->listbytes=-1;
     }
+    if(parser.isSet(listdbitsOption)){
+        goodasm->listdbits=true;
+        goodasm->listbytes=-1;
+    }
     goodasm->listadr=parser.isSet(listadrOption)?1:0;
     goodasm->verbose=parser.isSet(verboseOption)?1:0;
     goodasm->autocomment=parser.isSet(autocommentOption);
@@ -364,6 +377,8 @@ int main(int argc, char *argv[]){
         //Interactive assembly and disassembly modes are now unified.
         return garepl_encode(goodasm);
     }else if(args.count()==1 && parser.isSet(disOption)){    //Disassemble a binary.
+        if(parser.isSet(damageOption))
+            goodasm->loadDamageFile(parser.value(damageOption));
         goodasm->loadBinFile(args[0]);
         std::cout<<goodasm->source().toStdString();
     } else if(args.count()==1

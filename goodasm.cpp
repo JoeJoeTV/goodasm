@@ -512,6 +512,7 @@ bool GoodASM::selftest_overlap(){
 void GoodASM::clear(bool symbols){
     instructions.clear();
     bytes.clear();
+    //We don't clear damage.  Instead, it persists.
     clearErrors();
     if(symbols) this->symbols.clear();
     workingadr=baseaddress;
@@ -535,6 +536,7 @@ QByteArray GoodASM::code(){
     //Empty output when undefined.
     return QByteArray();
 }
+
 // Code in hex.
 QString GoodASM::hexdump(){
     QByteArray bytes=code();
@@ -571,6 +573,16 @@ void GoodASM::load(QByteArray bytes){
         ins=ins.next();
     }
 }
+
+// Load a binary of damage.  Call before ::load()
+void GoodASM::loadDamage(QByteArray bytes){
+    clear(true);  //Clear code and symbols.
+
+    //Load the binary.
+    this->damage=bytes;
+}
+
+
 // Disassemble bytes and append them to the working project.
 void GoodASM::loadFragment(QString label, QByteArray bytes, QString comment){
     char buf[GAMAXLEN];
@@ -604,6 +616,8 @@ void GoodASM::loadFragment(QString label, QByteArray bytes, QString comment){
     }
 
 }
+
+
 // Load source for assembly.
 void GoodASM::load(QString source){
     type=ASSEMBLY;
@@ -629,6 +643,8 @@ void GoodASM::load(QString source){
         error(QString("After %1 passes, symbols disagree.").arg(count));
 
 }
+
+
 //Loads a filename for assembly.
 void GoodASM::loadFile(QString file){
     QByteArray bytes;
@@ -661,6 +677,21 @@ void GoodASM::loadBinFile(QString file){
         exit(1);
 
     load(bytes);
+}
+//Same, but for damage.
+void GoodASM::loadDamageFile(QString file){
+    QByteArray bytes;
+
+    QFile input(file);
+    if(file=="-")
+        input.open(stdin, QIODevice::ReadOnly);
+    else
+        input.open(QFile::ReadOnly);
+    bytes=input.readAll();
+    if(bytes.length()==0)
+        exit(1);
+
+    loadDamage(bytes);
 }
 
 
@@ -706,6 +737,8 @@ GAInstruction GoodASM::at(uint64_t adr){
 
 // Confusing when epsilon!=1.
 uint8_t GoodASM::byteAt(uint64_t adr){
+    //qDebug()<<"Adr="<<adr<<"len="<<bytes.length();
+
     /* On architectures like PIC16C5x, we swap the bytes
      * as we load them so that our code more closely matches
      * the datasheet.
@@ -719,8 +752,26 @@ uint8_t GoodASM::byteAt(uint64_t adr){
     if(adr<bytes.length())
         return bytes[(int) adr];
 
-    //Too loud even for verbose mode.  Uncomment if you reall need this.
+    //Too loud even for verbose mode.  Uncomment if you really need this.
     //if(verbose) qDebug()<<"Illegal fetch from adr"<<adr;
+
+    return 0;
+}
+
+// Same but for damage instead of data.
+uint8_t GoodASM::damageAt(uint64_t adr){
+    /* On architectures like PIC16C5x, we swap the bytes
+     * as we load them so that our code more closely matches
+     * the datasheet.
+     */
+    if(lang->swapwordonload)
+        adr^=1;
+
+    //Important to adjust for the base address.
+    adr-=baseaddress;
+
+    if(adr<damage.length())
+        return damage[(int) adr];
 
     return 0;
 }

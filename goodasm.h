@@ -40,12 +40,15 @@ public:
     QByteArray code();             //Binary input or assembly.
     QString hexdump();             //Code in hex.
 
-    void load(QByteArray bytes);    //Load a binary for disassembly.
+    void load(QByteArray bytes);        //Load a binary for disassembly.
+    void loadDamage(QByteArray bytes);  //Load a binary for disassembly.
+
     //Disassemble bytes and append them to the working project.
     void loadFragment(QString label, QByteArray bytes, QString comment);
     void load(QString source);      //Load source for assembly.
     void loadFile(QString file);    //Loads a filename for assembly.
     void loadBinFile(QString file); //Loads a filename for disassembly.
+    void loadDamageFile(QString file); //Loads a filename for disassembly.
     void clear(bool symbols=false); //Clears all data or instructions.
 
 
@@ -55,6 +58,7 @@ public:
     void append(GAInstruction ins); //Insert the next instruction.
 
     uint8_t byteAt(uint64_t adr);   //Grab a byte from an address.
+    uint8_t damageAt(uint64_t adr); //Grab a damage mask from an address.
     GAInstruction at(uint64_t adr); //Grab an instruction from an address.
     uint64_t address();             //Calculated current working address.
     uint64_t baseaddress=0;         //Base address of the image.
@@ -86,6 +90,7 @@ public:
     int autocomment=0;   //Autogen comments when none is available.
     int verbose=0;       //Useful for printf debugging.
     bool listbits=false; //Shows bits instead of bytes.
+    bool listdbits=false;//Shows damaged bits.
     int line=0;          //Line number.
     QString filename=""; //Filename.
     QStack<int> filenamelines;
@@ -100,6 +105,7 @@ public:
 
     //Formerly private.
     QByteArray bytes;                    //Byte representation of program.
+    QByteArray damage;                   //Byte representation of damage.  No damage if empty.
     QList<GAInstruction> instructions;   //Source listing of the program.
     enum {NONE, ASSEMBLY, DISASSEMBLY} type=NONE;
 

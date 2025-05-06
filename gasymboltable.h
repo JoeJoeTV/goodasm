@@ -14,7 +14,10 @@ class GALanguage;
  * The table is "complete" if every symbol that is ever
  * consumed is also defined.  We reach "closure" if the
  * hash of all symbols and values is the same in two
- * subsequent assembly runs.
+ * subsequent assembly runs, but that can't be checked
+ * from this class alone without repeating a rendering.
+ *
+ *
  */
 
 class GASymbol {
