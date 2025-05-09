@@ -15,6 +15,7 @@ all:
 	make -C z80 clean all
 #	make -C z8 clean all
 	make -C 8080 clean all
+	make -C 8051 clean all
 	make -C weird clean all
 	make selftests fuzz
 
@@ -31,8 +32,9 @@ clean:
 	make -C fcard clean
 	make -C chip8 clean
 	make -C z80 clean
-#	make -C z80 clean
+#	make -C z8 clean
 	make -C 8080 clean
+	make -C 8051 clean
 	make -C weird clean
 
 selftests:
