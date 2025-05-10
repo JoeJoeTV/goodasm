@@ -38,6 +38,7 @@ public:
     GAGrader *grader=0;
     GALanguage *lang=0;
     int64_t score=0;
+    bool valid=false;
 };
 
 

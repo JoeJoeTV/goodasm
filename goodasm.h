@@ -53,6 +53,8 @@ public:
 
 
     QVector<GAGraderGrade> identify(); //Identifies potential languages for a binary.
+    QVector<GAGraderGrade> grade();    //Grades in the current language.
+
 
 
     void append(GAInstruction ins); //Insert the next instruction.

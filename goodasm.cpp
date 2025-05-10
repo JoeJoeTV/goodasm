@@ -803,3 +803,17 @@ QVector<GAGraderGrade> GoodASM::identify(){
 
     return matches;
 }
+
+//Grades in the current language.
+QVector<GAGraderGrade> GoodASM::grade(){
+    QVector<GAGraderGrade> matches;
+    setGrader("");   //Ensure list is populated.
+
+    //Collect the scores of each grader for the one language.
+    foreach(auto g, graders){
+        if(g->stable && g->isCompatible(lang))
+            matches.append(g->scores(this));
+    }
+
+    return matches;
+}

@@ -31,8 +31,11 @@ QString GAGrader::mostValid(GoodASM *goodasm){
 
 // Score the result.
 GAGraderGrade GAGrader::score(GoodASM *goodasm){
-    int64_t score=isValid(goodasm);
-    return GAGraderGrade(this, goodasm->lang, score);
+    bool valid=isValid(goodasm);
+    int64_t score=valid?100:0;
+    GAGraderGrade grade(this, goodasm->lang, score);
+    grade.valid=valid;
+    return grade;
 }
 
 //Static sorting function to put the highest scores first.
