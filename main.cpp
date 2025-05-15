@@ -424,19 +424,6 @@ int main(int argc, char *argv[]){
         goodasm->setGrader("");   //Ensure list is populated.
         int valids=0, invalids=0;
         foreach(GAGraderGrade g, goodasm->grade()){
-            /*
-            goodasm->setGrader(g);
-            bool compatible=goodasm->grader->isCompatible(goodasm->lang);
-            if(compatible && goodasm->grader->stable){
-                bool valid=goodasm->grader->isValid(goodasm);
-                printf("%s\t%s\n",
-                       goodasm->grader->name.toStdString().c_str(),
-                       (valid?"valid":"invalid")
-                       );
-                if(valid) valids++;
-                else invalids++;
-            }*/
-
             bool valid=g.score>50;
             printf("%s\t%s\n",
                    g.grader->name.toStdString().c_str(),
@@ -444,7 +431,6 @@ int main(int argc, char *argv[]){
                    );
             if(valid) valids++;
             else invalids++;
-
         }
         if(valids>invalids) return 0;
         else return 1;

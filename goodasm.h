@@ -24,8 +24,8 @@ public:
     GoodASM(QString language);
     ~GoodASM();
 
-    void setLanguage(GALanguage *language);
-    void setLanguage(QString language);
+    bool setLanguage(GALanguage *language);
+    bool setLanguage(QString language);
     void setListing(QString style);
     void setListing(GAListing *style);
     void setGrader(QString grader);

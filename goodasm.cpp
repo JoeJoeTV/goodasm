@@ -61,9 +61,9 @@ void rl_forced_update_display(){
 
 
 
-void GoodASM::setLanguage(QString language){
+bool GoodASM::setLanguage(QString language){
+    //Load the languages, in case we need them.
     if(languages.empty()){
-        //List of other languages, in case we need them.
         languages.append(new GALang8086());
         languages.append(new GALangUcom43());
         languages.append(new GALangTLCS47());
@@ -82,14 +82,26 @@ void GoodASM::setLanguage(QString language){
         languages.append(new GALangH83());
     }
 
-
+    //Does our language match?
+    lang=0;
     foreach (auto lang, languages) {
         if(lang->name==language)
             setLanguage(lang);
     }
 
+    //If it's empty, that's not an unexpected problem.
+    if(language=="")
+        setLanguage(0);
+
     //Empty language if we need one.
-    if(!lang) setLanguage(0);
+    if(!lang){
+        setLanguage(0);
+        qDebug()<<"Language "<<language<<"is not known.";
+        return false;
+    }
+
+    //True if the lang has been set.
+    return true;
 }
 
 //List of supported language names.
@@ -322,7 +334,7 @@ char** GoodASM::readline_completions(const char *fragment, const char *line,
 }
 
 
-void GoodASM::setLanguage(GALanguage *language){
+bool GoodASM::setLanguage(GALanguage *language){
     lang=language;
     if(!lang) //Apply if it's an empty language.
         lang=new GALanguage();
@@ -333,6 +345,8 @@ void GoodASM::setLanguage(GALanguage *language){
     //Reload binary if we are disassembling.
     if(type==DISASSEMBLY)
         load(bytes);
+
+    return true;
 }
 
 
