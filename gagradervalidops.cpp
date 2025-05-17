@@ -15,6 +15,9 @@ uint64_t GAGraderValidOps::isValid(GoodASM *goodasm){
     //Needed to set the threshold.
     isCompatible(goodasm->lang);
 
+    //Too many false positives on small samples.
+    if(goodasm->bytes.size()<1024) return 0;
+
 
     GAInstruction ins=goodasm->at(goodasm->baseaddress);
     uint64_t valid=0, invalid=0;

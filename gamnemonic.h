@@ -50,11 +50,11 @@ public:
     void dontcare(const char *mask=0);
 
     //Does the Mnemonic match bytes?  If so, decode it.
-    int match(GAInstruction &ins, uint64_t adr, uint32_t &len,
-              const char *bytes);
+    virtual int match(GAInstruction &ins, uint64_t adr, uint32_t &len,
+                      const char *bytes);
     //Does the Mnemonic match parameters?  If so, encode it.
-    int match(GAInstruction &ins, uint64_t adr, QString verb,
-              QList<GAParserOperand> ops);
+    virtual int match(GAInstruction &ins, uint64_t adr, QString verb,
+                      QList<GAParserOperand> ops);
 
     //Unique name.
     QString name="undefined";

@@ -61,12 +61,6 @@ int GAMnemonic::match(GAInstruction &ins, uint64_t adr, uint32_t &len,
         if((bytes[i]&opcodemask[i])!=opcode[i])
             return 0; //No match.
     }
-    /*
-    qDebug()<<"Match "<<length<<" ";
-    qDebug()<<"Bytes:  "<<Qt::hex<<(uint8_t) bytes[0]<<(uint8_t) bytes[1]<<(uint8_t) bytes[2]<<"to"<<examplestr;
-    qDebug()<<"Opcode: "<<Qt::hex<<(uint8_t) opcode[0]<<(uint8_t) opcode[1]<<(uint8_t) opcode[2];
-    qDebug()<<"Mask:   "<<Qt::hex<<(uint8_t) opcodemask[0]<<(uint8_t) opcodemask[1]<<(uint8_t) opcodemask[2];
-     */
 
     //Here we have a match, but we need to form a valid instructions.
     ins.verb=name;

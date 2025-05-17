@@ -27,6 +27,7 @@
 #include "galangfcard.h"
 #include "galang8080.h"
 #include "galangh83.h"
+#include "galangarm7tdmi.h"
 
 //Listings
 #include "galistingdefault.h"
@@ -80,6 +81,7 @@ bool GoodASM::setLanguage(QString language){
         languages.append(new GALangFCard());
         languages.append(new GALang8080());
         languages.append(new GALangH83());
+        languages.append(new GALangARM7TDMI());
     }
 
     //Does our language match?
@@ -511,9 +513,9 @@ bool GoodASM::selftest_overlap(){
                 qDebug()<<"Byte"<<i<<": "<<Qt::hex<<(uint8_t) (wmask[i]&m->dcmask[i]);
                 return false;
             }
-            if((wmask[i]|m->dcmask[i])!=0xff){
+            if(((uint8_t) wmask[i]|(uint8_t) m->dcmask[i])!=0xff){
                 qDebug()<<"Empty mask bit: "<<m->examplestr;
-                qDebug()<<"Byte"<<i<<": "<<Qt::hex<<(uint8_t) wmask[i];
+                qDebug()<<"Byte"<<i<<": "<<Qt::hex<<((uint8_t) wmask[i]|(uint8_t) m->dcmask[i]);
                 return false;
             }
         }
