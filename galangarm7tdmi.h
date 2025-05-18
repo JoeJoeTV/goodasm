@@ -127,7 +127,6 @@ class GAParameterARM7TDMIShift : public GAParameter {
 public:
     GAParameterARM7TDMIShift(const char* mask="\xf0\x0f\x00\x00");
     int match(GAParserOperand *op, int len) override;
-
     QString decode(GALanguage *lang, uint64_t adr, const char *bytes, int inslen) override;
     void encode(GALanguage *lang,
                 uint64_t adr, QByteArray &bytes,
@@ -152,6 +151,30 @@ private:
         "pc", //r15
         "r13", "r14", "r15"
     };
+};
+
+
+/* Represents a rotated immediate from an ARM7TDMI data processing instruction.
+ * The low 8 bits represent the immediate value, and the upper 4 bits are the
+ * rotation.
+ *
+ * The rotation is in multiples of two bits.  Is it applied by rotating the base
+ * to the right.
+ */
+class GAParameterARM7TDMIImmediate : public GAParameter
+{
+public:
+    GAParameterARM7TDMIImmediate(const char* mask="\xff\x0f\x00\x00");
+    int match(GAParserOperand *op, int len) override;
+    QString decode(GALanguage *lang, uint64_t adr, const char *bytes, int inslen) override;
+    void encode(GALanguage *lang,
+                uint64_t adr, QByteArray &bytes,
+                GAParserOperand op,
+                int inslen
+                ) override;
+
+    uint32_t dec(uint64_t base, uint32_t rotate);
+    bool enc(uint32_t val, uint64_t *base, uint32_t *rotate);
 };
 
 #endif // GALANGARM7TDMI_H

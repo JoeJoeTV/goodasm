@@ -12,6 +12,7 @@
 #define rel(x) insert(new GAParameterRelative((x), 8, 4))
 //Op2 register and shift.
 #define op2reg(x) insert(new GAParameterARM7TDMIReg((x)))->insert(new GAParameterARM7TDMIShift())
+#define armimm insert(new GAParameterARM7TDMIImmediate())
 
 
 GALangARM7TDMI::GALangARM7TDMI() {
@@ -106,8 +107,9 @@ GALangARM7TDMI::GALangARM7TDMI() {
             example+="r3, lsl #1";
         }else{
             //Shifted Immediate Mode.
-            m->imm("\xff\x00\x00\x00");
-            m->dontcare("\x00\x0f\x00\x00");  //FIXME: Missing rotation parameter!
+            //m->imm("\xff\x00\x00\x00");
+            //m->dontcare("\x00\x0f\x00\x00");  //FIXME: Missing rotation parameter!
+            m->armimm;
             example+="#0xff";
         }
 
@@ -367,3 +369,71 @@ void GAParameterARM7TDMIShift::encode(GALanguage *lang,
     rawencode(lang, adr, bytes, op, inslen, rn);
     return;
 }
+
+
+
+
+GAParameterARM7TDMIImmediate::GAParameterARM7TDMIImmediate(const char* mask){
+    setMask(mask);
+}
+int GAParameterARM7TDMIImmediate::match(GAParserOperand *op, int len){
+    if(op->prefix!="#")
+        return 0;
+
+    return 1;
+}
+QString GAParameterARM7TDMIImmediate::decode(GALanguage *lang, uint64_t adr,
+                                             const char *bytes, int inslen){
+    uint32_t d=rawdecode(lang, adr, bytes, inslen);
+    uint32_t val=dec(d&0xff, (d&0xf00)>>8);
+
+    return QString::asprintf("#0x%lx", (unsigned long) val);
+}
+void GAParameterARM7TDMIImmediate::encode(GALanguage *lang,
+                                          uint64_t adr, QByteArray &bytes,
+                                          GAParserOperand op,
+                                          int inslen){
+    uint32_t rn=0;
+    uint64_t base=0;
+    uint32_t rotate=0;
+
+
+    bool b=enc(op.uint64(false), &base, &rotate);
+    if(b){
+        rn|=base&0xff;
+        rn|=(rotate<<8)&0xf00;
+    }
+
+    //Rotation steps two at a time.
+    rawencode(lang, adr, bytes, op, inslen, rn);
+}
+
+/* This takes a base and a rotation, producing the decoded uint32_t. */
+uint32_t GAParameterARM7TDMIImmediate::dec(uint64_t base, uint32_t rotate){
+    base|=(base<<32);
+    base>>=rotate*2;
+    return base&0xFFFFFFFF;
+}
+
+
+bool GAParameterARM7TDMIImmediate::enc(uint32_t val, uint64_t *base, uint32_t *rotate){
+    uint64_t b=(((uint64_t) val)<<32)|val;
+    for(int i=0; i<16; i++){
+        uint64_t newbase=
+            ((b<<i*2)&0xffffffff)
+                           | (b>>(32-i*2));
+        newbase&=0xff;
+
+        if(dec(newbase, i)==val){
+            *base=newbase;
+            *rotate=i;
+            return true;
+        }
+    }
+    qDebug()<<"";
+    return false;
+}
+
+
+
+
