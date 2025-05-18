@@ -38,8 +38,8 @@ public:
                    int64_t val
                    );
     //Raw decode function, used by parameters but not by opcodes.
-    virtual uint64_t rawdecode(GAParameter *param, uint64_t adr,
-                               const char *bytes, int inslen);
+    virtual int64_t rawdecode(GAParameter *param, uint64_t adr,
+                              const char *bytes, int inslen);
 
 
     //Should these be private?

@@ -16,6 +16,7 @@ all:
 #	make -C z8 clean all
 	make -C 8080 clean all
 	make -C 8051 clean all
+	make -C arm7tdmi clean all
 	make -C weird clean all
 	make selftests fuzz
 
@@ -35,6 +36,7 @@ clean:
 #	make -C z8 clean
 	make -C 8080 clean
 	make -C 8051 clean
+	make -C arm7tdmi clean
 	make -C weird clean
 
 selftests:
@@ -52,6 +54,8 @@ selftests:
 	goodasm --test --z8
 	goodasm --test --8080
 	goodasm --test --h83
+	goodasm --test --arm7tdmi
+
 
 
 # Failing self-tests.
@@ -74,6 +78,7 @@ fuzz:
 	goodasm --fuzz --8080
 	goodasm --fuzz --pic16c5x
 	goodasm --fuzz --h83
+	goodasm --fuzz --arm7tdmi
 # Identify fuzzing.
 	goodasm --fuzz -i
 

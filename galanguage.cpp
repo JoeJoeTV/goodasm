@@ -60,8 +60,8 @@ void GALanguage::rawencode(uint64_t adr, QByteArray &bytes,
 }
 
 //Raw decode function, used by parameters but not by opcodes.
-uint64_t GALanguage::rawdecode(GAParameter *param, uint64_t adr,
-                                const char *bytes, int inslen){
+int64_t GALanguage::rawdecode(GAParameter *param, uint64_t adr,
+                              const char *bytes, int inslen){
     int64_t val=0;  // Value to return.
 
     /* For little endian, we count bytes down from the last
@@ -96,9 +96,9 @@ uint64_t GALanguage::rawdecode(GAParameter *param, uint64_t adr,
 
     if(param->isSigned){    //Sign extend if necessary.
         int count=param->rawbitcount(inslen);  //Count of bits after decoding.
-        if(val&(1<<(count-1))){           //If the highest bit is set,
-            val^=(1<<count)-1;            //  first flip the used bits.
-            val^=-1;                      //   then flip all bits.
+        if(val&(1<<(count-1))){                //If the highest bit is set,
+            val^=(1<<count)-1;                 //  first flip the used bits.
+            val^=-1;                           //   then flip all bits.
         }
     }
     return val;

@@ -449,9 +449,14 @@ bool GoodASM::selftest_examples(){
             source();
             if(instructions.length()>0
                 && instructions[0].mnem
-                && instructions[0].mnem==m){
+                && (instructions[0].mnem==m
+                    || instructions[0].mnem->priority>m->priority)){
+                /* Either reflection works here, or the returned mnemonic is higher priority
+                 * than the source mnemonic.  See ASL and LSL in 6805 for an example of that.
+                 */
             }else{
                 qDebug()<<"Reflection failed.";
+                fails++;
             }
 
             if(duplicates>0){
@@ -502,7 +507,8 @@ bool GoodASM::selftest_overlap(){
             for(int i=0; i<m->length; i++){
                 wmask[i]|=p->mask[i];
                 if(m->opcodemask[i] & p->mask[i]){
-                    qDebug()<<"Mask collision: "<<m->examplestr;
+                    qDebug()<<"Mask overlap: "<<m->examplestr;
+                    qDebug()<<"Byte"<<i<<": "<<Qt::hex<<(uint8_t)(m->opcodemask[i] & p->mask[i]);
                     return false;
                 }
             }
@@ -515,7 +521,8 @@ bool GoodASM::selftest_overlap(){
             }
             if(((uint8_t) wmask[i]|(uint8_t) m->dcmask[i])!=0xff){
                 qDebug()<<"Empty mask bit: "<<m->examplestr;
-                qDebug()<<"Byte"<<i<<": "<<Qt::hex<<((uint8_t) wmask[i]|(uint8_t) m->dcmask[i]);
+                qDebug()<<"Byte"<<i<<": "<<Qt::hex<<(((uint8_t) wmask[i]|(uint8_t) m->dcmask[i]))
+                         <<"="<<(uint8_t) wmask[i]<<"|"<<(uint8_t) m->dcmask[i];
                 return false;
             }
         }

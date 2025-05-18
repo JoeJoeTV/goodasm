@@ -33,8 +33,8 @@ public:
                    int64_t vals
                    ) override;
     //Raw decode function, used by parameters but not by opcodes.
-    uint64_t rawdecode(GAParameter *param, uint64_t adr,
-                       const char *bytes, int inslen) override;
+    int64_t rawdecode(GAParameter *param, uint64_t adr,
+                      const char *bytes, int inslen) override;
 
 private:
     //Helpfully also an unscrambling function!

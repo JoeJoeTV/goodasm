@@ -30,6 +30,33 @@
 class GALangARM7TDMI : public GALanguage {
 public:
     GALangARM7TDMI();
+
+    //MVN and MOV ignore Op1.
+    QString dataopcodes[16]={
+        "and", "eor", "sub", "rsb",
+        "add", "adc", "sbc", "rsc",
+        "tst", "teq", "cmp", "cmn",
+        "orr", "mov", "bic", "mvn"
+    };
+    QString datahelp[16]={
+        "AND",
+        "XOR",
+        "Subtract",
+        "Reversed Subtract",
+        "Add",
+        "Add w/ Carry",
+        "Subtract w/ Carry",
+        "Reverse Subtract w/ Carry",
+        "AND, but result is not written.",
+        "EOR, but result is not written.",
+        "SUB, but result is not written.",
+        "ADD, but result is not written.",
+        "OR",
+        "Move",   //Ignores Op1!
+        "Bit Clear",
+        "Not"     //Ignores Op1!
+    };
+
 };
 
 
@@ -70,7 +97,7 @@ public:
 //Represents an ARM register.
 class GAParameterARM7TDMIReg : public GAParameter {
 public:
-    GAParameterARM7TDMIReg(const char* mask);
+    GAParameterARM7TDMIReg(const char* mask, const char *shiftmask=0);
     int match(GAParserOperand *op, int len) override;
 
     QString decode(GALanguage *lang, uint64_t adr, const char *bytes, int inslen) override;
@@ -79,6 +106,8 @@ public:
                 GAParserOperand op,
                 int inslen
                 ) override;
+
+    char shiftmask[5]="\x00\x00\x00\x00";
 private:
     QString regnames[19]={
         "r0", "r1", "r2", "r3",

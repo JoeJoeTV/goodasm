@@ -6,7 +6,9 @@
 
 //Just to keep things shorter.
 #define armmnem new GAMnemonicARM7TDMI
-#define reg(x) insert(new GAParameterARM7TDMIReg((x)))
+#define reg(x) insert(new GAParameterARM7TDMIReg((x))) // Destination or Op1.
+#define rel(x) insert(new GAParameterRelative((x), 8, 4))
+#define op2reg(x,y) insert(new GAParameterARM7TDMIReg((x),(y))) // Op2 register with shift.
 
 
 GALangARM7TDMI::GALangARM7TDMI() {
@@ -27,11 +29,77 @@ GALangARM7TDMI::GALangARM7TDMI() {
         "r13"<<"r14"<<"r15"
         ;
 
+    //Define these as Little Endian.
 
+    //Section 4.3
     insert(armmnem("bx", 4, "\x10\xff\x2f\x01", "\xf0\xff\xff\x0f"))
         ->help("Branch and Exchange")
         ->example("bx r0")
+        ->prioritize()   //Prevents conflict with TEQ data processing instruction.
         ->reg("\x0f\x00\x00\x00");
+
+    //Section 4.4
+    insert(armmnem("b", 4, "\x00\x00\x00\x0a", "\x00\x00\x00\x0f"))
+        ->help("Branch")
+        ->example("loop: b loop")
+        ->rel("\xff\xff\xff\x00");
+    insert(armmnem("bl", 4, "\x00\x00\x00\x0b", "\x00\x00\x00\x0f"))
+        ->help("Branch w/ Link")
+        ->example("loop: bl loop")
+        ->rel("\xff\xff\xff\x00");
+
+    //Section 4.5, data processing.
+    /* These exist in a few forms:
+     * Bit 25 (I) chooses between Operand 2 being shifted or an immediate.
+     * Bit 20 (S) chooses whether condition codes are written, implied by S after condition code.
+     * Sub-opcode chooses the data processing operation.
+     */
+    int I=0, S=0;
+    for(int i=0; i<16; i++)
+        for(S=0; S<2; S++)
+            for(I=0; I<2; I++)
+    {
+        // .... 00I.  ...S ....  ....   .... .... ....
+        // cond    opcode   Op1  dest   ----op2-------
+
+        char word[]="\x00\x00\x00\x00";
+        //Set the opcode.
+        word[3]|=(i&0x8)?1:0;
+        word[2]|=(i&0x7)<<5;
+        //Set the option bits.
+        word[2]|=(S?0x10:0);   // S-suffix on operand?
+        word[3]|=(I?0x02:0);   // Immediate mode?
+
+        QString example=dataopcodes[i]+(S?"s ":" ")+"r0, ";
+
+
+        auto m=insert(armmnem(dataopcodes[i]+(S?"s":""), 4, word, "\x00\x00\xf0\x0f"));
+        m->help(datahelp[i])
+            ->reg("\x00\xf0\x00\x00");  //Destination register.
+
+        //Operand 1 is ommitted for both MOV and MVN.
+        if(i!=0xd && i!=0xf){
+            m->reg("\x00\x00\x0f\x00"); //Operand 1.
+            example+="r2, ";
+        }else{
+            m->dontcare("\x00\x00\x0f\x00");  //Unused Op1.
+        }
+
+        //Operand 2.
+        if(I==0){
+            //Shifted Register mode.
+            m->reg("\x0f\x00\x00\x00");
+            m->dontcare("\xf0\x0f\x00\x00");  //FIXME: Missing shift field!
+            example+="r3";
+        }else{
+            //Shifted Immediate Mode.
+            m->imm("\xff\x00\x00\x00");
+            m->dontcare("\x00\x0f\x00\x00");  //FIXME: Missing rotation parameter!
+            example+="#0xff";
+        }
+
+        m->example(example);
+    }
 }
 
 
@@ -51,7 +119,7 @@ GAMnemonicARM7TDMI::GAMnemonicARM7TDMI(QString mnemonic,
 }
 //Does the Mnemonic match bytes?  If so, decode bytes to an instruction.
 int GAMnemonicARM7TDMI::match(GAInstruction &ins, uint64_t adr, uint32_t &len,
-                      const char *bytes){
+                              const char *bytes){
     assert(length==4); //No zero byte mnemonics.
 
     //Don't match on a misaligned byte.
@@ -161,8 +229,15 @@ int GAMnemonicARM7TDMI::match(GAInstruction &ins, uint64_t adr,
     return 1;
 }
 
-GAParameterARM7TDMIReg::GAParameterARM7TDMIReg(const char* mask){
+GAParameterARM7TDMIReg::GAParameterARM7TDMIReg(const char* mask, const char *shiftmask){
     setMask(mask);
+
+    /* On ARM, we sometimes have a shifting mask for the second operand.
+     * It never appears for the first operand or the destination, so we
+     * leave it null there.
+     */
+    if(shiftmask)
+        memcpy(this->shiftmask, shiftmask, 4);
 }
 int GAParameterARM7TDMIReg::match(GAParserOperand *op, int len){
     //No prefixes or suffixes on ARM registers.

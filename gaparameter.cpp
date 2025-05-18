@@ -222,8 +222,9 @@ uint64_t GAParameter::rawbitcount(int inslen){
 }
 
 //Raw decode function, intentionally not virtual.
-uint64_t GAParameter::rawdecode(GALanguage *lang, uint64_t adr,
-                               const char *bytes, int inslen){
+int64_t GAParameter::rawdecode(GALanguage *lang, uint64_t adr,
+                               const char *bytes, int inslen,
+                               bool sign){
     return lang->rawdecode(this, adr, bytes, inslen);
 }
 
@@ -269,21 +270,9 @@ void GAParameterGroup::encode(GALanguage *lang,
 
 //PC-relative
 QString GAParameterRelative::decode(GALanguage *lang, uint64_t adr, const char *bytes, int inslen){
-    uint64_t p=rawdecode(lang,adr,bytes, inslen);
+    int64_t p=rawdecode(lang,adr,bytes, inslen, true);
 
-    //Need to adjust the relative size if we have more than one byte.
-    assert(rawbitcount(inslen)==8);
-
-    //FIXME: Hideous hack that only works on 6502 and 6805.
-    uint64_t tadr;
-    //qDebug()<<"Decoding at address"<<adr<<"parameter"<<p;
-    if(p>128){
-        tadr=adr-256+p+offset;
-    }else{
-        tadr=adr+p+offset;
-    }
-
-
+    uint64_t tadr=adr+offset+p*multiple;
     QString rendering=prefix
                         +QString::asprintf("0x%04x",(unsigned int) tadr)
                         +suffix;
@@ -303,6 +292,7 @@ void GAParameterRelative::encode(GALanguage *lang, uint64_t adr,
     //qDebug()<<"Encoding relative jump to "<<val<<"from "<<adr;
     val-=adr;
     val-=offset;
+    val/=multiple;
 
     rawencode(lang, adr, bytes, op, inslen, val);
 
@@ -368,10 +358,12 @@ GAParameterPort::GAParameterPort(const char* mask){
     prefix="%";
 }
 //PC-relative addressing with some offset.
-GAParameterRelative::GAParameterRelative(const char* mask, int offset){
+GAParameterRelative::GAParameterRelative(const char* mask, int offset, int multiple){
     setMask(mask);
     this->offset=offset;
-    prefix="";
+    this->multiple=multiple;
+    this->prefix="";
+    this->isSigned=true;
 }
 //An address itself, rather than the value at that address.
 GAParameterAddress::GAParameterAddress(const char* mask){
@@ -486,8 +478,8 @@ GAParameterGroup* GAParameterGroup::port(const char *mask){
 
 
 //PC-relative address.
-GAParameterGroup* GAParameterGroup::rel(const char *mask, int offset){
-    insert(new GAParameterRelative(mask, offset));
+GAParameterGroup* GAParameterGroup::rel(const char *mask, int offset, int multiple){
+    insert(new GAParameterRelative(mask, offset, multiple));
     return this;
 }
 //Absolute address is the same as relative from zero.

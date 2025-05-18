@@ -62,7 +62,7 @@ public:
     virtual int match(GAParserOperand *op, int len);
 
     //Raw decode function, intentionally not virtual.
-    uint64_t rawdecode(GALanguage *lang, uint64_t adr, const char *bytes, int inslen);
+    int64_t rawdecode(GALanguage *lang, uint64_t adr, const char *bytes, int inslen, bool sign=0);
     //Raw encode function, also intentionally not virtual.
     void rawencode(GALanguage *lang,
                    uint64_t adr, QByteArray &bytes,
@@ -106,7 +106,7 @@ public:
 
 class GAParameterRelative : public GAParameter {
 public:
-    GAParameterRelative(const char* mask, int offset=0);
+    GAParameterRelative(const char* mask, int offset=0, int multiple=1);
     QString decode(GALanguage *lang, uint64_t adr, const char *bytes, int inslen) override;
     void encode(GALanguage *lang,
                 uint64_t adr, QByteArray &bytes,
@@ -114,7 +114,8 @@ public:
                 int inslen
                 ) override;
     int match(GAParserOperand *op, int len) override;
-    uint32_t offset=0; //Offset from the source address.
+    uint32_t offset=0;   //Offset from the source address.
+    uint32_t multiple=1; //Step size.  Usually 1 for CISC, 4 for RISC.
 };
 
 //This is an absolute address.
@@ -164,9 +165,9 @@ public:
     //Adds a port number by just its mask, preceeded by %.
     GAParameterGroup* port(const char *mask);
     //PC-relative address.
-    GAParameterGroup* adr(const char *mask);                         // Absolute address.
-    GAParameterGroup* rel(const char *mask, int offset=2);           // Relative address.
-    GAParameterGroup* pageadr(const char *mask, uint32_t pagemask);  // Page-offset address.
+    GAParameterGroup* adr(const char *mask);                               // Absolute address.
+    GAParameterGroup* rel(const char *mask, int offset=2, int multiple=1); // Relative address.
+    GAParameterGroup* pageadr(const char *mask, uint32_t pagemask);        // Page-offset address.
     //Absolute indexed by X or Y.
     GAParameterGroup* absx(const char *mask);
     GAParameterGroup* absy(const char *mask);

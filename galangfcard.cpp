@@ -92,7 +92,7 @@ void GALangFCard::rawencode(uint64_t adr, QByteArray &bytes,
     }
 }
 //Raw decode function, used by parameters but not by opcodes.
-uint64_t GALangFCard::rawdecode(GAParameter *param, uint64_t adr,
+int64_t GALangFCard::rawdecode(GAParameter *param, uint64_t adr,
                                 const char *bytes, int inslen){
     int64_t val=0;  // Value to return.
 

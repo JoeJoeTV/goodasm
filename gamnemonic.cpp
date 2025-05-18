@@ -43,7 +43,8 @@ void GAMnemonic::config(QString mnemonic, uint32_t length,
 
 //Mask of bits for which you don't care.
 void GAMnemonic::dontcare(const char *mask){
-    memcpy(this->dcmask, mask, GAMAXLEN);
+    for(int i=0; i<GAMAXLEN; i++)
+        dcmask[i]|=mask[i];
 }
 
 //Does the Mnemonic match bytes?  If so, decode bytes to an instruction.
