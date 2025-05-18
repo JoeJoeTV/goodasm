@@ -97,7 +97,7 @@ public:
 //Represents an ARM register.
 class GAParameterARM7TDMIReg : public GAParameter {
 public:
-    GAParameterARM7TDMIReg(const char* mask, const char *shiftmask=0);
+    GAParameterARM7TDMIReg(const char* mask);
     int match(GAParserOperand *op, int len) override;
 
     QString decode(GALanguage *lang, uint64_t adr, const char *bytes, int inslen) override;
@@ -106,10 +106,43 @@ public:
                 GAParserOperand op,
                 int inslen
                 ) override;
-
-    char shiftmask[5]="\x00\x00\x00\x00";
 private:
-    QString regnames[19]={
+    const QString regnames[19]={
+        "r0", "r1", "r2", "r3",
+        "r4", "r5", "r6", "r7",
+        "r8", "r9", "r10", "r11",
+        "r12",
+        "sp", //r13
+        "lr", //r14
+        "pc", //r15
+        "r13", "r14", "r15"
+    };
+};
+
+/* Represents a shifted (non-immediate) alteration of Op2 of a data operation.
+ * This does not include the op2 source register.  That is a separate field.
+ * See section 4.5.2.
+ */
+class GAParameterARM7TDMIShift : public GAParameter {
+public:
+    GAParameterARM7TDMIShift(const char* mask="\xf0\x0f\x00\x00");
+    int match(GAParserOperand *op, int len) override;
+
+    QString decode(GALanguage *lang, uint64_t adr, const char *bytes, int inslen) override;
+    void encode(GALanguage *lang,
+                uint64_t adr, QByteArray &bytes,
+                GAParserOperand op,
+                int inslen
+                ) override;
+private:
+    uint8_t shiftregistermode=0;  //Register or amount?
+    uint8_t shifttype=0xff;       //Index in set below.
+    uint8_t shiftregister=0xff;   //Which register?
+    uint8_t shiftamount=0xff;     //5-bit amount.
+    const QString names[4]={
+        "lsl", "lsr", "asr", "ror"
+    };
+    const QString regnames[19]={
         "r0", "r1", "r2", "r3",
         "r4", "r5", "r6", "r7",
         "r8", "r9", "r10", "r11",

@@ -495,15 +495,22 @@ GAParserOperand GAParser::operand(){
         QString value=token->literal;
         nextToken();
 
-        // Sometimes a symbol has a suffix before the next symbol.
+        // Sometimes a symbol has a suffix before the next parameter.
+        // Sufixes are +, -, or a space and a symbol or immediate number.
         if(token->literal=="+"){
             suffix="+";
             nextToken();
         }else if(token->literal=="-"){
             suffix="-";
             nextToken();
+        }else if(token->literal=="#"){
+            nextToken();
+            suffix=" #"+token->literal;
+            nextToken();
+        }else if(token->type==GATokenType::symbol){
+            suffix=" "+token->literal;
+            nextToken();
         }
-
 
         return GAParserOperand(goodasm, prefix, value, suffix);
     }

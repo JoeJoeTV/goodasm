@@ -3,12 +3,15 @@
 #include "gamnemonic.h"
 #include "gainstruction.h"
 
+#include<QDebug>
+
 
 //Just to keep things shorter.
 #define armmnem new GAMnemonicARM7TDMI
 #define reg(x) insert(new GAParameterARM7TDMIReg((x))) // Destination or Op1.
 #define rel(x) insert(new GAParameterRelative((x), 8, 4))
-#define op2reg(x,y) insert(new GAParameterARM7TDMIReg((x),(y))) // Op2 register with shift.
+//Op2 register and shift.
+#define op2reg(x) insert(new GAParameterARM7TDMIReg((x)))->insert(new GAParameterARM7TDMIShift())
 
 
 GALangARM7TDMI::GALangARM7TDMI() {
@@ -50,14 +53,14 @@ GALangARM7TDMI::GALangARM7TDMI() {
 
     //Section 4.5, data processing.
     /* These exist in a few forms:
-     * Bit 25 (I) chooses between Operand 2 being shifted or an immediate.
+     * Bit 25 (I) chooses between Operand 2 being a shifted register or an immediate.
      * Bit 20 (S) chooses whether condition codes are written, implied by S after condition code.
      * Sub-opcode chooses the data processing operation.
      */
     int I=0, S=0;
     for(int i=0; i<16; i++)
         for(S=0; S<2; S++)
-            for(I=0; I<2; I++)
+            for(I=-1; I<2; I++)
     {
         // .... 00I.  ...S ....  ....   .... .... ....
         // cond    opcode   Op1  dest   ----op2-------
@@ -67,13 +70,18 @@ GALangARM7TDMI::GALangARM7TDMI() {
         word[3]|=(i&0x8)?1:0;
         word[2]|=(i&0x7)<<5;
         //Set the option bits.
-        word[2]|=(S?0x10:0);   // S-suffix on operand?
-        word[3]|=(I?0x02:0);   // Immediate mode?
+        word[2]|=(S==1?0x10:0);   // S-suffix on operand?
+        word[3]|=(I==1?0x02:0);   // Immediate mode?
+
+        char mask[]="\x00\x00\xf0\x0f";
+        if(I==-1){
+            mask[0]|=0xf0;
+            mask[1]|=0x0f;
+        }
 
         QString example=dataopcodes[i]+(S?"s ":" ")+"r0, ";
 
-
-        auto m=insert(armmnem(dataopcodes[i]+(S?"s":""), 4, word, "\x00\x00\xf0\x0f"));
+        auto m=insert(armmnem(dataopcodes[i]+(S?"s":""), 4, word, mask));
         m->help(datahelp[i])
             ->reg("\x00\xf0\x00\x00");  //Destination register.
 
@@ -86,11 +94,16 @@ GALangARM7TDMI::GALangARM7TDMI() {
         }
 
         //Operand 2.
-        if(I==0){
-            //Shifted Register mode.
+        if(I==-1){
+            //Shifted register mode, without a shift.
             m->reg("\x0f\x00\x00\x00");
-            m->dontcare("\xf0\x0f\x00\x00");  //FIXME: Missing shift field!
+            //m->dontcare("\x00\x0f\x00\x00"); //Intentionally skipped.
+            m->prioritize();
             example+="r3";
+        }else if(I==0){
+            //Shifted Register mode.
+            m->op2reg("\x0f\x00\x00\x00");
+            example+="r3, lsl #1";
         }else{
             //Shifted Immediate Mode.
             m->imm("\xff\x00\x00\x00");
@@ -229,15 +242,8 @@ int GAMnemonicARM7TDMI::match(GAInstruction &ins, uint64_t adr,
     return 1;
 }
 
-GAParameterARM7TDMIReg::GAParameterARM7TDMIReg(const char* mask, const char *shiftmask){
+GAParameterARM7TDMIReg::GAParameterARM7TDMIReg(const char* mask){
     setMask(mask);
-
-    /* On ARM, we sometimes have a shifting mask for the second operand.
-     * It never appears for the first operand or the destination, so we
-     * leave it null there.
-     */
-    if(shiftmask)
-        memcpy(this->shiftmask, shiftmask, 4);
 }
 int GAParameterARM7TDMIReg::match(GAParserOperand *op, int len){
     //No prefixes or suffixes on ARM registers.
@@ -249,7 +255,6 @@ int GAParameterARM7TDMIReg::match(GAParserOperand *op, int len){
             return 1;
     return 0;
 }
-
 QString GAParameterARM7TDMIReg::decode(GALanguage *lang, uint64_t adr,
                                        const char *bytes, int inslen){
     uint8_t regnum=rawdecode(lang, adr, bytes, inslen);
@@ -274,5 +279,91 @@ void GAParameterARM7TDMIReg::encode(GALanguage *lang,
     if(rn>=16) rn-=3;
     rawencode(lang, adr, bytes, op, inslen, rn);
 
+    return;
+}
+
+
+
+GAParameterARM7TDMIShift::GAParameterARM7TDMIShift(const char* mask){
+    setMask(mask);
+}
+int GAParameterARM7TDMIShift::match(GAParserOperand *op, int len){
+    //No prefixes on ARM registers.
+    if(prefix!="")
+        return 0;
+
+    //Optional suffix contains the shifting size.
+    QString name=op->value;
+    QString shift=op->suffix; //FIXME: Check that this shift is valid.
+
+    if(!op->suffix.startsWith(" #") && ! op->suffix.startsWith(" r"))
+        return 0;
+
+    for(int i=0; i<4; i++)
+        if(op->value==names[i])
+            return 1;
+    return 0;
+}
+QString GAParameterARM7TDMIShift::decode(GALanguage *lang, uint64_t adr,
+                                         const char *bytes, int inslen){
+    uint8_t d=rawdecode(lang, adr, bytes, inslen);
+    shiftregistermode=d&1;
+    shifttype=(d>>1)&3;
+    shiftregister=(d>>4)&0xf;
+    shiftamount=(d>>3)&0x1f;
+
+    if(shiftregistermode){   // Shift Register
+        return names[shifttype]+" "+regnames[shiftregister];
+    }else{                   // Shift Amount
+        //Special case: What should be LSR #0 is actually LSR #32.
+        if(shifttype==1 && shiftamount==0)
+            shiftamount=32;
+        return names[shifttype]+" "+QString::asprintf("#%d", shiftamount);
+    }
+    return "";
+}
+void GAParameterARM7TDMIShift::encode(GALanguage *lang,
+                                      uint64_t adr, QByteArray &bytes,
+                                      GAParserOperand op,
+                                      int inslen
+                                      ){
+    //First we mark our settings.
+    if(op.suffix.startsWith(" #")){
+        shiftregistermode=0;
+        QString num=op.suffix.last(op.suffix.length()-2);
+        bool okay=false;
+        shiftamount=GAParser::str2uint(num, &okay);
+        if(!okay)
+            qDebug()<<"Failed to encode shift: "<<num;
+    }else if(op.suffix.startsWith(" r")){
+        shiftregistermode=1;
+        for(int i=0; i<16; i++)
+            if(op.suffix==" "+regnames[i]){
+                shiftregistermode=1;
+                shiftregister=i;
+            }
+    }
+    shifttype=0xff;
+    for(int i=0; i<4 && shifttype>4; i++)
+        if(op.value==names[i])
+            shifttype=i;
+
+    //Second, we write them back to the instruction bits.
+    uint8_t rn=0;
+    rn|=(shifttype<<1);
+    if(shiftregistermode){
+        //Register mode.
+        rn|=1;
+        rn|=shiftregister<<4;
+        assert(shiftregister<16);
+    }else{
+        //Immediate shift.
+        if(shiftamount==0x20 && shifttype==1)
+            shiftamount=0;
+        rn|=(shiftamount<<3);
+        assert(shiftamount<0x20);
+    }
+
+    rawencode(lang, adr, bytes, op, inslen, rn);
     return;
 }

@@ -9,10 +9,6 @@ GALexer::GALexer(QString source){
     nextChar();
 }
 
-
-
-
-
 GAToken* GALexer::nextToken(){
     /* We use a fixed array of pre-allocated tokens so
      * that we don't need to free them on a return.
