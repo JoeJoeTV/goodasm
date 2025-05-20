@@ -15,7 +15,15 @@ entry:
 	add r1, r2, #0xde
 	;; Rotated immediates.
 	mov r7, #0x2000000a
+
 	
 late:
 	bx r12
+	
+
+;;; Tricky ones.
+	eorseq r0, r2, r3	; S and conditional.
+	;; Collision
+	and r0, r2, r3, lsl #1
+	mul r0, r1, r2
 	

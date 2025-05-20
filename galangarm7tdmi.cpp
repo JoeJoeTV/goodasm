@@ -72,7 +72,7 @@ GALangARM7TDMI::GALangARM7TDMI() {
         // .... 00I.  ...S ....  ....   .... .... ....
         // cond    opcode   Op1  dest   ----op2-------
 
-        QString opname=dataopcodes[i]+(S?"s":"");
+        QString opname=dataopcodes[i]+(S?"s":""); //FIXME: Condition should come between verb and S.
         if(i>=8 && i<=11){
             opname=dataopcodes[i];
             if(!S) continue;
@@ -119,8 +119,6 @@ GALangARM7TDMI::GALangARM7TDMI() {
             example+="r3, lsl #1";
         }else{
             //Shifted Immediate Mode.
-            //m->imm("\xff\x00\x00\x00");
-            //m->dontcare("\x00\x0f\x00\x00");  //FIXME: Missing rotation parameter!
             m->armimm;
             example+="#0xff";
         }
@@ -181,6 +179,35 @@ GALangARM7TDMI::GALangARM7TDMI() {
             m->reg("\x0f\x00\x00\x00");
     }
 
+    //Section 4.7: Multiple, Multiply-Accumulate
+
+    for(int A=0; A<2; A++)
+    for(int S=0; S<2; S++)
+    {
+        //asdf
+        QString name=(A?"mla":"mul");
+        if(S) name+="s"; //FIXME: S should come after condition code, not before!
+
+        char word[]="\x90\x00\x00\x00";
+        char mask[]="\xf0\x00\xf0\x0f";
+        if(A)
+            word[2]|=0x20;
+        else
+            mask[1]|=0xf0;  //Rn must be zero when not accumulating.
+
+        if(S) word[2]|=0x10;
+        auto m=insert(armmnem(name, 4, word, mask))
+                     ->help(A?"Multiply-Accumulate":"Multiply");
+        QString example=name+" r0, r1, r2";
+        if(A) example+=", r3";
+        m->example(example)
+            ->reg("\x00\x00\x0f\x00") //rd
+            ->reg("\x0f\x00\x00\x00") //rm
+            ->reg("\x00\x0f\x00\x00");//rs
+        if(A)
+            m->reg("\x00\xf0\x00\x00");//Rn, for accumulation.
+        m->prioritize(1);
+    }
 }
 
 
