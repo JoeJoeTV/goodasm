@@ -29,8 +29,13 @@ GALangARM7TDMI::GALangARM7TDMI() {
         "r4"<<"r5"<<"r6"<<"r7"<<
         "r8"<<"r9"<<"r10"<<"r11"<<
         "r12"<<
-        "sp"<<"lr"<<"pc"
-        "r13"<<"r14"<<"r15"
+        "sp"<<"lr"<<"pc"<<
+        //Short names for SP, LR, PC.
+        "r13"<<"r14"<<"r15"<<
+
+        //Non-general purpose registers.
+        "cpsr"<<"spsr"<<
+        "cpsr_flg"<<"spsr_flg"
         ;
 
     //Define these as Little Endian.
@@ -58,13 +63,20 @@ GALangARM7TDMI::GALangARM7TDMI() {
      * Bit 20 (S) chooses whether condition codes are written, implied by S after condition code.
      * Sub-opcode chooses the data processing operation.
      */
-    int I=0, S=0;
+    int I=0,  //Immediate Bit
+        S=0;  //S Bit, preventing writeback of result.
     for(int i=0; i<16; i++)
         for(S=0; S<2; S++)
             for(I=-1; I<2; I++)
     {
         // .... 00I.  ...S ....  ....   .... .... ....
         // cond    opcode   Op1  dest   ----op2-------
+
+        QString opname=dataopcodes[i]+(S?"s":"");
+        if(i>=8 && i<=11){
+            opname=dataopcodes[i];
+            if(!S) continue;
+        }
 
         char word[]="\x00\x00\x00\x00";
         //Set the opcode.
@@ -80,9 +92,9 @@ GALangARM7TDMI::GALangARM7TDMI() {
             mask[1]|=0x0f;
         }
 
-        QString example=dataopcodes[i]+(S?"s ":" ")+"r0, ";
+        QString example=opname+" r0, ";
 
-        auto m=insert(armmnem(dataopcodes[i]+(S?"s":""), 4, word, mask));
+        auto m=insert(armmnem(opname, 4, word, mask));
         m->help(datahelp[i])
             ->reg("\x00\xf0\x00\x00");  //Destination register.
 
@@ -115,6 +127,60 @@ GALangARM7TDMI::GALangARM7TDMI() {
 
         m->example(example);
     }
+
+
+    //Section 4.6: PSR Transfer (MRS, MSR)
+    //R15 is illegal for these.
+    for(int ps=0; ps<2; ps++){
+        char word[]="\x00\x00\x0f\x01";
+        if(ps) word[2]|=0x40;
+        insert(armmnem("mrs", 4, word, "\xff\x0f\xff\x0f"))
+            ->help("Transfer PSR contents to a Register")
+            ->example(ps?"mrs r0, spsr":"mrs r0, cpsr")
+            ->reg("\x00\xf0\x00\x00")
+            ->regname(ps?"spsr":"cpsr");
+    }
+    for(int pd=0; pd<2; pd++){
+        char word[]="\x00\xf0\x14\x01";
+        if(pd) word[2]|=0x40;
+        insert(armmnem("msr", 4, word, "\xf0\xff\xff\x0f"))
+            ->help("Transfer from Register to PSR")
+            ->example(pd?"msr spsr, r0":"msr cpsr, r0")
+            ->regname(pd?"spsr":"cpsr")
+            ->reg("\x0f\x00\x00\x00");
+    }
+
+
+    for(int pd=0; pd<2; pd++)   //CPSR or SPSR
+        for(int I=0; I<2; I++) //Unshifted reg, shited reg, rotated immediate.
+    {
+        char word[]="\x00\xf0\x28\x01";
+        char mask[]="\x00\xf0\xff\x0f";
+        if(pd) word[2]|=0x40;
+        if(I){
+            word[3]|=0x02;
+        }else{ //Mandatory zeroes when source is a register.
+            mask[0]|=0xf0;
+            mask[1]|=0x0f;
+        }
+
+        assert(mask[2]&0x40);
+        assert(mask[3]&0x02);
+
+        auto m=insert(armmnem("msr", 4, word, mask))
+                     ->help("Transfer from Register to PSR Flags");
+        QString example="msr ";
+        example+=(pd?"spsr_flg, ":"cpsr_flg, ");
+        example+=(I?"#0xf0000000":"r0");
+
+        m->example(example)
+            ->regname(pd?"spsr_flg":"cpsr_flg");
+        if(I)
+            m->armimm;
+        else
+            m->reg("\x0f\x00\x00\x00");
+    }
+
 }
 
 
