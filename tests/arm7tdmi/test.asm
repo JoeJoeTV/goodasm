@@ -27,3 +27,7 @@ late:
 	and r0, r2, r3, lsl #1
 	mul r0, r1, r2
 	
+	;; Collision
+	eor r0, r2, r3, lsl #1
+	mla r0, r1, r2, r3
+	

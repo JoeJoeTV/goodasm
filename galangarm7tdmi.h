@@ -92,6 +92,9 @@ public:
         "hi", "ls", "ge", "lt",
         "gt", "le", "al", "illegal"
     };
+    GAParameterGroup* shift();  //ARM7TDMI shift parameter.
+private:
+    bool hasShift=false; //Used to check that bit 7 is zero if bit4 is set.
 };
 
 //Represents an ARM register.

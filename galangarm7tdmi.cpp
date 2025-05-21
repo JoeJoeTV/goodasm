@@ -11,7 +11,7 @@
 #define reg(x) insert(new GAParameterARM7TDMIReg((x))) // Destination or Op1.
 #define rel(x) insert(new GAParameterRelative((x), 8, 4))
 //Op2 register and shift.
-#define op2reg(x) insert(new GAParameterARM7TDMIReg((x)))->insert(new GAParameterARM7TDMIShift())
+#define op2reg(x) insert(new GAParameterARM7TDMIReg((x)))
 #define armimm insert(new GAParameterARM7TDMIImmediate())
 
 
@@ -66,8 +66,8 @@ GALangARM7TDMI::GALangARM7TDMI() {
     int I=0,  //Immediate Bit
         S=0;  //S Bit, preventing writeback of result.
     for(int i=0; i<16; i++)
-        for(S=0; S<2; S++)
-            for(I=-1; I<2; I++)
+    for(S=0; S<2; S++)
+    for(I=-1; I<2; I++)
     {
         // .... 00I.  ...S ....  ....   .... .... ....
         // cond    opcode   Op1  dest   ----op2-------
@@ -94,7 +94,8 @@ GALangARM7TDMI::GALangARM7TDMI() {
 
         QString example=opname+" r0, ";
 
-        auto m=insert(armmnem(opname, 4, word, mask));
+        auto m=armmnem(opname, 4, word, mask);
+        insert(m);
         m->help(datahelp[i])
             ->reg("\x00\xf0\x00\x00");  //Destination register.
 
@@ -110,12 +111,12 @@ GALangARM7TDMI::GALangARM7TDMI() {
         if(I==-1){
             //Shifted register mode, without a shift.
             m->reg("\x0f\x00\x00\x00");
-            //m->dontcare("\x00\x0f\x00\x00"); //Intentionally skipped.
-            m->prioritize();
+            m->prioritize();  //Higher priority than with the register specified.
             example+="r3";
         }else if(I==0){
-            //Shifted Register mode.
+            //Shifted Register mode, with a shift.
             m->op2reg("\x0f\x00\x00\x00");
+            m->shift();
             example+="r3, lsl #1";
         }else{
             //Shifted Immediate Mode.
@@ -150,7 +151,7 @@ GALangARM7TDMI::GALangARM7TDMI() {
 
 
     for(int pd=0; pd<2; pd++)   //CPSR or SPSR
-        for(int I=0; I<2; I++) //Unshifted reg, shited reg, rotated immediate.
+    for(int I=0; I<2; I++)      //Unshifted reg, shited reg, rotated immediate.
     {
         char word[]="\x00\xf0\x28\x01";
         char mask[]="\x00\xf0\xff\x0f";
@@ -167,6 +168,7 @@ GALangARM7TDMI::GALangARM7TDMI() {
 
         auto m=insert(armmnem("msr", 4, word, mask))
                      ->help("Transfer from Register to PSR Flags");
+
         QString example="msr ";
         example+=(pd?"spsr_flg, ":"cpsr_flg, ");
         example+=(I?"#0xf0000000":"r0");
@@ -179,12 +181,13 @@ GALangARM7TDMI::GALangARM7TDMI() {
             m->reg("\x0f\x00\x00\x00");
     }
 
-    //Section 4.7: Multiple, Multiply-Accumulate
+    //Section 4.7: Multiply, Multiply-Accumulate
+    //These overlap with ADD if you don't enforce the shift field.
 
     for(int A=0; A<2; A++)
     for(int S=0; S<2; S++)
     {
-        //asdf
+        //Names get complicated.
         QString name=(A?"mla":"mul");
         if(S) name+="s"; //FIXME: S should come after condition code, not before!
 
@@ -206,7 +209,41 @@ GALangARM7TDMI::GALangARM7TDMI() {
             ->reg("\x00\x0f\x00\x00");//rs
         if(A)
             m->reg("\x00\xf0\x00\x00");//Rn, for accumulation.
-        m->prioritize(1);
+        m->prioritize(2);
+    }
+
+    //Section 4.8: Multiple Long and Multiple-Accumulate Long (MULL, MLAL).
+    //These overlapp with data processing.
+    for(int U=0; U<2; U++)
+    for(int A=0; A<2; A++)
+    for(int S=0; S<2; S++)
+    {
+        //foo
+        QString name=(A?"mlal":"mull");
+        if(!U) name="u"+name; else name="s"+name;
+        if(S) name+="s"; //FIXME: S should come after condition code, not before!
+
+
+        QString help=A?"Multiply-Accumulate Long":"Multiply Long";
+        help=QString(!U ? "Unsigned " : "Signed")+help;
+
+        char word[]="\x90\x00\x80\x00";
+        char mask[]="\xf0\x00\xf0\x0f";
+        if(U) word[2]|=0x40;  //U variable represents bit, not unsigned-ness.
+        if(A) word[2]|=0x20;
+        if(S) word[2]|=0x10;
+
+        auto m=insert(armmnem(name, 4, word, mask))
+                     ->help(help);
+        QString example=name+" r0, r1, r2, r3";
+        m->example(example)
+            ->reg("\x00\x00\x0f\x00") //rdhi   //64-bit destination
+            ->reg("\x00\xf0\x00\x00") //rdlo
+            ->reg("\x0f\x00\x00\x00") //rm     //First param
+            ->reg("\x00\x0f\x00\x00");//rs     //Second param.
+
+        //Accumulation is against prior destination value.
+        m->prioritize(2);
     }
 }
 
@@ -239,6 +276,8 @@ int GAMnemonicARM7TDMI::match(GAInstruction &ins, uint64_t adr, uint32_t &len,
         if((bytes[i]&opcodemask[i])!=opcode[i])
             return 0; //No match.
     }
+    //Also fail if we have a hsift but bit7 and bit4 are set.
+    if(hasShift && (bytes[0]&0x90)==0x90) return 0;
 
     //Here we have a match, but we need to form a valid instruction.
     ins.verb=name;
@@ -254,6 +293,7 @@ int GAMnemonicARM7TDMI::match(GAInstruction &ins, uint64_t adr, uint32_t &len,
         ins.verb=name+conditionString;
 
     ins.params="";  //Resets the decoding.
+    //qDebug()<<"Decoding parameter bytes.";
     for(int i=0; i<params.count(); i++){
         ins.params+=params[i]->decode(lang, adr, bytes, len);
         if(i+1<params.count()) ins.params+=", ";
@@ -272,9 +312,16 @@ int GAMnemonicARM7TDMI::match(GAInstruction &ins, uint64_t adr, uint32_t &len,
     return 1;
 }
 
+//ARM7TDMI shift parameter.
+GAParameterGroup* GAMnemonicARM7TDMI::shift(){
+    this->insert(new GAParameterARM7TDMIShift());
+    hasShift=true;  //Needed to avoid collisions with multiplication.
+    return this;
+}
+
 //Does the Mnemonic match source?  If so, encode it to bytes.
 int GAMnemonicARM7TDMI::match(GAInstruction &ins, uint64_t adr,
-                      QString verb, QList<GAParserOperand> ops){
+                              QString verb, QList<GAParserOperand> ops){
     //Names and parameter count must match.
     if(ops.count()!=params.count()) return 0;
     if(!verb.startsWith(this->name)) return 0;
@@ -406,6 +453,10 @@ QString GAParameterARM7TDMIShift::decode(GALanguage *lang, uint64_t adr,
     shifttype=(d>>1)&3;
     shiftregister=(d>>4)&0xf;
     shiftamount=(d>>3)&0x1f;
+
+    //Catches a bad match on a shift mode.
+    //See page 4-12 of ARM DDI 0084D.
+    if(d&1) assert(!(d&8));
 
     if(shiftregistermode){   // Shift Register
         return names[shifttype]+" "+regnames[shiftregister];
