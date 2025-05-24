@@ -1230,7 +1230,7 @@ GALangH83::GALangH83() {
     pg->imm("\x00\x00\xff\xff");
     pg->regh83_32("\x00\x70\x00\x00");
     // TODO: Should be `mov.w rs, @(d:32, erd)`
-    m = insert(mnem("mov.w", 8, "\x78\x80\x6b\xa0\xff\x00\x00\x00", "\xff\x8f\xff\xf0\x00\x00\x00\x00"))
+    m = insert(mnem("mov.w", 8, "\x78\x00\x6b\xa0\x00\x00\x00\x00", "\xff\x8f\xff\xf0\x00\x00\x00\x00"))
         ->help("Move word from 16-bit register into address given by 32-bit register with 32-bit offset: mov.w rs, (d:32, erd)")
         ->example("mov.w r2h, (#0x12345678, er1)");
     m->regh83_8("\x00\x00\x00\x0f\x00\x00\x00\x00");
