@@ -212,7 +212,7 @@ GALangARM7TDMI::GALangARM7TDMI() {
         m->prioritize(2);
     }
 
-    //Section 4.8: Multiple Long and Multiple-Accumulate Long (MULL, MLAL).
+    //Section 4.8: Multiply Long and Multiple-Accumulate Long (MULL, MLAL).
     //These overlapp with data processing.
     for(int U=0; U<2; U++)
     for(int A=0; A<2; A++)
@@ -245,6 +245,81 @@ GALangARM7TDMI::GALangARM7TDMI() {
         //Accumulation is against prior destination value.
         m->prioritize(2);
     }
+
+    //Section 4.9: Single Data Transfer (LDR, STR)
+    for(int L=0; L<2; L++) // 0 store, 1 load.
+    for(int I=0; I<1; I++) // 0 immediate offset, 1 shifted register offset.
+    for(int P=0; P<1; P++) // 0=post, 1=pre addition of offset.
+    for(int U=0; U<1; U++) // 0=down, 1=up.  subtract/add the offset.
+    for(int B=0; B<2; B++) // 0=word, 1=byte transfer quantity.
+    for(int W=0; W<1; W++) // write back into base if 1.
+    {
+    // Single data transfers.
+        char word[]="\x00\x00\x00\x04";
+        char mask[]="\x00\x00\xC0\x0F";
+        QString name=(L?"ldr":"str");  //L implies load or store.
+        QString help="";
+        QString example=name+" ";
+
+        if(L) word[2]|=0x10;   //1=load
+
+        if(I){ //Is the offset a register?
+            //FIXME: Add field.
+            word[3]|=0x20;
+        }else{
+            //FIXME: Add field.
+        }
+
+        if(P){ //Pre-addition of offset.
+            word[3]|=0x01;
+        }else{ //Post-addition of offset.
+
+        }
+
+        if(U){ //Add the offset.
+            word[2]|=0x80;
+        }else{ //Subtract the offset.
+
+        }
+
+        if(B){ //Byte mode.
+            name+="b";     //B suffix in byte mode.
+            word[2]|=0x40; //Set bit field.
+        }
+
+        if(W){  //Write back.
+            word[2]|=0x20;
+        }
+
+        auto m=insert(armmnem(name, 4, word, mask))
+                     ->help(help);
+
+        //Rd, the Source/Destination register always comes first.
+        m->reg("\x00\xf0\x00\x00");
+        example+=" r1, ";
+
+
+        /* Three types of addressing:
+         * 1. Just an address, being PC-relative and pre-indexed.
+         * 2. A pre-indexed address of the form:
+         *    [Rn]                         offset of zero
+         *    [Rn, #expresion]{!}          offset of #exp, optionally written back.
+         *    [Rn, {+/-}Rm{,<shift>}]{!}   offset of +/- index register, shifted.
+         * 3. A post-indexed address, adding back to the base.
+         *    [Rn], #expression            offset of #exp bytes
+         *    [Rn], {+/-}Rm{,<shift>}      offset of +/- contents of index reg, shifted.
+         */
+
+        //Type 1:
+        //Type 2a: [Rn]
+        if(1){
+            m->group('[')->reg("\x00\x00\x0f\x00");
+            example+="[r5]";
+        }
+
+        m->example(example);
+    }
+
 }
 
 
