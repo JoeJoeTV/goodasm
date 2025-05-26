@@ -242,6 +242,11 @@ int main(int argc, char *argv[]){
                                "ARM7TDMI (broken)"
                                );
     parser.addOption(langARM7TDMI);
+    QCommandLineOption langTMS320C28x(QStringList()<<"tms320c28x",
+                                 "TI TMS320C28x (broken)"
+                                 );
+    parser.addOption(langTMS320C28x);
+
 
 
     if(argc==1)
@@ -285,6 +290,8 @@ int main(int argc, char *argv[]){
         language="h83";
     else if(parser.isSet(langARM7TDMI))
         language="arm7tdmi";
+    else if(parser.isSet(langTMS320C28x))
+        language="tms320c28x";
 
     //We allocate this dynamically to test that we free properly.
     GoodASM *goodasm=new GoodASM(language);
