@@ -7,10 +7,14 @@
 #include "galanguage.h"
 #include "gamnemonic.h"
 
-/* This implements the TMS320C28x DSP series.
+/* This implements the TMS320C28x DSP series by Texas Instruments.
 
- The C28x series boot up in a C27x compatible mode but adds changes to
- registers, full context save and restore, and B0/B1 memory mapping.
+ The architecture includes two compability modes for migrating older designs:
+ C2xLP source-compatible mode and C27x object-compatible mode. At reset, the
+ C28x CPU is in C27x object-compatible mode but a "c28obj" instruction is
+ typically called early on to switch to full C28x device mode.
+ 
+ Current development efforts for this target are limited to C28x device mode.
  */
 
 class GALangTMS320C28x : public GALanguage
