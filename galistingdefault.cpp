@@ -30,7 +30,7 @@ QString GAListingDefault::render(GoodASM *goodasm){
 QString GAListingDefault::render(GAInstruction *instruction){
     // label, instruction, comments
     QString label="";
-    QString ins="";
+    QString data="", ins="";
     GoodASM *gasm=instruction->gasm;
 
     switch(instruction->type){
@@ -57,17 +57,15 @@ QString GAListingDefault::render(GAInstruction *instruction){
         for(int i=0; i<instruction->data.length(); i++){
             if(gasm->listbits){
                 //List bits, not bytes.
-                //ins+=bitstring(instruction->data[i])+" ";
-                ins+=bitstring(gasm->byteAt(gasm->baseaddress+instruction->adr+i))+" ";
+                data+=bitstring(gasm->byteAt(gasm->baseaddress+instruction->adr+i))+" ";
             }else if(gasm->listdbits){
                 //List damage bits
-                //ins+=bitstring(instruction->data[i])+" ";
-                ins+=bitstring(gasm->damageAt(gasm->baseaddress+instruction->adr+i))+" ";
+                data+=bitstring(gasm->damageAt(gasm->baseaddress+instruction->adr+i))+" ";
             }else if(gasm->listbytes){
                 //List bytes, just for visibility.
-                ins+=QString::asprintf("%02x ", instruction->data[i] & 0xFF);
+                data+=QString::asprintf("%02x ", instruction->data[i] & 0xFF);
             }else if(!gasm->listbytes){
-                ins+=QString::asprintf("%02x ", instruction->data[i] & 0xFF);
+                data+=QString::asprintf("%02x ", instruction->data[i] & 0xFF);
             }
         }
 
@@ -75,7 +73,7 @@ QString GAListingDefault::render(GAInstruction *instruction){
         ins+=instruction->override;
         if(gasm->autocomment && instruction->comment.length()==0)
             instruction->comment="; illegal";
-        return gasm->formatSource(label, ins, instruction->comment);
+        return gasm->formatSource(label, data, ins, instruction->comment);
         break;
     case GAInstruction::MNEMONIC:
         //Bad things happen if the length and the data disagree.
@@ -89,23 +87,19 @@ QString GAListingDefault::render(GAInstruction *instruction){
 
         //Then the data bytes, if we show them.
         if(gasm->listbytes){
-            for(int i=0; i<gasm->lang->maxbytes; i++){
+            for(int i=0; i<instruction->data.length(); i++){
                 if(i<instruction->len)
                     assert(gasm->byteAt(instruction->adr+i) == (instruction->data[i]&0xff));
 
-                if(gasm->listbits){
-                    //ins+=bitstring(instruction->data[i])+" ";
-                    ins+=bitstring(gasm->byteAt(instruction->adr+i))+" ";
-                }else if(gasm->listdbits){
-                    ins+=bitstring(gasm->damageAt(instruction->adr+i))+" ";
-                }else{
-                    if(i<instruction->len)
-                        ins+=QString::asprintf("%02x ", gasm->byteAt(instruction->adr+i) & 0xFF);
-                    else
-                        ins+="   ";
+                if(gasm->listbits){        //Just bits.
+                    data+=bitstring(gasm->byteAt(instruction->adr+i))+" ";
+                }else if(gasm->listdbits){ //Damage bits.
+                    data+=bitstring(gasm->damageAt(instruction->adr+i))+" ";
+                }else{                     //Bytes
+                    data+=QString::asprintf("%02x ", gasm->byteAt(instruction->adr+i) & 0xFF);
                 }
             }
-            ins+="  ";
+            data+="  ";
         }
 
         //Finally the instruction and parameters.
@@ -113,7 +107,7 @@ QString GAListingDefault::render(GAInstruction *instruction){
         if(gasm->autocomment && instruction->comment.length()==0)
             instruction->comment="; "+instruction->helpstr;
 
-        return gasm->formatSource(label, ins, instruction->comment);
+        return gasm->formatSource(label, data, ins, instruction->comment);
         break;
     }
 
