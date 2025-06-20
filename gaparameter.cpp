@@ -156,6 +156,12 @@ void GAParameterBitIndex::encode(GALanguage *lang,
 //Group value.
 int GAParameterGroup::match(GAParserOperand *op, int len){
     assert(len>0);
+
+    //Fail to match on other grouping symbols.
+    if(op->prefix!=groupstart)
+        return 0;
+
+    //Every child must match.  This allows for nested groups.
     if(op->children.count()==this->params.count()){
         int i=0;
         foreach (auto param, this->params){

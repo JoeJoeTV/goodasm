@@ -31,3 +31,6 @@ late:
 	eor r0, r2, r3, lsl #1
 	mla r0, r1, r2, r3
 	
+;;; Load/Store
+	ldr r5, [r6]
+	

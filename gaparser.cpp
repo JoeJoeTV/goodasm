@@ -35,14 +35,29 @@ QString GAParserOperand::render(){
         //return "_"+prefix+"."+value+"."+suffix+"_";
 
     //Because we have parameters, we have to list them individually.
-    QString sum="(";  //FIXME: Other group types.
+    QString sum=prefix;
+
     int count=0;
     foreach(auto op, children){
         if(count++)
             sum+=", ";
         sum+=op.render();
     }
-    sum+=")";
+
+
+    //FIXME: Add support for other grouping symbol types.
+    //FIXME: Enforce separation between group types.
+    assert(prefix.length()>=1);
+    switch(prefix[0].unicode()){
+    default:
+    case '(':
+        sum+=")";
+        break;
+    case '[':
+        sum+="]";
+        break;
+    }
+
     return sum;
 }
 
@@ -421,7 +436,8 @@ GAParserOperand GAParser::operandgroup(){
 
     //If there's a grouping symbol, we wrap the group in it.
     if(checkToken(GATokenType::lparen)){
-        op.prefix="(";
+        op.prefix=token->literal;
+
         nextToken();
     }
 

@@ -86,7 +86,7 @@ public:
     //Used for arm condition codes.
     QString conditionString="";
     uint8_t conditionCode=0xE;
-    QString conditions[16]{
+    const QString conditions[16]{
         "eq", "ne", "cs", "cc",
         "mi", "pl", "vs", "vc",
         "hi", "ls", "ge", "lt",
@@ -100,7 +100,7 @@ private:
 //Represents an ARM register.
 class GAParameterARM7TDMIReg : public GAParameter {
 public:
-    GAParameterARM7TDMIReg(const char* mask);
+    GAParameterARM7TDMIReg(const char* mask, const char* dirmask=0);
     int match(GAParserOperand *op, int len) override;
 
     QString decode(GALanguage *lang, uint64_t adr, const char *bytes, int inslen) override;
@@ -120,6 +120,7 @@ private:
         "pc", //r15
         "r13", "r14", "r15"
     };
+    const char* dirmask=0;
 };
 
 /* Represents a shifted (non-immediate) alteration of Op2 of a data operation.

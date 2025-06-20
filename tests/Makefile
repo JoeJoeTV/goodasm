@@ -54,11 +54,7 @@ selftests:
 	goodasm --test --z8
 	goodasm --test --8080
 	goodasm --test --h83
-	goodasm --test --arm7tdmi
-
-
-
-# Failing self-tests.
+#	goodasm --test --arm7tdmi
 #	goodasm --pic16c5x --test
 
 

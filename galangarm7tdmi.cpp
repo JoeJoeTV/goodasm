@@ -249,7 +249,7 @@ GALangARM7TDMI::GALangARM7TDMI() {
     //Section 4.9: Single Data Transfer (LDR, STR)
     for(int L=0; L<2; L++) // 0 store, 1 load.
     for(int I=0; I<1; I++) // 0 immediate offset, 1 shifted register offset.
-    for(int P=0; P<1; P++) // 0=post, 1=pre addition of offset.
+    for(int P=0; P<2; P++) // 0=post, 1=pre addition of offset.
     for(int U=0; U<1; U++) // 0=down, 1=up.  subtract/add the offset.
     for(int B=0; B<2; B++) // 0=word, 1=byte transfer quantity.
     for(int W=0; W<1; W++) // write back into base if 1.
@@ -310,11 +310,26 @@ GALangARM7TDMI::GALangARM7TDMI() {
          *    [Rn], {+/-}Rm{,<shift>}      offset of +/- contents of index reg, shifted.
          */
 
-        //Type 1:
-        //Type 2a: [Rn]
-        if(1){
-            m->group('[')->reg("\x00\x00\x0f\x00");
-            example+="[r5]";
+        //Type 1, PC-relative and pre-indexed.
+        if(I){
+
+        }
+        //Type 2, preindexed
+        else if(P){
+            //Type 2a: [Rn]
+            if(1){
+                m->group('[')->reg("\x00\x00\x0f\x00");
+                example+="[r5]";
+            }
+            //Type 2b: [Rn, #expression]{!}
+
+            //Type 2c: [Rn, {+/-}Rm {,<shift>}]{!}
+        }
+        //Type 3, post-indexed
+        else if(!P){
+            //Type 3a: [Rn], #expression
+            //Type 3b: [Rn], {+/-}Rm {,<shift>}
+
         }
 
         m->example(example);
@@ -459,8 +474,10 @@ int GAMnemonicARM7TDMI::match(GAInstruction &ins, uint64_t adr,
     return 1;
 }
 
-GAParameterARM7TDMIReg::GAParameterARM7TDMIReg(const char* mask){
+GAParameterARM7TDMIReg::GAParameterARM7TDMIReg(const char* mask,
+                                               const char* dirmask){
     setMask(mask);
+    this->dirmask=dirmask;
 }
 int GAParameterARM7TDMIReg::match(GAParserOperand *op, int len){
     //No prefixes or suffixes on ARM registers.

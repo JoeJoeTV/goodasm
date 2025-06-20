@@ -58,10 +58,12 @@ GAToken* GALexer::nextToken(){
         nextChar();
         break;
     case '(':
+    case '[':
         t->type=GATokenType::lparen;
         nextChar();
         break;
     case ')':
+    case ']':
         t->type=GATokenType::rparen;
         nextChar();
         break;
