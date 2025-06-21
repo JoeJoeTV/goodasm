@@ -302,8 +302,20 @@ paper, away from a real laptop.
 
 ## Identification and Grading
 
+It's a frequent problem in embedded systems reverse engineering that
+you have a binary but do not yet know its language, or that you know
+the language but aren't sure that your dumped binary is in that
+language.  GoodASM solves this with *graders*, which are classes
+designed to recognize when programs are correctly decoded.
 
-
+```
+carbon% goodasm -i Gameboy-ASM-Examples/bin/0.hello-world.gb
+sm83	gameboy	100
+carbon% goodasm -i ti85v100.bin 
+z80	z80	100
+carbon% goodasm --z80 --grade ti85v100.bin 
+z80	valid
+```
 
 ## Defining a New Language
 
