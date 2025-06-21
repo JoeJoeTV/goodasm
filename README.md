@@ -317,6 +317,11 @@ carbon% goodasm --z80 --grade ti85v100.bin
 z80	valid
 ```
 
+These same graders are also used by
+[MaskROMTool](https://github.com/travisgoodspeed/maskromtool) to solve
+the rearrangement of physically-ordered bits into logically ordered
+bytes.
+
 ## Defining a New Language
 
 You can find instruction definitions in `galang8051.cpp`/`.h`.  Many
