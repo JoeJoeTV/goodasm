@@ -256,7 +256,7 @@ GALangARM7TDMI::GALangARM7TDMI() {
     {
     // Single data transfers.
         char word[]="\x00\x00\x00\x04";
-        char mask[]="\x00\x00\xC0\x0F";
+        char mask[]="\x00\x00\xf0\x0F";
         QString name=(L?"ldr":"str");  //L implies load or store.
         QString help="";
         QString example=name+" ";
