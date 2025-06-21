@@ -49,6 +49,9 @@ uint64_t GAGraderValidOps::isValid(GoodASM *goodasm){
 bool GAGraderValidOps::isCompatible(GALanguage *lang){
     GALanguage *l=lang;
 
+    //FIXME: Temporarily disabling this because of false positives.
+    return false;
+
     //How many opcodes are defined?
     int count=0;
     for(unsigned int I=0; I<0x100; I++){
