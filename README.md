@@ -22,6 +22,7 @@ the potential forms of the `jmp` instruction?  Does `ror a` assemble
 to ASCII?  An interactive REPL mode answers these in a jiffy, with tab
 completion.
 
+There is no license, but you're welcome to use this software anyways.
 If you like this program, please buy my book on [Microcontroller
 Exploits](https://www.amazon.com/Microcontroller-Exploits-Travis-Goodspeed/dp/1718503881)
 for yourself or for a clever student.
@@ -40,7 +41,7 @@ bugs and missing features.
 A language is `alpha` if it is relatively unused, `beta` if successful
 test programs have been written for it, and `stable` if it has been
 used for real projects and compared against competing assemblers for
-accuracy.  `partial` languages are not yet complete, and you should
+accuracy.  `broken` and `partial` languages are not yet complete, and you should
 check the issue tracker for their status.
 
 Source code and binaries were publicly released at
