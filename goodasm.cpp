@@ -301,7 +301,6 @@ char** GoodASM::readline_completions(const char *fragment, const char *line,
 
     QStringList list;
     assert(lang);
-    assert(lang->mnemonics.size()>0);
     foreach(auto m, lang->mnemonics)
         if(m->name.startsWith(fragment))
             list.append(m->name);
