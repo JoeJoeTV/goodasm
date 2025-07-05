@@ -2,7 +2,13 @@ cmake_minimum_required(VERSION 3.16)
 
 project(goodasm VERSION 0.1 LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED YES)
+
+
+include(FetchContent)
+FetchContent_Declare(replxx GIT_REPOSITORY https://github.com/AmokHuginnsson/replxx.git)
+FetchContent_MakeAvailable(replxx)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 
@@ -96,11 +102,11 @@ if(ANDROID OR IOS)
       WIN32_EXECUTABLE TRUE
   )
 
-  # Readline is only used on Unix.
+  # App mustn't contain external libraries.
   if(WIN32 OR IOS OR ANDROID)
     target_link_libraries(appgoodasmapp PRIVATE Qt6::Quick)
   else()
-    target_link_libraries(appgoodasmapp PRIVATE Qt6::Quick readline)
+    target_link_libraries(appgoodasmapp PRIVATE Qt6::Quick)
   endif()
 
   set(APPS
@@ -124,10 +130,12 @@ if(WIN32 OR (LINUX AND NOT ANDROID) OR (APPLE AND NOT IOS) )
         #${GOODASM_SOURCES}
     )
     target_link_libraries(libgoodasm PRIVATE Qt6::Quick)
+
+    ## replxx will soon replace readline.
     if(WIN32)
-        target_link_libraries(goodasm PRIVATE Qt6::Quick libgoodasm)
+        target_link_libraries(goodasm PRIVATE Qt6::Quick libgoodasm replxx::replxx)
     else()
-        target_link_libraries(goodasm PRIVATE Qt6::Quick libgoodasm readline)
+        target_link_libraries(goodasm PRIVATE Qt6::Quick libgoodasm replxx::replxx readline)
     endif()
 
     install(TARGETS ${APPS} DESTINATION bin)

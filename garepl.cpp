@@ -44,7 +44,7 @@ void add_history(const char* line){
 
 }*/
 
-//Encoding REPL, for trying out assembly.
+//Encoding REPL, and now also the decoding repl.
 int garepl_encode(GoodASM *goodasm){
     QTextStream s(stdin);
     QString l;
@@ -52,21 +52,6 @@ int garepl_encode(GoodASM *goodasm){
     while(std::cout<<"goodasm> ", s.readLineInto(&l)){
         goodasm->load(l);
         std::cout<<"["<<i<<"] "<<goodasm->hexdump().toStdString();
-        goodasm->printErrors();
-        goodasm->clear();
-    }
-    return 0;
-}
-
-//Decoding REPL, for trying out disassembly.
-int garepl_decode(GoodASM *goodasm){
-    QTextStream s(stdin);
-    QString l;
-    int i=0;
-    while(std::cout<<"goodasm> ", s.readLineInto(&l)){
-        QByteArray bytes=QByteArray::fromHex(l.toLocal8Bit());
-        goodasm->load(bytes);
-        std::cout<<goodasm->source().toStdString();
         goodasm->printErrors();
         goodasm->clear();
     }
