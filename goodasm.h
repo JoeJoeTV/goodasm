@@ -102,6 +102,8 @@ public:
     //Returns an array of tab completions for the REPL mode.
     char **readline_completions(const char *fragment, const char *line,
                                 int start, int end);
+    //New complication array, for REPLXX.
+    QVector<QString> completions(QString line);
 
     QVector<QString> languageNames();
 

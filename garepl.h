@@ -14,8 +14,11 @@
  * https://github.com/AmokHuginnsson/replxx
  */
 
+#include <QString>
+
 class GoodASM;
 
 int garepl_encode(GoodASM *goodasm);
+bool isbytes(QString s);
 
 #endif // GAREPL_H

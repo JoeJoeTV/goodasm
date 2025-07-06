@@ -6,13 +6,16 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 
 
-include(FetchContent)
-FetchContent_Declare(replxx GIT_REPOSITORY https://github.com/AmokHuginnsson/replxx.git)
-FetchContent_MakeAvailable(replxx)
+
 
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 
 qt_standard_project_setup(REQUIRES 6.5)
+
+include(FetchContent)
+FetchContent_Declare(replxx GIT_REPOSITORY https://github.com/AmokHuginnsson/replxx.git)
+FetchContent_MakeAvailable(replxx)
+#FIXME: We fetch the replxx library, but its headers aren't in the path.  Temporary workaround is duplicating them.
 
 
 set(GOODASM_SOURCES
@@ -48,9 +51,6 @@ set(GOODASM_SOURCES
     gatoken.h gatoken.cpp
     galexer.h galexer.cpp
     gaparser.h gaparser.cpp
-
-    # Interactive mode.
-    garepl.h garepl.cpp
 
     # Languages
     galanguage.h galanguage.cpp
@@ -104,9 +104,9 @@ if(ANDROID OR IOS)
 
   # App mustn't contain external libraries.
   if(WIN32 OR IOS OR ANDROID)
-    target_link_libraries(appgoodasmapp PRIVATE Qt6::Quick)
+    target_link_libraries(appgoodasmapp PRIVATE Qt6::Quick replxx::replxx)
   else()
-    target_link_libraries(appgoodasmapp PRIVATE Qt6::Quick)
+    target_link_libraries(appgoodasmapp PRIVATE Qt6::Quick replxx::replxx)
   endif()
 
   set(APPS
@@ -127,7 +127,10 @@ if(WIN32 OR (LINUX AND NOT ANDROID) OR (APPLE AND NOT IOS) )
     )
     qt_add_executable(goodasm
         main.cpp
-        #${GOODASM_SOURCES}
+
+        # Interactive mode.
+        garepl.h garepl.cpp
+        gareplxx.h gareplxx.cpp
     )
     target_link_libraries(libgoodasm PRIVATE Qt6::Quick)
 

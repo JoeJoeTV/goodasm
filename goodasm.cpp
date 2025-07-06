@@ -336,6 +336,45 @@ char** GoodASM::readline_completions(const char *fragment, const char *line,
     return result;
 }
 
+//New complication array, for REPLXX.
+QVector<QString> GoodASM::completions(QString line){
+    QVector<QString> vector;
+    QString fragment=line;  //FIXME: Should be last word.
+    assert(lang);
+
+
+
+    /* We used to provide a list of example instructions like this in the old REPL.
+    //First word is an exact match to a mnemonic, complete example.
+    QStringList words=line.split(" ");
+    if(words.length()==0 || 1){
+        QString v=words[0];
+        foreach(auto m, lang->mnemonics){
+            if(m->name==line){
+                vector.append(m->examplestr+"\n");
+                //std::cout<<m->examplestr.toStdString()<<"\n";
+            }
+        }
+        if(vector.length()>0) return vector;
+    }
+     */
+
+    QStringList words=line.split(" ");
+    fragment=words[words.length()-1]; //Completing last word.
+    //Completes the last word as a symbol, mnemonic or register.
+    foreach(auto m, lang->mnemonics)
+        if(m->name.startsWith(fragment))
+            vector.append(m->name);
+    foreach(auto m, lang->regnames)
+        if(m.startsWith(fragment))
+            vector.append(m);
+    vector.append(symbols.completions(fragment));
+    vector.removeDuplicates();
+    vector.sort();
+
+    return vector;
+}
+
 
 bool GoodASM::setLanguage(GALanguage *language){
     lang=language;
