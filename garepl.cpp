@@ -14,6 +14,33 @@
 
 static GoodASM* replgoodasm=0;
 
+bool isbytes(QString s){
+    int count=0;
+    s+=" ";
+
+    for(int i=0; i<s.length(); i++){
+        QChar c=s[i].toLower();
+        if(
+            !c.isDigit() &&
+            !c.isSpace() &&
+            !(c.toLatin1()>='a' && c.toLatin1()<='f')
+            ){
+            return false;
+        }else if(c.isSpace()){
+            if((count&1)==1)
+                return false;
+            count=0;
+        }else{
+            //Count the next letter.
+            count++;
+        }
+    }
+
+    //All characters are spaces, numbers, or A through F.
+    //And nybbles are in pairs.
+    return true;
+}
+
 /* Attempt to complete on the contents of TEXT.  START and END show the
    region of TEXT that contains the word to complete.  We can use the
    entire line in case we want to do some simple parsing.  Return the
@@ -62,32 +89,7 @@ int garepl_encode(GoodASM *goodasm){
 
 static char name[]="goodasm";
 
-bool isbytes(QString s){
-    int count=0;
-    s+=" ";
 
-    for(int i=0; i<s.length(); i++){
-        QChar c=s[i].toLower();
-        if(
-            !c.isDigit() &&
-            !c.isSpace() &&
-            !(c.toLatin1()>='a' && c.toLatin1()<='f')
-            ){
-            return false;
-        }else if(c.isSpace()){
-            if((count&1)==1)
-                return false;
-            count=0;
-        }else{
-            //Count the next letter.
-            count++;
-        }
-    }
-
-    //All characters are spaces, numbers, or A through F.
-    //And nybbles are in pairs.
-    return true;
-}
 
 //Encoding REPL, for trying out assembly.
 int garepl_encode(GoodASM *goodasm){
