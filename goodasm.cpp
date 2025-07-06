@@ -344,22 +344,25 @@ QVector<QString> GoodASM::completions(QString line){
 
 
 
-    /* We used to provide a list of example instructions like this in the old REPL.
     //First word is an exact match to a mnemonic, complete example.
     QStringList words=line.split(" ");
-    if(words.length()==0 || 1){
+    if(words.length()==2){
+        //Just one word, maybe exactly matches some mnemonics?
         QString v=words[0];
         foreach(auto m, lang->mnemonics){
-            if(m->name==line){
-                vector.append(m->examplestr+"\n");
-                //std::cout<<m->examplestr.toStdString()<<"\n";
+            if((line==m->name+" " || line==m->name)){
+                vector.append(m->examplestr);
             }
         }
-        if(vector.length()>0) return vector;
+        vector.removeDuplicates();
+        vector.sort();
+        if(vector.length()>0){
+            // Fake entry, so that the completion isn't taken.
+            vector.append(" ");
+            return vector;
+        }
     }
-     */
 
-    QStringList words=line.split(" ");
     fragment=words[words.length()-1]; //Completing last word.
     //Completes the last word as a symbol, mnemonic or register.
     foreach(auto m, lang->mnemonics)
