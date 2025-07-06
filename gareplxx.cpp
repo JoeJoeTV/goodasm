@@ -2,15 +2,8 @@
 #include "goodasm.h"
 
 
-//Some dependencies not yet cleaned out.
-#include "garepl.h"
-
-
-#include <algorithm>
-#include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <sstream>
 
 #include <QDebug>
 
@@ -21,6 +14,32 @@ int gareplxx_encode(GoodASM *goodasm){
     return 0;
 }
 
+static bool isbytes(QString s){
+    int count=0;
+    s+=" ";
+
+    for(int i=0; i<s.length(); i++){
+        QChar c=s[i].toLower();
+        if(
+            !c.isDigit() &&
+            !c.isSpace() &&
+            !(c.toLatin1()>='a' && c.toLatin1()<='f')
+            ){
+            return false;
+        }else if(c.isSpace()){
+            if((count&1)==1)
+                return false;
+            count=0;
+        }else{
+            //Count the next letter.
+            count++;
+        }
+    }
+
+    //All characters are spaces, numbers, or A through F.
+    //And nybbles are in pairs.
+    return true;
+}
 
 
 

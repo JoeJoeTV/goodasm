@@ -99,9 +99,6 @@ public:
     QStack<QString> filenames;
     int duplicates=0;    //Count of instructions that match both ways.
 
-    //Returns an array of tab completions for the REPL mode.
-    char **readline_completions(const char *fragment, const char *line,
-                                int start, int end);
     //New complication array, for REPLXX.
     QVector<QString> completions(QString line);
 
@@ -124,13 +121,6 @@ private:
 
 
 };
-
-
-//Convenience test, to disable readline on platforms that don't have it.
-#define HASREADLINE
-#if defined(Q_OS_WIN) || defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
-#undef HASREADLINE
-#endif
 
 
 #endif // GOODASM_H

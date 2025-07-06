@@ -103,11 +103,7 @@ if(ANDROID OR IOS)
   )
 
   # App mustn't contain external libraries.
-  if(WIN32 OR IOS OR ANDROID)
-    target_link_libraries(appgoodasmapp PRIVATE Qt6::Quick replxx::replxx)
-  else()
-    target_link_libraries(appgoodasmapp PRIVATE Qt6::Quick replxx::replxx)
-  endif()
+  target_link_libraries(appgoodasmapp PRIVATE Qt6::Quick)
 
   set(APPS
     appgoodasmapp)
@@ -129,18 +125,13 @@ if(WIN32 OR (LINUX AND NOT ANDROID) OR (APPLE AND NOT IOS) )
         main.cpp
 
         # Interactive mode.
-        garepl.h garepl.cpp
+        # garepl.h garepl.cpp  ## Old REPL, removed 2025.07.06
         gareplxx.h gareplxx.cpp
     )
     target_link_libraries(libgoodasm PRIVATE Qt6::Quick)
 
     ## replxx will soon replace readline.
-    if(WIN32)
-        target_link_libraries(goodasm PRIVATE Qt6::Quick libgoodasm replxx::replxx)
-    else()
-        target_link_libraries(goodasm PRIVATE Qt6::Quick libgoodasm replxx::replxx readline)
-    endif()
-
+    target_link_libraries(goodasm PRIVATE Qt6::Quick libgoodasm replxx::replxx)
     install(TARGETS ${APPS} DESTINATION bin)
 endif()
 

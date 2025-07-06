@@ -7,7 +7,6 @@
 
 #include "gaparser.h"
 #include "goodasm.h"
-#include "garepl.h"
 #include "gareplxx.h"
 
 int main(int argc, char *argv[]){
@@ -94,10 +93,6 @@ int main(int argc, char *argv[]){
                                   "Interactive shell."
                                   );
     parser.addOption(replOption);
-    QCommandLineOption replxxOption(QStringList()<<"replxx",
-                                  "Interactive shell.  (Next generation.)"
-                                  );
-    parser.addOption(replxxOption);
 
     QCommandLineOption waitOption(QStringList()<<"wait",
                                   "Wait after cleanup."
@@ -391,12 +386,9 @@ int main(int argc, char *argv[]){
     const QStringList args = parser.positionalArguments();
 
 
-    if(parser.isSet(replxxOption)){
-        //New interactive mode, without newline.  Will become default.
+    if(parser.isSet(replOption) || args.count()==0){
+        //New interactive mode, without readline.
         return gareplxx_encode(goodasm);
-    }else if(parser.isSet(replOption) || args.count()==0){
-        //Interactive assembly and disassembly modes are now unified.
-        return garepl_encode(goodasm);
     }else if(args.count()==1 && parser.isSet(disOption)){    //Disassemble a binary.
         if(parser.isSet(damageOption))
             goodasm->loadDamageFile(parser.value(damageOption));

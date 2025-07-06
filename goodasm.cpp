@@ -53,16 +53,6 @@
 #include "gasymboltable.h"
 
 
-#ifdef HASREADLINE
-#include<readline/readline.h>
-#else
-void rl_forced_update_display(){
-    qDebug()<<"I should be updating the readline display but can't on Windows.";
-}
-#endif
-
-
-
 bool GoodASM::setLanguage(QString language){
     //Load the languages, in case we need them.
     if(languages.empty()){
@@ -261,81 +251,6 @@ QString GoodASM::formatSource(QString label, QString code,
     return listing->formatSource(label, code, comment, comment2);
 }
 
-
-//Returns an array of tab completions for the REPL mode.
-char** GoodASM::readline_completions(const char *fragment, const char *line,
-                                     int start, int end){
-    /* This function returns an array for GNU ReadLine's autocompletion.
-     * The first element replaces the selected fragment, while the latter
-     * lines are presented in a list for the user.
-     *
-     * At the very least we need to complete verbs, but it's also handy to
-     * show the usage of commands that might be completed.  Every element and
-     * the array itself will be freed after usage, and the array ends with
-     * the first null pointer.
-     */
-
-    //No word to complete, so we complete the whole sentence.
-    if(start==end){
-        //FIXME: Replace this shotgun parser with the real parser.
-        QString l(line);
-        QStringList words=l.split(" ");
-        if(words.length()>0){
-            QString v=words[0];
-            std::cout<<"\n";
-            foreach(auto m, lang->mnemonics){
-                if(m->name==v)
-                    std::cout<<m->examplestr.toStdString()<<"\n";
-            }
-        }
-
-        rl_forced_update_display();
-        return 0; //No suggestions for Readline.
-    }
-
-
-    /* Here we do have a word, but we don't know what part of speech it
-     * is.  For now, we ignore the part of speech and return completions
-     * for all known mnemonic verbs and symbols that match.
-     */
-
-    QStringList list;
-    assert(lang);
-    foreach(auto m, lang->mnemonics)
-        if(m->name.startsWith(fragment))
-            list.append(m->name);
-    list.append(symbols.completions(fragment));
-    list.removeDuplicates();
-    list.sort();
-
-    //Empty result when there are no matches.
-    if(list.size()==0)
-        return 0;
-
-    //Result is a structure.
-    char** result=(char**) malloc(sizeof(char*)*list.size()+2*sizeof(char*));
-
-    //Skip ahead if there's exactly one unique match.
-    if(list.size()==1){
-        result[0]=strdup(list[0].toStdString().c_str());
-        result[1]=0;
-        result[2]=0;
-        return result;
-    }
-
-    //By here, we know that we have more than one match to choose from.
-
-    //First element replaces whatever was being completed.
-    result[0]=strdup(fragment);
-    //Further elements are potential completion words.
-    int i=1;
-    foreach(QString s, list)
-        result[i++]=strdup(s.toStdString().c_str());
-    result[i]=0; //Null terminator.
-
-    return result;
-}
-
 //New complication array, for REPLXX.
 QVector<QString> GoodASM::completions(QString line){
     QVector<QString> vector;
@@ -363,8 +278,8 @@ QVector<QString> GoodASM::completions(QString line){
         }
     }
 
-    fragment=words[words.length()-1]; //Completing last word.
     //Completes the last word as a symbol, mnemonic or register.
+    fragment=words[words.length()-1]; //Completing last word.
     foreach(auto m, lang->mnemonics)
         if(m->name.startsWith(fragment))
             vector.append(m->name);
