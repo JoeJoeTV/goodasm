@@ -49,10 +49,13 @@ Source code and binaries were publicly released at
 
 ## Building
 
-For GUI development, install the [Qt Dev Kit](https://www.qt.io/download-qt-installer-oss) and then open
-`CMakefile.txt` in Qt Creator.
+For GUI development, install the [Qt Dev
+Kit](https://www.qt.io/download-qt-installer-oss) and then open
+`CMakefile.txt` in Qt Creator.  On Windows, you must also install the
+[Git](https://git-scm.com/downloads/win) client; Github Desktop is not
+enough on its own.
 
-To build in Linux without the GUI, first install `qt6-declarative-dev`, `qml6-module-\*`
+To build in Linux, first install `qt6-declarative-dev`, `qml6-module-\*`, `git`
 and `cmake`, then run the following:
 ```
 git clone https://github.com/travisgoodspeed/goodasm
