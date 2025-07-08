@@ -156,3 +156,11 @@ install(TARGETS ${APPS}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+if(WIN32)
+    qt_generate_deploy_app_script(
+        TARGET goodasm
+        OUTPUT_SCRIPT GOODASM_DEPLOY_SCRIPT
+        NO_TRANSLATIONS
+    )
+    install(SCRIPT ${GOODASM_DEPLOY_SCRIPT})
+endif()
