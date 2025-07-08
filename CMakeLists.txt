@@ -137,6 +137,15 @@ if(WIN32 OR (LINUX AND NOT ANDROID) OR (APPLE AND NOT IOS) )
             message(FATAL_ERROR "Only Visual Studio versions 2017 version 15.7 and above are supported.")
         endif()
     endif()
+    if(WIN32 AND (TARGET Qt6::windeployqt))
+        add_custom_command(TARGET goodasm
+            POST_BUILD
+            COMMAND set PATH=%PATH%$<SEMICOLON>${Qt6_install_prefix}/bin
+            COMMAND Qt6::windeployqt --dir "$<TARGET_FILE_DIR:goodasm>" "$<TARGET_FILE_DIR:goodasm>/$<TARGET_FILE_NAME:goodasm>"
+                $<IF:$<CONFIG:Debug>,--debug,--release> --no-translations
+            COMMAND ${CMAKE_COMMAND} -E remove_directory "$<TARGET_FILE_DIR:goodasm>/imageformats"
+        )
+    endif()
 
     ## replxx will soon replace readline.
     target_link_libraries(goodasm PRIVATE libgoodasm replxx::replxx)
