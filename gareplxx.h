@@ -36,7 +36,6 @@ private:
     std::vector<std::pair<std::string, CommandWithResult>> commands;
 
     Replxx::completions_t CompleteContext(const std::string& line, int& lastWordLength);
-    Replxx::hints_t Hint(const std::string& line, int& lastWordLength, Replxx::Color& color);
     std::vector<std::string> Matches(const std::string& line);
 };
 
