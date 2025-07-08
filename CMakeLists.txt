@@ -129,6 +129,8 @@ if(WIN32 OR (LINUX AND NOT ANDROID) OR (APPLE AND NOT IOS) )
         gareplxx.h gareplxx.cpp
     )
     target_link_libraries(libgoodasm PRIVATE Qt6::Quick)
+    target_include_directories(libgoodasm INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+    set_property(TARGET libgoodasm PROPERTY OUTPUT_NAME goodasm)
 
     ## replxx will soon replace readline.
     target_link_libraries(goodasm PRIVATE Qt6::Quick libgoodasm replxx::replxx)
