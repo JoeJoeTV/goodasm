@@ -15,7 +15,6 @@ qt_standard_project_setup(REQUIRES 6.5)
 include(FetchContent)
 FetchContent_Declare(replxx GIT_REPOSITORY https://github.com/AmokHuginnsson/replxx.git)
 FetchContent_MakeAvailable(replxx)
-#FIXME: We fetch the replxx library, but its headers aren't in the path.  Temporary workaround is duplicating them.
 
 
 set(GOODASM_SOURCES

@@ -12,7 +12,7 @@
  */
 
 class GoodASM;
-#include "replxx.hxx"
+#include <replxx.hxx>
 
 int gareplxx_encode(GoodASM *goodasm);
 
