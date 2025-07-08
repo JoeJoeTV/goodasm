@@ -7,7 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED YES)
 
 
 
-
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 
 qt_standard_project_setup(REQUIRES 6.5)
@@ -127,10 +126,20 @@ if(WIN32 OR (LINUX AND NOT ANDROID) OR (APPLE AND NOT IOS) )
         # garepl.h garepl.cpp  ## Old REPL, removed 2025.07.06
         gareplxx.h gareplxx.cpp
     )
-    target_link_libraries(libgoodasm PRIVATE Qt6::Quick)
+    target_link_libraries(libgoodasm PUBLIC Qt6::Quick)
+    # Have MSVC define the the __cplusplus macro for Qt6 to build correctly.
+    # Also suppress two small warnings due to Qt6's header files.
+    # Reference: https://stackoverflow.com/a/60890947
+    if (MSVC)
+        if (MSVC_VERSION GREATER_EQUAL 1914)
+            target_compile_options(libgoodasm PUBLIC /Zc:__cplusplus /wd26495 /wd26813)
+        else()
+            message(FATAL_ERROR "Only Visual Studio versions 2017 version 15.7 and above are supported.")
+        endif()
+    endif()
 
     ## replxx will soon replace readline.
-    target_link_libraries(goodasm PRIVATE Qt6::Quick libgoodasm replxx::replxx)
+    target_link_libraries(goodasm PRIVATE libgoodasm replxx::replxx)
     install(TARGETS ${APPS} DESTINATION bin)
 endif()
 
