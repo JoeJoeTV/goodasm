@@ -127,6 +127,8 @@ if(WIN32 OR (LINUX AND NOT ANDROID) OR (APPLE AND NOT IOS) )
         gareplxx.h gareplxx.cpp
     )
     target_link_libraries(libgoodasm PUBLIC Qt6::Quick)
+    target_include_directories(libgoodasm INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+    set_property(TARGET libgoodasm PROPERTY OUTPUT_NAME goodasm)
     # Have MSVC define the the __cplusplus macro for Qt6 to build correctly.
     # Also suppress two small warnings due to Qt6's header files.
     # Reference: https://stackoverflow.com/a/60890947
@@ -144,7 +146,6 @@ if(WIN32 OR (LINUX AND NOT ANDROID) OR (APPLE AND NOT IOS) )
                 $<IF:$<CONFIG:Debug>,--debug,--release> --no-translations
         )
     endif()
-
     ## replxx will soon replace readline.
     target_link_libraries(goodasm PRIVATE libgoodasm replxx::replxx)
     install(TARGETS ${APPS} DESTINATION bin)
