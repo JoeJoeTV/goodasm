@@ -1859,7 +1859,7 @@ QString GAParameterTMS320C28xPM::decode(GALanguage *lang, uint64_t adr, const ch
 
 void GAParameterTMS320C28xPM::encode(GALanguage *lang, uint64_t adr, QByteArray &bytes, GAParserOperand op, int inslen)
 {
-    uint64_t val;
+    uint64_t val = 0;
 
     for (auto it = shifts.begin(); it != shifts.end(); ++it)
     {
@@ -1919,7 +1919,7 @@ QString GAParameterTMS320C28xStatus::decode(GALanguage *lang, uint64_t adr, cons
 
 void GAParameterTMS320C28xStatus::encode(GALanguage *lang, uint64_t adr, QByteArray &bytes, GAParserOperand op, int inslen)
 {
-    uint64_t val;
+    uint64_t val = 0;
 
     for (auto it = status.begin(); it != status.end(); ++it)
     {

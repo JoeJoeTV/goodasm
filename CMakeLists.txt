@@ -7,7 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED YES)
 
 
 
-
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 
 qt_standard_project_setup(REQUIRES 6.5)
@@ -15,7 +14,6 @@ qt_standard_project_setup(REQUIRES 6.5)
 include(FetchContent)
 FetchContent_Declare(replxx GIT_REPOSITORY https://github.com/AmokHuginnsson/replxx.git)
 FetchContent_MakeAvailable(replxx)
-#FIXME: We fetch the replxx library, but its headers aren't in the path.  Temporary workaround is duplicating them.
 
 
 set(GOODASM_SOURCES
@@ -128,12 +126,28 @@ if(WIN32 OR (LINUX AND NOT ANDROID) OR (APPLE AND NOT IOS) )
         # garepl.h garepl.cpp  ## Old REPL, removed 2025.07.06
         gareplxx.h gareplxx.cpp
     )
-    target_link_libraries(libgoodasm PRIVATE Qt6::Quick)
+    target_link_libraries(libgoodasm PUBLIC Qt6::Quick)
     target_include_directories(libgoodasm INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
     set_property(TARGET libgoodasm PROPERTY OUTPUT_NAME goodasm)
-
+    # Have MSVC define the the __cplusplus macro for Qt6 to build correctly.
+    # Also suppress two small warnings due to Qt6's header files.
+    # Reference: https://stackoverflow.com/a/60890947
+    if (MSVC)
+        if (MSVC_VERSION GREATER_EQUAL 1914)
+            target_compile_options(libgoodasm PUBLIC /Zc:__cplusplus /wd26495 /wd26813)
+        else()
+            message(FATAL_ERROR "Only Visual Studio versions 2017 version 15.7 and above are supported.")
+        endif()
+    endif()
+    if(WIN32 AND (TARGET Qt6::windeployqt))
+        add_custom_command(TARGET goodasm
+            POST_BUILD
+            COMMAND Qt6::windeployqt --dir "$<TARGET_FILE_DIR:goodasm>" "$<TARGET_FILE_DIR:goodasm>/$<TARGET_FILE_NAME:goodasm>"
+                $<IF:$<CONFIG:Debug>,--debug,--release> --no-translations
+        )
+    endif()
     ## replxx will soon replace readline.
-    target_link_libraries(goodasm PRIVATE Qt6::Quick libgoodasm replxx::replxx)
+    target_link_libraries(goodasm PRIVATE libgoodasm replxx::replxx)
     install(TARGETS ${APPS} DESTINATION bin)
 endif()
 
@@ -143,3 +157,11 @@ install(TARGETS ${APPS}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+if(WIN32)
+    qt_generate_deploy_app_script(
+        TARGET goodasm
+        OUTPUT_SCRIPT GOODASM_DEPLOY_SCRIPT
+        NO_TRANSLATIONS
+    )
+    install(SCRIPT ${GOODASM_DEPLOY_SCRIPT})
+endif()
