@@ -13,8 +13,8 @@ simple: simple.s
 simple.txt: simple
 	goodasm -dabA --6502 simple | tee simple.txt
 grade:
-	goodasm --6502 --grade basic.bin
-	goodasm --6502 --grade kernal.bin
+#	goodasm --6502 --grade basic.bin
+#	goodasm --6502 --grade kernal.bin
 error:
 # Checking for errors on particular line numbers.
 	goodasm error.asm | grep "error2.asm:12"

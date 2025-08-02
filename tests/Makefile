@@ -56,7 +56,7 @@ selftests:
 	goodasm --test --h83
 #	goodasm --test --arm7tdmi
 #	goodasm --pic16c5x --test
-
+#	goodasm --test --ti80
 
 fuzz:
 # Passing self-tests.
@@ -75,6 +75,7 @@ fuzz:
 	goodasm --fuzz --pic16c5x
 	goodasm --fuzz --h83
 	goodasm --fuzz --arm7tdmi
+#	goodasm --fuzz --ti80
 # Identify fuzzing.
 	goodasm --fuzz -i
 

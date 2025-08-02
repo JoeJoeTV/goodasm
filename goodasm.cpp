@@ -29,6 +29,7 @@
 #include "galangh83.h"
 #include "galangarm7tdmi.h"
 #include "galangtms320c28x.h"
+#include "galangti80.h"
 
 //Listings
 #include "galistingdefault.h"
@@ -74,6 +75,7 @@ bool GoodASM::setLanguage(QString language){
         languages.append(new GALangH83());
         languages.append(new GALangARM7TDMI());
         languages.append(new GALangTMS320C28x());
+        languages.append(new GALangTI80());
     }
 
     //Does our language match?

@@ -73,8 +73,7 @@ int GAParameter::match(GAParserOperand *op, int len){
 }
 
 int GAParameterRelative::match(GAParserOperand *op, int len){
-    //FIXME: We should do some sort of a match here.
-    //https://github.com/travisgoodspeed/goodasm/issues/47
+    //FIXME: We should do some sort of a match here.2
     //It's lazy to just return success.
     if(op->prefix=="-" && this->prefix=="")
         return 1;  //Negative value, but a match.
@@ -85,13 +84,18 @@ int GAParameterRelative::match(GAParserOperand *op, int len){
 
 int GAParameterAddress::match(GAParserOperand *op, int len){
     //FIXME: We should do some sort of a match here.
-    //https://github.com/travisgoodspeed/goodasm/issues/47
     //It's lazy to just return success.
     if(op->prefix!=this->prefix) return 0;
 
     //Check that value fits in the field.
-    if(op->uint64(false)>=(1<<rawbitcount(len)))
+    //For now, we allow either offset or unoffset to be generous.
+    if(
+        (op->uint64(false)>=(1<<rawbitcount(len)))
+        && (op->uint64(false)+offset>=(1<<rawbitcount(len)))
+        )
         return 0;
+
+
     return 1;
 }
 
@@ -309,7 +313,7 @@ QString GAParameterAddress::decode(GALanguage *lang, uint64_t adr, const char *b
     uint64_t p=rawdecode(lang,adr,bytes,inslen);
 
     QString rendering=prefix
-                        +QString::asprintf("0x%04x",(unsigned int) p)
+                        +QString::asprintf("0x%04x",(unsigned int) (p-offset))
                         +suffix;
     return rendering;
 }
@@ -372,9 +376,10 @@ GAParameterRelative::GAParameterRelative(const char* mask, int offset, int multi
     this->isSigned=true;
 }
 //An address itself, rather than the value at that address.
-GAParameterAddress::GAParameterAddress(const char* mask){
+GAParameterAddress::GAParameterAddress(const char* mask, int offset){
     setMask(mask);
     prefix="";
+    this->offset=offset;
 }
 //Offset into the current page.
 GAParameterPageAddress::GAParameterPageAddress(const char* mask, uint32_t pagemask){
@@ -489,8 +494,8 @@ GAParameterGroup* GAParameterGroup::rel(const char *mask, int offset, int multip
     return this;
 }
 //Absolute address is the same as relative from zero.
-GAParameterGroup* GAParameterGroup::adr(const char *mask){
-    insert(new GAParameterAddress(mask));
+GAParameterGroup* GAParameterGroup::adr(const char *mask, int offset){
+    insert(new GAParameterAddress(mask, offset));
     return this;
 }
 // Page-offset address, common on 4-bit chips.

@@ -121,9 +121,8 @@ public:
 //This is an absolute address.
 class GAParameterAddress : public GAParameter {
 public:
-    GAParameterAddress(const char* mask);
+    GAParameterAddress(const char* mask, int offset=0);
     QString decode(GALanguage *lang, uint64_t adr, const char *bytes, int inslen) override;
-
     int match(GAParserOperand *op, int len) override;
 };
 
@@ -165,7 +164,7 @@ public:
     //Adds a port number by just its mask, preceeded by %.
     GAParameterGroup* port(const char *mask);
     //PC-relative address.
-    GAParameterGroup* adr(const char *mask);                               // Absolute address.
+    GAParameterGroup* adr(const char *mask, int offset=0);                 // Absolute address.
     GAParameterGroup* rel(const char *mask, int offset=2, int multiple=1); // Relative address.
     GAParameterGroup* pageadr(const char *mask, uint32_t pagemask);        // Page-offset address.
     //Absolute indexed by X or Y.
