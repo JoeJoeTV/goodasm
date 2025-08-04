@@ -584,11 +584,12 @@ GALang6805::GALang6805() {
         ->example("lsr @x")
         ->regnameind("x");
 
+    //FIXME: This is in ST16CF54, not classic 6805.
     insert(mnem("mul", 1, "\x42", "\xff"))
         ->help("Multiply. (ix)")
-        ->example("mul a, x")
-        ->regname("a")
-        ->regname("x");
+        ->example("mul x, a")
+        ->regname("x")
+        ->regname("a");
 
 
     insert(mnem("neg", 2, "\x30\x00", "\xff\x00"))
