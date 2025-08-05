@@ -19,6 +19,7 @@
 #include "galangmarc4.h"
 #include "galang6502.h"
 #include "galang6805.h"
+#include "galangst7.h"
 #include "galang8051.h"
 #include "galangsm83.h"
 #include "galangchip8.h"
@@ -65,6 +66,7 @@ bool GoodASM::setLanguage(QString language){
         languages.append(new GALangMARC4());
         languages.append(new GALang6502());
         languages.append(new GALang6805());
+        languages.append(new GALangST7());
         languages.append(new GALang8051());
         languages.append(new GALangSM83());  //GameBoy.
         languages.append(new GALangChip8());

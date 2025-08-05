@@ -186,6 +186,10 @@ int main(int argc, char *argv[]){
                                 "68HC05 (stable)"
                                 );
     parser.addOption(lang6805);
+    QCommandLineOption langST7(QStringList()<<"st7",
+                                "ST7 (broken)"
+                                );
+    parser.addOption(langST7);
     QCommandLineOption langFcard(QStringList()<<"fcard",
                                 "68HC05SC21 DSS P1 F-Card (stable)"
                                 );
@@ -276,6 +280,8 @@ int main(int argc, char *argv[]){
         language="6502";
     else if(parser.isSet(lang6805))
         language="6805";
+    else if(parser.isSet(langST7))
+        language="st7";
     else if(parser.isSet(langFcard))
         language="fcard";
     else if(parser.isSet(lang8051))
