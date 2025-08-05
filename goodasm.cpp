@@ -396,7 +396,7 @@ bool GoodASM::selftest_examples(){
             && instructions[0].mnem
             && instructions[0].mnem==m
             ){
-            qDebug()<<"TEST: "<<lineinput;
+            //qDebug()<<"TEST: "<<lineinput;
             passes++;
 
             //Must come before we attempt disassmbly, or we'll miss the missing symbols.
@@ -417,7 +417,10 @@ bool GoodASM::selftest_examples(){
                  * than the source mnemonic.  See ASL and LSL in 6805 for an example of that.
                  */
             }else{
-                qDebug()<<"Reflection failed.";
+                qDebug()<<"Reflection failed: "
+                         //<<instructions[0].mnem->name
+                         <<m->name
+                         <<bytes;
                 fails++;
             }
 
