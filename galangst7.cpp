@@ -8,14 +8,174 @@
  * 90 -- Indexing by Y instead of by X.
  * 92 -- Double-indirect forms.
  * 91 -- Double-indirect on Y.
+ *
+ * In addition to the prefixes, opcodes have been added for pushing and
+ * popping some registers.
+ *
+ * Y is a new index register, never existing on 6805.
  */
+
+//CALL and JP.
+void GALangST7::buildCallJump(uint8_t opcode,
+                              QString name,
+                              QString help){
+    /* Opcode is C for JP and D for CALL.
+     * We exit early in 6805 mode to avoid
+     * extra definitions.
+     */
+    assert((opcode&0xf)==opcode);
+
+    char modeb[]="\xb0\x00";
+    modeb[0]|=opcode;
+    insert(mnem(name, 2, modeb, "\xff\x00"))  //short
+        ->help(help)
+        ->example(name+" 0xab")
+        ->adr("\x00\xff");
+    char modec[]="\xc0\x00\x00";
+    modec[0]|=opcode;
+    insert(mnem(name, 3, modec, "\xff\x00\x00"))  //long
+        ->help(help)
+        ->example(name+" 0xdead")
+        ->adr("\x00\xff\xff");
+    char modef[]="\xf0";
+    modef[0]|=opcode;
+    insert(mnem(name, 1, modef, "\xff"))
+        ->help(help)
+        ->example(name+" @x")
+        ->regnameind("x");
+    char modee[]="\xe0\x00";
+    modee[0]|=opcode;
+    insert(mnem(name, 2, modee, "\xff\x00"))
+        ->help(help)
+        ->example(name+" (0xed, x)")
+        ->group('(')
+        ->adr("\x00\xff")
+        ->regname("x");
+    char moded[]="\xd0\x00\x00";
+    moded[0]|=opcode;
+    insert(mnem(name, 3, moded, "\xff\x00"))
+        ->help(help)
+        ->example(name+" (0xdead, x)")
+        ->group('(')
+        ->adr("\x00\xff\xff")
+        ->regname("x");
+
+
+    //Bail out if we don't want extended opcodes.
+    if(mode6805) return;
+
+    char mode90f[]="\x90\xf0";
+    mode90f[1]|=opcode;
+    insert(mnem(name, 2, mode90f, "\xff\xff"))
+        ->help(help)
+        ->example(name+" @y")
+        ->regnameind("y");
+    char mode90e[]="\x90\xe0\x00";
+    mode90e[1]|=opcode;
+    insert(mnem(name, 3, mode90e, "\xff\xff\x00"))
+        ->help(help)
+        ->example(name+" (0xed, y)")
+        ->group('(')
+        ->adr("\x00\x00\xff")
+        ->regname("y");
+    char mode90d[]="\x90\xd0\x00\x00";
+    mode90d[1]|=opcode;
+    insert(mnem(name, 4, mode90d, "\xff\xff\x00\x00"))
+        ->help(help)
+        ->example(name+" (0xdead, y)")
+        ->group('(')
+        ->adr("\x00\x00\xff\xff")
+        ->regname("y");
+
+    char mode92b[]="\x92\xb0\x00";
+    mode92b[1]|=opcode;
+    insert(mnem(name, 3, mode92b, "\xff\xff\x00"))  //short
+        ->help(help)
+        ->example(name+" @0xab")
+        ->abs("\x00\x00\xff");
+    char mode92c[]="\x92\xc0\x00\x00";
+    mode92c[1]|=opcode;
+    insert(mnem(name, 4, mode92c, "\xff\xff\x00\x00"))  //long
+        ->help(help)
+        ->example(name+" @0xdead")
+        ->abs("\x00\x00\xff\xff");
+    char mode92e[]="\x92\xe0\x00";
+    mode92e[1]|=opcode;
+    insert(mnem(name, 3, mode92e, "\xff\xff\x00"))
+        ->help(help)
+        ->example(name+" (@0xed, x)")
+        ->group('(')
+        ->abs("\x00\x00\xff")
+        ->regname("x");
+    char mode92d[]="\x92\xd0\x00\x00";
+    mode92d[1]|=opcode;
+    insert(mnem(name, 4, mode92d, "\xff\xff\x00\x00"))
+        ->help(help)
+        ->example(name+" (@0xdead, x)")
+        ->group('(')
+        ->abs("\x00\x00\xff\xff")
+        ->regname("x");
+
+    char mode91e[]="\x91\xe0\x00";
+    mode91e[1]|=opcode;
+    insert(mnem(name, 3, mode91e, "\xff\xff\x00"))
+        ->help(help)
+        ->example(name+" (@0xed, y)")
+        ->group('(')
+        ->abs("\x00\x00\xff")
+        ->regname("y");
+    char mode91d[]="\x91\xd0\x00\x00";
+    mode91d[1]|=opcode;
+    insert(mnem(name, 4, mode91d, "\xff\xff\x00\x00"))
+        ->help(help)
+        ->example(name+" (@0xdead, y)")
+        ->group('(')
+        ->abs("\x00\x00\xff\xff")
+        ->regname("y");
+}
+
+//PUSH and POP on ST17.  Not on 6805.
+void GALangST7::buildStackOp(uint8_t opcode,
+                             QString name,
+                             QString help){
+    /* 6805 has JSR and RTS, but ST7 extends that with
+     * support for pushing and popping X, Y and the
+     * condition codes.
+     *
+     * Opcode parameter is the lowest opcode:
+     * 84 for pop, 88 for push.
+     */
+    if(mode6805) return;
+
+    char str[2];
+    str[0]=opcode++;
+    insert(mnem(name, 1, str, "\xff"))
+        ->help(help)
+        ->example(name+" a")
+        ->regname("a");
+    str[0]=opcode;
+    insert(mnem(name, 1, str, "\xff"))
+        ->help(help)
+        ->example(name+" x")
+        ->regname("x");
+    str[0]=0x90;
+    str[1]=opcode++;
+    insert(mnem(name, 2, str, "\xff\xff"))
+        ->help(help)
+        ->example(name+" y")
+        ->regname("y");
+    str[0]=opcode;
+    insert(mnem(name, 1, str, "\xff"))
+        ->help(help)
+        ->example(name+" cc")
+        ->regname("cc");
+}
 
 
 //15 opcode arithmetic instruction, destination A.
 void GALangST7::buildArithmetic15(uint8_t opcode,
                                   QString name,
-                                  QString help,
-                                  bool mode6805){
+                                  QString help){
     /* The 15-opcode operations have the accumulator (A)
      * as the destination register.
      */
@@ -160,8 +320,7 @@ void GALangST7::buildArithmetic15(uint8_t opcode,
 //11 opcode arithmetic instruction.  (not A)
 void GALangST7::buildArithmetic11(uint8_t opcode,
                                   QString name,
-                                  QString help,
-                                  bool mode6805){
+                                  QString help){
     /* The 11-opcode operations are things which have the
      * same source and destination.  Inversion, clearing,
      * etc.
@@ -266,16 +425,17 @@ void GALangST7::buildArithmetic11(uint8_t opcode,
 
 
 //ST7 is a superset of 6805, so we include all of the 6805 stuff.
-GALangST7::GALangST7() {
+GALangST7::GALangST7(bool mode6805) {
+    this->mode6805=mode6805;
     endian=BIG;
     name="st7";
-    maxbytes=3;
+    maxbytes=4;
 
     //Register names.
     regnames.clear();
-    regnames<<"x"<<"y"<<"a";
-
-
+    regnames<<"a"<<"x";
+    if(!mode6805)
+        regnames<<"y"<<"cc";
 
     //ADC, page 33
     buildArithmetic15(0x09, "adc", "Add w/ Carry");
@@ -287,14 +447,31 @@ GALangST7::GALangST7() {
         ->example("bres @0xff, bit4")
         ->abs("\x00\xff")
         ->bit3("\x0e\x00");
+    if(!mode6805){
+        auto a=insert(mnem("bres", 3, "\x92\x11\x00", "\xff\xf1\x00"))
+            ->help("Bit Reset")
+                     ->example("bres (@0xff), bit4");
+        a->group('(')
+            ->abs("\x00\x00\xff");
+        a->bit3("\x00\x0e\x00");
+    }
     insert(mnem("bset", 2, "\x10\x00", "\xf1\x00"))
         ->help("Bit Set")
         ->example("bset @0xff, bit4")
         ->abs("\x00\xff")
         ->bit3("\x0e\x00");
+    if(!mode6805){
+        auto a=insert(mnem("bset", 3, "\x92\x10\x00", "\xff\xf1\x00"))
+        ->help("Bit Set")
+            ->example("bset (@0xff), bit4");
+        a->group('(')
+            ->abs("\x00\x00\xff");
+        a->bit3("\x00\x0e\x00");
+    }
     //BTJF
     //BTJT
     //CALL
+    buildCallJump(0x0d, "call", "Call Subroutine");
     //CALLR
     buildArithmetic11(0x0f, "clr", "Clear");
     buildArithmetic15(0x01, "cp", "Compare");
@@ -307,12 +484,29 @@ GALangST7::GALangST7() {
     //JRA
     //JRxx -- Conditional Jump
     buildArithmetic15(0x06, "ld", "Load");
-    //MUL
+
+    /* Mul isn't really a part of 6805, but we don't cut this
+     * out in 6805 mode because many 6805 chips like the ST16C54
+     * include mul a, x.
+     */
+    insert(mnem("mul", 1, "\x42", "\xff"))
+        ->help("Multiply.")
+        ->example("mul x, a")
+        ->regname("x")
+        ->regname("a");
+    if(!mode6805)
+        insert(mnem("mul", 2, "\x90\x42", "\xff\xff"))
+            ->help("Multiply.")
+            ->example("mul y, a")
+            ->regname("y")
+            ->regname("a");
     buildArithmetic11(0x00, "neg", "Negate");
     insert(mnem("nop", "\x9d"))->help("No Operation");
     buildArithmetic15(0x0a, "or", "or");
-    //POP
-    //PUSH
+
+    buildStackOp(0x84, "pop", "Pop from Stack");
+    buildStackOp(0x88, "push", "Push to Stack");
+
     insert(mnem("rcf", "\x98"))->help("Reset Carry Flag");
     insert(mnem("ret", "\x81"))->help("Return From Subroutine");
     insert(mnem("rim", "\x9a"))->help("Reset Interrupt Mask (IE)");
@@ -332,112 +526,4 @@ GALangST7::GALangST7() {
     insert(mnem("trap", "\x83"))->help("Software Interrupt");
     insert(mnem("wfi", "\x8f"))->help("Wait for Interrupt");
     buildArithmetic15(0x08, "xor", "Logical Exclusive Or");
-
-
-
-
-
-
-    /*
-    //First half inherited from 6805.
-    insert(mnem("adc", 2, "\xa9\x00", "\xff\x00"))            //Immediate
-        ->help("Add to A with Carry. (imm)")
-        ->example("adc a, #0xff")
-        ->regname("a")
-        ->imm("\x00\xff");
-    insert(mnem("adc", 2, "\xb9\x00", "\xff\x00"))            //Short
-        ->help("Add to A with Carry. (dir)")
-        ->example("adc a, @0xff")
-        ->regname("a")
-        ->abs("\x00\xff");
-    insert(mnem("adc", 3, "\xc9\x00\x00", "\xff\x00\x00"))    //Long
-        ->help("Add to A with Carry. (ext)")
-        ->example("adc a, @0xffff")
-        ->regname("a")
-        ->abs("\x00\xff\xff");
-    insert(mnem("adc", 1, "\xf9", "\xff"))
-        ->help("Add to A with Carry. (ix)")
-        ->example("adc a, @x")
-        ->regname("a")
-        ->regnameind("x");
-    insert(mnem("adc", 2, "\xe9\x00", "\xff\x00"))
-        ->help("Add to A with Carry. (ix1)")
-        ->example("adc a, (0xff, x)")
-        ->regname("a")
-        ->group('(')
-        ->adr("\x00\xff")
-        ->regname("x");
-    insert(mnem("adc", 3, "\xd9\x00\x00", "\xff\x00\x00"))
-        ->help("Add to A with Carry. (ix2)")
-        ->example("adc a, (0xffff, x)")
-        ->regname("a")
-        ->group('(')
-        ->adr("\x00\xff\xff")
-        ->regname("x");
-    //90 prefix, indexing by Y.
-    insert(mnem("adc", 2, "\x90\xf9", "\xff\xff"))
-        ->help("Add to A with Carry. (iy)")
-        ->example("adc a, @y")
-        ->regname("a")
-        ->regnameind("y");
-    insert(mnem("adc", 3, "\x90\xe9\x00", "\xff\xff\x00"))
-        ->help("Add to A with Carry. (iy1)")
-        ->example("adc a, (0xff, y)")
-        ->regname("a")
-        ->group('(')
-        ->adr("\x00\x00\xff")
-        ->regname("y");
-    insert(mnem("adc", 4, "\x90\xd9\x00\x00", "\xff\xff\x00\x00"))
-        ->help("Add to A with Carry. (iy2)")
-        ->example("adc a, (0xffff, y)")
-        ->regname("a")
-        ->group('(')
-        ->adr("\x00\x00\xff\xff")
-        ->regname("y");
-
-
-
-    //92 prefix, double-indirection
-    insert(mnem("adc", 3, "\x92\xb9\x00", "\xff\xff\x00"))
-        ->help("Add to A with Carry. (indir)")
-        ->example("adc a, (@0xff)")
-        ->regname("a")
-        ->group('(')
-        ->abs("\x00\x00\xff");
-    insert(mnem("adc", 4, "\x92\xc9\x00\x00", "\xff\xff\x00\x00"))
-        ->help("Add to A with Carry. (indext)")
-        ->example("adc a, (@0xffff)")
-        ->regname("a")
-        ->group('(')
-        ->abs("\x00\x00\xff\xff");
-    insert(mnem("adc", 3, "\x92\xe9\x00", "\xff\xff\x00"))
-        ->help("Add to A with Carry. (ind-ix1)")
-        ->example("adc a, (@0xff, x)")
-        ->regname("a")
-        ->group('(')
-        ->abs("\x00\x00\xff")
-        ->regname("x");
-    insert(mnem("adc", 4, "\x92\xd9\x00\x00", "\xff\xff\x00\x00"))
-        ->help("Add to A with Carry. (ind-ix2)")
-        ->example("adc a, (@0xffff, x)")
-        ->regname("a")
-        ->group('(')
-        ->abs("\x00\x00\xff\xff")
-        ->regname("x");
-    //91 prefix, double-indirection on Y.
-    insert(mnem("adc", 3, "\x91\xe9\x00", "\xff\xff\x00"))
-        ->help("Add to A with Carry. (ind-iy1)")
-        ->example("adc a, (@0xff, y)")
-        ->regname("a")
-        ->group('(')
-        ->abs("\x00\x00\xff")
-        ->regname("y");
-    insert(mnem("adc", 4, "\x91\xd9\x00\x00", "\xff\xff\x00\x00"))
-        ->help("Add to A with Carry. (ind-ixy)")
-        ->example("adc a, (@0xffff, y)")
-        ->regname("a")
-        ->group('(')
-        ->abs("\x00\x00\xff\xff")
-        ->regname("y");
-*/
 }
