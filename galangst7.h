@@ -24,6 +24,8 @@ private:
     void buildLdToY();
     //Load instruction, from y
     void buildLdFromY();
+    //Weirder load instructions.
+    void buildLdMisc();
 
     //14 opcode arithmetic instruction, source A.
     void buildArithmetic14fromA(uint8_t opcode,

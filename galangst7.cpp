@@ -210,35 +210,35 @@ void GALangST7::buildArithmetic15(uint8_t opcode,
     char typea[]="\xa0\x00";  //A900 for ADC, for example.
     typea[0]|=opcode;
     insert(mnem(name, 2, typea, "\xff\x00"))            //Immediate
-        ->help(help+" (imm)")
+        ->help(help)
         ->example(name+" a, #0xff")
         ->regname("a")
         ->imm("\x00\xff");
     char typeb[]="\xb0\x00";
     typeb[0]|=opcode;
     insert(mnem(name, 2, typeb, "\xff\x00"))            //Short
-        ->help(help+" (dir)")
+        ->help(help)
         ->example(name+" a, @0xff")
         ->regname("a")
         ->abs("\x00\xff");
     char typec[]="\xc0\x00\x00";
     typec[0]|=opcode;
     insert(mnem(name, 3, typec, "\xff\x00\x00"))    //Long
-        ->help(help+" (ext)")
+        ->help(help)
         ->example(name+" a, @0xffff")
         ->regname("a")
         ->abs("\x00\xff\xff");
     char typef[]="\xf0";
     typef[0]|=opcode;
     insert(mnem(name, 1, typef, "\xff"))
-        ->help(help+" (ix)")
+        ->help(help)
         ->example(name+" a, @x")
         ->regname("a")
         ->regnameind("x");
     char typee[]="\xe0\x00";
     typee[0]|=opcode;
     insert(mnem(name, 2, typee, "\xff\x00"))
-        ->help(help+" (ix1)")
+        ->help(help)
         ->example(name+" a, (0xff, x)")
         ->regname("a")
         ->group('(')
@@ -247,7 +247,7 @@ void GALangST7::buildArithmetic15(uint8_t opcode,
     char typed[]="\xd0\x00\x00";
     typed[0]|=opcode;
     insert(mnem(name, 3, typed, "\xff\x00\x00"))
-        ->help(help+" (ix2)")
+        ->help(help)
         ->example(name+" a, (0xffff, x)")
         ->regname("a")
         ->group('(')
@@ -261,14 +261,14 @@ void GALangST7::buildArithmetic15(uint8_t opcode,
     char type90f[]="\x90\xf0";
     type90f[1]|=opcode;
     insert(mnem(name, 2, type90f, "\xff\xff"))
-        ->help(help+" (iy)")
+        ->help(help)
         ->example(name+" a, @y")
         ->regname("a")
         ->regnameind("y");
     char type90e[]="\x90\xe0\x00";
     type90e[1]|=opcode;
     insert(mnem(name, 3, type90e, "\xff\xff\x00"))
-        ->help(help+" (iy1)")
+        ->help(help)
         ->example(name+" a, (0xff, y)")
         ->regname("a")
         ->group('(')
@@ -277,7 +277,7 @@ void GALangST7::buildArithmetic15(uint8_t opcode,
     char type90d[]="\x90\xd0\x00\x00";
     type90d[1]|=opcode;
     insert(mnem(name, 4, type90d, "\xff\xff\x00\x00"))
-        ->help(help+" (iy2)")
+        ->help(help)
         ->example(name+" a, (0xffff, y)")
         ->regname("a")
         ->group('(')
@@ -287,7 +287,7 @@ void GALangST7::buildArithmetic15(uint8_t opcode,
     char type92b[]="\x92\xb0\x00";
     type92b[1]|=opcode;
     insert(mnem(name, 3, type92b, "\xff\xff\x00"))
-        ->help(help+" (indir)")
+        ->help(help)
         ->example(name+" a, (@0xff)")
         ->regname("a")
         ->group('(')
@@ -295,7 +295,7 @@ void GALangST7::buildArithmetic15(uint8_t opcode,
     char type92c[]="\x92\xc0\x00\x00";
     type92c[1]|=opcode;
     insert(mnem(name, 4, type92c, "\xff\xff\x00\x00"))
-        ->help(help+" (indext)")
+        ->help(help)
         ->example(name+" a, (@0xffff)")
         ->regname("a")
         ->group('(')
@@ -303,7 +303,7 @@ void GALangST7::buildArithmetic15(uint8_t opcode,
     char type92e[]="\x92\xe0\x00";
     type92e[1]|=opcode;
     insert(mnem(name, 3, type92e, "\xff\xff\x00"))
-        ->help(help+" (ind-ix1)")
+        ->help(help)
         ->example(name+" a, (@0xff, x)")
         ->regname("a")
         ->group('(')
@@ -312,7 +312,7 @@ void GALangST7::buildArithmetic15(uint8_t opcode,
     char type92d[]="\x92\xd0\x00\x00";
     type92d[1]|=opcode;
     insert(mnem(name, 4, type92d, "\xff\xff\x00\x00"))
-        ->help(help+" (ind-ix2)")
+        ->help(help)
         ->example(name+" a, (@0xffff, x)")
         ->regname("a")
         ->group('(')
@@ -322,7 +322,7 @@ void GALangST7::buildArithmetic15(uint8_t opcode,
     char type91e[]="\x91\xe0\x00";
     type91e[1]|=opcode;
     insert(mnem(name, 3, type91e, "\xff\xff\x00"))
-        ->help(help+" (ind-iy1)")
+        ->help(help)
         ->example(name+" a, (@0xff, y)")
         ->regname("a")
         ->group('(')
@@ -331,11 +331,82 @@ void GALangST7::buildArithmetic15(uint8_t opcode,
     char type01d[]="\x91\xd0\x00\x00";
     type01d[1]|=opcode;
     insert(mnem(name, 4, type01d, "\xff\xff\x00\x00"))
-        ->help(help+" (ind-ixy)")
+        ->help(help)
         ->example(name+" a, (@0xffff, y)")
         ->regname("a")
         ->group('(')
         ->abs("\x00\x00\xff\xff")
+        ->regname("y");
+}
+
+
+//Weirder load instructions.
+void GALangST7::buildLdMisc(){
+    QString help="Load";
+    insert(mnem("ld", 1, "\x97", "\xff"))
+        ->help(help)
+        ->example("ld x, a")
+        ->regname("x")
+        ->regname("a");
+    insert(mnem("ld", 1, "\x9f", "\xff"))
+        ->help(help)
+        ->example("ld a, x")
+        ->regname("a")
+        ->regname("x");
+    insert(mnem("ld", 2, "\x90\x97", "\xff\xff"))
+        ->help(help)
+        ->example("ld y, a")
+        ->regname("y")
+        ->regname("a");
+    insert(mnem("ld", 2, "\x90\x9f", "\xff\xff"))
+        ->help(help)
+        ->example("ld a, y")
+        ->regname("a")
+        ->regname("y");
+    insert(mnem("ld", 2, "\x90\x93", "\xff\xff"))
+        ->help(help)
+        ->example("ld y, x")
+        ->regname("y")
+        ->regname("x");
+    insert(mnem("ld", 1, "\x93", "\xff"))
+        ->help(help)
+        ->example("ld x, y")
+        ->regname("x")
+        ->regname("y");
+
+
+    insert(mnem("ld", 1, "\x9e", "\xff"))
+        ->help(help)
+        ->example("ld a, s")
+        ->regname("a")
+        ->regname("s");
+    insert(mnem("ld", 1, "\x95", "\xff"))
+        ->help(help)
+        ->example("ld s, a")
+        ->regname("s")
+        ->regname("a");
+
+
+    insert(mnem("ld", 1, "\x96", "\xff"))
+        ->help(help)
+        ->example("ld x, s")
+        ->regname("x")
+        ->regname("s");
+    insert(mnem("ld", 1, "\x94", "\xff"))
+        ->help(help)
+        ->example("ld s, x")
+        ->regname("s")
+        ->regname("x");
+
+    insert(mnem("ld", 2, "\x90\x96", "\xff\xff"))
+        ->help(help)
+        ->example("ld y, s")
+        ->regname("y")
+        ->regname("s");
+    insert(mnem("ld", 2, "\x90\x94", "\xff\xff"))
+        ->help(help)
+        ->example("ld s, y")
+        ->regname("s")
         ->regname("y");
 }
 
@@ -346,7 +417,7 @@ void GALangST7::buildLdToX(){
 
     //First half inherited from 6805.
     insert(mnem(name, 2, "\xae\x00", "\xff\x00"))            //Immediate
-        ->help(help+" (imm)")
+        ->help(help)
         ->example(name+" x, #0xff")
         ->regname("x")
         ->imm("\x00\xff");
@@ -597,7 +668,7 @@ void GALangST7::buildLdFromY(){
         ->regname("y");
     b->regname("y");
 
-    //92 prefix, double-indirection
+    //double-indirection
     auto c=insert(mnem(name, 3, "\x91\xbf\x00", "\xff\xff\x00"))
                  ->help(help)
                  ->example(name+" (@0xff), y");
@@ -627,12 +698,12 @@ void GALangST7::buildLdFromY(){
 
 }
 
-//15 opcode arithmetic instruction, destination A.
+//14 opcode arithmetic instruction, source A.
 void GALangST7::buildArithmetic14fromA(uint8_t opcode,
                                        QString name,
                                        QString help){
-    /* The 15-opcode operations have the accumulator (A)
-     * as the destination register.
+    /* The 14-opcode operations have the accumulator (A)
+     * as the source register.
      */
 
 
@@ -643,28 +714,28 @@ void GALangST7::buildArithmetic14fromA(uint8_t opcode,
     char typeb[]="\xb0\x00";
     typeb[0]|=opcode;
     insert(mnem(name, 2, typeb, "\xff\x00"))            //Short
-        ->help(help+" (dir)")
+        ->help(help)
         ->example(name+" @0xff, a")
         ->abs("\x00\xff")
         ->regname("a");
     char typec[]="\xc0\x00\x00";
     typec[0]|=opcode;
     insert(mnem(name, 3, typec, "\xff\x00\x00"))    //Long
-        ->help(help+" (ext)")
+        ->help(help)
         ->example(name+" @0xffff, a")
         ->abs("\x00\xff\xff")
         ->regname("a");
     char typef[]="\xf0";
     typef[0]|=opcode;
     insert(mnem(name, 1, typef, "\xff"))
-        ->help(help+" (ix)")
+        ->help(help)
         ->example(name+" @x, a")
         ->regnameind("x")
         ->regname("a");
     char typee[]="\xe0\x00";
     typee[0]|=opcode;
     auto a=insert(mnem(name, 2, typee, "\xff\x00"))
-                 ->help(help+" (ix1)")
+                 ->help(help)
                  ->example(name+" (0xff, x), a");
     a->group('(')
         ->adr("\x00\xff")
@@ -674,7 +745,7 @@ void GALangST7::buildArithmetic14fromA(uint8_t opcode,
     char typed[]="\xd0\x00\x00";
     typed[0]|=opcode;
     auto b=insert(mnem(name, 3, typed, "\xff\x00\x00"))
-                 ->help(help+" (ix2)")
+                 ->help(help)
                  ->example(name+" (0xffff, x), a");
     b->group('(')
         ->adr("\x00\xff\xff")
@@ -688,14 +759,14 @@ void GALangST7::buildArithmetic14fromA(uint8_t opcode,
     char type90f[]="\x90\xf0";
     type90f[1]|=opcode;
     insert(mnem(name, 2, type90f, "\xff\xff"))
-        ->help(help+" (iy)")
+        ->help(help)
         ->example(name+" @y, a")
         ->regnameind("y")
         ->regname("a");
     char type90e[]="\x90\xe0\x00";
     type90e[1]|=opcode;
     auto c=insert(mnem(name, 3, type90e, "\xff\xff\x00"))
-        ->help(help+" (iy1)")
+        ->help(help)
         ->example(name+" (0xff, y), a");
     c->group('(')
         ->adr("\x00\x00\xff")
@@ -704,7 +775,7 @@ void GALangST7::buildArithmetic14fromA(uint8_t opcode,
     char type90d[]="\x90\xd0\x00\x00";
     type90d[1]|=opcode;
     auto d=insert(mnem(name, 4, type90d, "\xff\xff\x00\x00"))
-                 ->help(help+" (iy2)")
+                 ->help(help)
                  ->example(name+" (0xffff, y), a");
     d->group('(')
         ->adr("\x00\x00\xff\xff")
@@ -714,7 +785,7 @@ void GALangST7::buildArithmetic14fromA(uint8_t opcode,
     char type92b[]="\x92\xb0\x00";
     type92b[1]|=opcode;
     auto e=insert(mnem(name, 3, type92b, "\xff\xff\x00"))
-                 ->help(help+" (indir)")
+                 ->help(help)
                  ->example(name+" (@0xff), a");
     e->group('(')
         ->abs("\x00\x00\xff");
@@ -722,7 +793,7 @@ void GALangST7::buildArithmetic14fromA(uint8_t opcode,
     char type92c[]="\x92\xc0\x00\x00";
     type92c[1]|=opcode;
     auto f=insert(mnem(name, 4, type92c, "\xff\xff\x00\x00"))
-                 ->help(help+" (indext)")
+                 ->help(help)
                  ->example(name+" (@0xffff), a");
     f->group('(')
         ->abs("\x00\x00\xff\xff");
@@ -731,7 +802,7 @@ void GALangST7::buildArithmetic14fromA(uint8_t opcode,
     char type92e[]="\x92\xe0\x00";
     type92e[1]|=opcode;
     auto g=insert(mnem(name, 3, type92e, "\xff\xff\x00"))
-                 ->help(help+" (ind-ix1)")
+                 ->help(help)
                  ->example(name+" (@0xff, x), a");
     g->group('(')
         ->abs("\x00\x00\xff")
@@ -741,7 +812,7 @@ void GALangST7::buildArithmetic14fromA(uint8_t opcode,
     char type92d[]="\x92\xd0\x00\x00";
     type92d[1]|=opcode;
     auto h=insert(mnem(name, 4, type92d, "\xff\xff\x00\x00"))
-                 ->help(help+" (ind-ix2)")
+                 ->help(help)
                  ->example(name+" (@0xffff, x), a");
     h->group('(')
         ->abs("\x00\x00\xff\xff")
@@ -752,7 +823,7 @@ void GALangST7::buildArithmetic14fromA(uint8_t opcode,
     char type91e[]="\x91\xe0\x00";
     type91e[1]|=opcode;
     auto i=insert(mnem(name, 3, type91e, "\xff\xff\x00"))
-                 ->help(help+" (ind-iy1)")
+                 ->help(help)
                  ->example(name+" (@0xff, y), a");
     i->group('(')
         ->abs("\x00\x00\xff")
@@ -761,7 +832,7 @@ void GALangST7::buildArithmetic14fromA(uint8_t opcode,
     char type91d[]="\x91\xd0\x00\x00";
     type91d[1]|=opcode;
     auto j=insert(mnem(name, 4, type91d, "\xff\xff\x00\x00"))
-                 ->help(help+" (ind-ixy)")
+                 ->help(help)
                  ->example(name+" (@0xffff, y), a");
     j->group('(')
         ->abs("\x00\x00\xff\xff")
@@ -806,7 +877,7 @@ void GALangST7::buildArithmetic11(uint8_t opcode,
     char type7[]="\x70";
     type7[0]|=opcode;
     insert(mnem(name, 1, type7, "\xff"))
-        ->help(help+" (ix)")
+        ->help(help)
         ->example(name+" @x")
         ->regnameind("x");
 
@@ -889,7 +960,7 @@ GALangST7::GALangST7(bool mode6805) {
     regnames.clear();
     regnames<<"a"<<"x";
     if(!mode6805)
-        regnames<<"y"<<"cc";
+        regnames<<"y"<<"cc"<<"s";
 
     buildArithmetic15(0x09, "adc", "Add w/ Carry");
     buildArithmetic15(0x0b, "add", "Add");
@@ -921,8 +992,24 @@ GALangST7::GALangST7(bool mode6805) {
             ->abs("\x00\x00\xff");
         a->bit3("\x00\x0e\x00");
     }
-    //BTJF
-    //BTJT
+
+
+    //BTJF TODO FIXME
+    insert(mnem("btjf", 3, "\x01\x00\x00", "\xf1\x00\x00"))
+        ->help("Branch Test Jump if False")
+        ->example("here: btjf bit4, @0xff, here")
+        ->bit3("\x0e\x00\x00")
+        ->abs("\x00\xff\x00")
+        ->rel("\x00\x00\xff");
+
+    //BTJT TODO FIXME
+    insert(mnem("btjt", 3, "\x00\x00\x00", "\xf1\x00\x00"))
+        ->help("Branch Test Jump if True")
+        ->example("here: btjt bit4, @0xff, here")
+        ->bit3("\x0e\x00\x00")
+        ->abs("\x00\xff\x00")
+        ->rel("\x00\x00\xff");
+
     buildCallJump(0x0d, "call", "Call Subroutine");
     insert(mnem("callr", 2, "\xad\x00", "\xff\x00")) //Formerly BSR.
         ->help("Branch to Subroutine. (rel)")
@@ -969,8 +1056,8 @@ GALangST7::GALangST7(bool mode6805) {
     buildLdToX();
     buildLdFromX();
     buildLdToY();
-    buildLdFromY(); //FIXME
-    //FIXME: Between registers.
+    buildLdFromY();
+    buildLdMisc();
 
 
     /* Mul isn't really a part of 6805, but we don't cut this
