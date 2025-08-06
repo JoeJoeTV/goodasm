@@ -15,6 +15,29 @@
  * Y is a new index register, never existing on 6805.
  */
 
+//Relative and conditional jumps.
+void GALangST7::buildRelJump(uint8_t opcode,
+                             QString name,
+                             QString help){
+    char rel[]="\x00\x00";
+    rel[0]|=opcode;
+    insert(mnem(name, 2, rel, "\xff\x00"))
+        ->help(help)
+        ->example(name+" 0xff")
+        ->adr("\x00\xff");
+
+    //Bail if we aren't doing the extended instructions.
+    if(mode6805) return;
+
+    char rel92[]="\x92\x00\x00";
+    rel92[1]|=opcode;
+    insert(mnem(name, 3, rel92, "\xff\xff\x00"))
+        ->help(help)
+        ->example(name+" @0xff")
+        ->abs("\x00\x00\xff");
+
+}
+
 //CALL and JP.
 void GALangST7::buildCallJump(uint8_t opcode,
                               QString name,
@@ -316,6 +339,437 @@ void GALangST7::buildArithmetic15(uint8_t opcode,
         ->regname("y");
 }
 
+//Kinda like arithmetic, destionation X.
+void GALangST7::buildLdToX(){
+    QString help="Load to X";
+    QString name="ld";
+
+    //First half inherited from 6805.
+    insert(mnem(name, 2, "\xae\x00", "\xff\x00"))            //Immediate
+        ->help(help+" (imm)")
+        ->example(name+" x, #0xff")
+        ->regname("x")
+        ->imm("\x00\xff");
+    insert(mnem(name, 2, "\xbe\x00", "\xff\x00"))            //Short
+        ->help(help)
+        ->example(name+" x, @0xff")
+        ->regname("x")
+        ->abs("\x00\xff");
+    insert(mnem(name, 3, "\xce\x00\x00", "\xff\x00\x00"))    //Long
+        ->help(help)
+        ->example(name+" x, @0xffff")
+        ->regname("x")
+        ->abs("\x00\xff\xff");
+    insert(mnem(name, 1, "\xfe", "\xff"))
+        ->help(help)
+        ->example(name+" x, @x")
+        ->regname("x")
+        ->regnameind("x");
+    insert(mnem(name, 2, "\xee\x00", "\xff\x00"))
+        ->help(help)
+        ->example(name+" x, (0xff, x)")
+        ->regname("x")
+        ->group('(')
+        ->adr("\x00\xff")
+        ->regname("x");
+    insert(mnem(name, 3, "\xde\x00\x00", "\xff\x00\x00"))
+        ->help(help)
+        ->example(name+" x, (0xffff, x)")
+        ->regname("x")
+        ->group('(')
+        ->adr("\x00\xff\xff")
+        ->regname("x");
+
+    //Exit early if not using extended instructions.
+    if(mode6805) return;
+
+
+    //92 prefix, double-indirection
+    insert(mnem(name, 3, "\x92\xbe\x00", "\xff\xff\x00"))
+        ->help(help)
+        ->example(name+" x, (@0xff)")
+        ->regname("x")
+        ->group('(')
+        ->abs("\x00\x00\xff");
+    insert(mnem(name, 4, "\x92\xce\x00\x00", "\xff\xff\x00\x00"))
+        ->help(help)
+        ->example(name+" x, (@0xffff)")
+        ->regname("x")
+        ->group('(')
+        ->abs("\x00\x00\xff\xff");
+    insert(mnem(name, 3, "\x92\xee\x00", "\xff\xff\x00"))
+        ->help(help)
+        ->example(name+" x, (@0xff, x)")
+        ->regname("x")
+        ->group('(')
+        ->abs("\x00\x00\xff")
+        ->regname("x");
+    insert(mnem(name, 4, "\x92\xde\x00\x00", "\xff\xff\x00\x00"))
+        ->help(help)
+        ->example(name+" x, (@0xffff, x)")
+        ->regname("x")
+        ->group('(')
+        ->abs("\x00\x00\xff\xff")
+        ->regname("x");
+}
+
+//Kinda like arithmetic, destionation X.
+void GALangST7::buildLdFromX(){
+    QString help="Load from X";
+    QString name="ld";
+
+    //First half inherited from 6805.
+    insert(mnem(name, 2, "\xbf\x00", "\xff\x00"))            //Short
+        ->help(help)
+        ->example(name+" @0xff, x")
+        ->abs("\x00\xff")
+        ->regname("x");
+    insert(mnem(name, 3, "\xcf\x00\x00", "\xff\x00\x00"))    //Long
+        ->help(help)
+        ->example(name+" @0xffff, x")
+        ->abs("\x00\xff\xff")
+        ->regname("x");
+    insert(mnem(name, 1, "\xff", "\xff"))
+        ->help(help)
+        ->example(name+" @x, x")
+        ->regnameind("x")
+        ->regname("x");
+    auto a=insert(mnem(name, 2, "\xef\x00", "\xff\x00"))
+                 ->help(help)
+                 ->example(name+" (0xff, x), x");
+    a->group('(')
+        ->adr("\x00\xff")
+        ->regname("x");
+    a->regname("x");
+    auto b=insert(mnem(name, 3, "\xdf\x00\x00", "\xff\x00\x00"))
+                 ->help(help)
+                 ->example(name+" (0xffff, x), x");
+    b->group('(')
+        ->adr("\x00\xff\xff")
+        ->regname("x");
+    b->regname("x");
+
+    //Exit early if not using extended instructions.
+    if(mode6805) return;
+
+
+    //92 prefix, double-indirection
+    auto c=insert(mnem(name, 3, "\x92\xbf\x00", "\xff\xff\x00"))
+                 ->help(help)
+                 ->example(name+" (@0xff), x");
+    c->group('(')
+        ->abs("\x00\x00\xff");
+    c->regname("x");
+    auto d=insert(mnem(name, 4, "\x92\xcf\x00\x00", "\xff\xff\x00\x00"))
+                 ->help(help)
+                 ->example(name+" (@0xffff), x");
+    d->group('(')
+        ->abs("\x00\x00\xff\xff");
+    d->regname("x");
+    auto e=insert(mnem(name, 3, "\x92\xef\x00", "\xff\xff\x00"))
+                 ->help(help)
+                 ->example(name+" (@0xff, x), x");
+    e->group('(')
+        ->abs("\x00\x00\xff")
+        ->regname("x");
+    e->regname("x");
+    auto f=insert(mnem(name, 4, "\x92\xdf\x00\x00", "\xff\xff\x00\x00"))
+                 ->help(help)
+                 ->example(name+" (@0xffff, x), x");
+    f->group('(')
+        ->abs("\x00\x00\xff\xff")
+        ->regname("x");
+    f->regname("x");
+
+}
+
+
+//Kinda like arithmetic, destionation X.
+void GALangST7::buildLdToY(){
+    QString help="Load to Y";
+    QString name="ld";
+
+    //Exit early if not using extended instructions.
+    if(mode6805) return;
+
+    //First half inherited from 6805.
+    insert(mnem(name, 3, "\x90\xae\x00", "\xff\xff\x00"))            //Immediate
+        ->help(help)
+        ->example(name+" y, #0xff")
+        ->regname("y")
+        ->imm("\x00\x00\xff");
+    insert(mnem(name, 3, "\x90\xbe\x00", "\xff\xff\x00"))            //Short
+        ->help(help)
+        ->example(name+" y, @0xff")
+        ->regname("y")
+        ->abs("\x00\x00\xff");
+    insert(mnem(name, 4, "\x90\xce\x00\x00", "\xff\xff\x00\x00"))    //Long
+        ->help(help)
+        ->example(name+" y, @0xffff")
+        ->regname("y")
+        ->abs("\x00\x00\xff\xff");
+    insert(mnem(name, 2, "\x90\xfe", "\xff\xff"))
+        ->help(help)
+        ->example(name+" y, @y")
+        ->regname("y")
+        ->regnameind("y");
+    insert(mnem(name, 3, "\x90\xee\x00", "\xff\xff\x00"))
+        ->help(help)
+        ->example(name+" y, (0xff, y)")
+        ->regname("y")
+        ->group('(')
+        ->adr("\x00\x00\xff")
+        ->regname("y");
+    insert(mnem(name, 4, "\x90\xde\x00\x00", "\xff\xff\x00\x00"))
+        ->help(help)
+        ->example(name+" y, (0xffff, y)")
+        ->regname("y")
+        ->group('(')
+        ->adr("\x00\x00\xff\xff")
+        ->regname("y");
+
+
+
+    //double-indirection
+    insert(mnem(name, 3, "\x91\xbe\x00", "\xff\xff\x00"))
+        ->help(help)
+        ->example(name+" y, (@0xff)")
+        ->regname("y")
+        ->group('(')
+        ->abs("\x00\x00\xff");
+    insert(mnem(name, 4, "\x91\xce\x00\x00", "\xff\xff\x00\x00"))
+        ->help(help)
+        ->example(name+" y, (@0xffff)")
+        ->regname("y")
+        ->group('(')
+        ->abs("\x00\x00\xff\xff");
+    insert(mnem(name, 3, "\x91\xee\x00", "\xff\xff\x00"))
+        ->help(help)
+        ->example(name+" y, (@0xff, y)")
+        ->regname("y")
+        ->group('(')
+        ->abs("\x00\x00\xff")
+        ->regname("y");
+    insert(mnem(name, 4, "\x91\xde\x00\x00", "\xff\xff\x00\x00"))
+        ->help(help)
+        ->example(name+" y, (@0xffff, y)")
+        ->regname("y")
+        ->group('(')
+        ->abs("\x00\x00\xff\xff")
+        ->regname("y");
+}
+
+//Kinda like arithmetic, source Y.
+void GALangST7::buildLdFromY(){
+    QString help="Load from Y";
+    QString name="ld";
+
+    //Exit early if not using extended instructions.
+    if(mode6805) return;
+
+    insert(mnem(name, 3, "\x90\xbf\x00", "\xff\xff\x00"))            //Short
+        ->help(help)
+        ->example(name+" @0xff, y")
+        ->abs("\x00\x00\xff")
+        ->regname("y");
+    insert(mnem(name, 4, "\x90\xcf\x00\x00", "\xff\xff\x00\x00"))    //Long
+        ->help(help)
+        ->example(name+" @0xffff, y")
+        ->abs("\x00\x00\xff\xff")
+        ->regname("y");
+    insert(mnem(name, 2, "\x90\xff", "\xff\xff"))
+        ->help(help)
+        ->example(name+" @y, y")
+        ->regnameind("y")
+        ->regname("y");
+    auto a=insert(mnem(name, 3, "\x90\xef\x00", "\xff\xff\x00"))
+                 ->help(help)
+                 ->example(name+" (0xff, y), y");
+    a->group('(')
+        ->adr("\x00\x00\xff")
+        ->regname("y");
+    a->regname("y");
+    auto b=insert(mnem(name, 4, "\x90\xdf\x00\x00", "\xff\xff\x00\x00"))
+                 ->help(help)
+                 ->example(name+" (0xffff, y), y");
+    b->group('(')
+        ->adr("\x00\x00\xff\xff")
+        ->regname("y");
+    b->regname("y");
+
+    //92 prefix, double-indirection
+    auto c=insert(mnem(name, 3, "\x91\xbf\x00", "\xff\xff\x00"))
+                 ->help(help)
+                 ->example(name+" (@0xff), y");
+    c->group('(')
+        ->abs("\x00\x00\xff");
+    c->regname("y");
+    auto d=insert(mnem(name, 4, "\x91\xcf\x00\x00", "\xff\xff\x00\x00"))
+                 ->help(help)
+                 ->example(name+" (@0xffff), y");
+    d->group('(')
+        ->abs("\x00\x00\xff\xff");
+    d->regname("y");
+    auto e=insert(mnem(name, 3, "\x91\xef\x00", "\xff\xff\x00"))
+                 ->help(help)
+                 ->example(name+" (@0xff, y), y");
+    e->group('(')
+        ->abs("\x00\x00\xff")
+        ->regname("y");
+    e->regname("y");
+    auto f=insert(mnem(name, 4, "\x91\xdf\x00\x00", "\xff\xff\x00\x00"))
+                 ->help(help)
+                 ->example(name+" (@0xffff, y), y");
+    f->group('(')
+        ->abs("\x00\x00\xff\xff")
+        ->regname("y");
+    f->regname("y");
+
+}
+
+//15 opcode arithmetic instruction, destination A.
+void GALangST7::buildArithmetic14fromA(uint8_t opcode,
+                                       QString name,
+                                       QString help){
+    /* The 15-opcode operations have the accumulator (A)
+     * as the destination register.
+     */
+
+
+    assert(!(opcode&0xF0)); //Only lower nybble should be set.
+
+    //First half inherited from 6805.
+    //Immediate mode doesn't exist here.
+    char typeb[]="\xb0\x00";
+    typeb[0]|=opcode;
+    insert(mnem(name, 2, typeb, "\xff\x00"))            //Short
+        ->help(help+" (dir)")
+        ->example(name+" @0xff, a")
+        ->abs("\x00\xff")
+        ->regname("a");
+    char typec[]="\xc0\x00\x00";
+    typec[0]|=opcode;
+    insert(mnem(name, 3, typec, "\xff\x00\x00"))    //Long
+        ->help(help+" (ext)")
+        ->example(name+" @0xffff, a")
+        ->abs("\x00\xff\xff")
+        ->regname("a");
+    char typef[]="\xf0";
+    typef[0]|=opcode;
+    insert(mnem(name, 1, typef, "\xff"))
+        ->help(help+" (ix)")
+        ->example(name+" @x, a")
+        ->regnameind("x")
+        ->regname("a");
+    char typee[]="\xe0\x00";
+    typee[0]|=opcode;
+    auto a=insert(mnem(name, 2, typee, "\xff\x00"))
+                 ->help(help+" (ix1)")
+                 ->example(name+" (0xff, x), a");
+    a->group('(')
+        ->adr("\x00\xff")
+        ->regname("x");
+    a->regname("a");
+
+    char typed[]="\xd0\x00\x00";
+    typed[0]|=opcode;
+    auto b=insert(mnem(name, 3, typed, "\xff\x00\x00"))
+                 ->help(help+" (ix2)")
+                 ->example(name+" (0xffff, x), a");
+    b->group('(')
+        ->adr("\x00\xff\xff")
+        ->regname("x");
+    b->regname("a");
+
+    //Exit early if not using extended instructions.
+    if(mode6805) return;
+
+    //90 prefix, indexing by Y.
+    char type90f[]="\x90\xf0";
+    type90f[1]|=opcode;
+    insert(mnem(name, 2, type90f, "\xff\xff"))
+        ->help(help+" (iy)")
+        ->example(name+" @y, a")
+        ->regnameind("y")
+        ->regname("a");
+    char type90e[]="\x90\xe0\x00";
+    type90e[1]|=opcode;
+    auto c=insert(mnem(name, 3, type90e, "\xff\xff\x00"))
+        ->help(help+" (iy1)")
+        ->example(name+" (0xff, y), a");
+    c->group('(')
+        ->adr("\x00\x00\xff")
+        ->regname("y");
+    c->regname("a");
+    char type90d[]="\x90\xd0\x00\x00";
+    type90d[1]|=opcode;
+    auto d=insert(mnem(name, 4, type90d, "\xff\xff\x00\x00"))
+                 ->help(help+" (iy2)")
+                 ->example(name+" (0xffff, y), a");
+    d->group('(')
+        ->adr("\x00\x00\xff\xff")
+        ->regname("y");
+    d->regname("a");
+    //92 prefix, double-indirection
+    char type92b[]="\x92\xb0\x00";
+    type92b[1]|=opcode;
+    auto e=insert(mnem(name, 3, type92b, "\xff\xff\x00"))
+                 ->help(help+" (indir)")
+                 ->example(name+" (@0xff), a");
+    e->group('(')
+        ->abs("\x00\x00\xff");
+    e->regname("a");
+    char type92c[]="\x92\xc0\x00\x00";
+    type92c[1]|=opcode;
+    auto f=insert(mnem(name, 4, type92c, "\xff\xff\x00\x00"))
+                 ->help(help+" (indext)")
+                 ->example(name+" (@0xffff), a");
+    f->group('(')
+        ->abs("\x00\x00\xff\xff");
+    f->regname("a");
+
+    char type92e[]="\x92\xe0\x00";
+    type92e[1]|=opcode;
+    auto g=insert(mnem(name, 3, type92e, "\xff\xff\x00"))
+                 ->help(help+" (ind-ix1)")
+                 ->example(name+" (@0xff, x), a");
+    g->group('(')
+        ->abs("\x00\x00\xff")
+        ->regname("x");
+    g->regname("a");
+
+    char type92d[]="\x92\xd0\x00\x00";
+    type92d[1]|=opcode;
+    auto h=insert(mnem(name, 4, type92d, "\xff\xff\x00\x00"))
+                 ->help(help+" (ind-ix2)")
+                 ->example(name+" (@0xffff, x), a");
+    h->group('(')
+        ->abs("\x00\x00\xff\xff")
+        ->regname("x");
+    h->regname("a");
+
+    //91 prefix, double-indirection on Y.
+    char type91e[]="\x91\xe0\x00";
+    type91e[1]|=opcode;
+    auto i=insert(mnem(name, 3, type91e, "\xff\xff\x00"))
+                 ->help(help+" (ind-iy1)")
+                 ->example(name+" (@0xff, y), a");
+    i->group('(')
+        ->abs("\x00\x00\xff")
+        ->regname("y");
+    i->regname("a");
+    char type91d[]="\x91\xd0\x00\x00";
+    type91d[1]|=opcode;
+    auto j=insert(mnem(name, 4, type91d, "\xff\xff\x00\x00"))
+                 ->help(help+" (ind-ixy)")
+                 ->example(name+" (@0xffff, y), a");
+    j->group('(')
+        ->abs("\x00\x00\xff\xff")
+        ->regname("y");
+    j->regname("a");
+
+}
+
 
 //11 opcode arithmetic instruction.  (not A)
 void GALangST7::buildArithmetic11(uint8_t opcode,
@@ -437,7 +891,6 @@ GALangST7::GALangST7(bool mode6805) {
     if(!mode6805)
         regnames<<"y"<<"cc";
 
-    //ADC, page 33
     buildArithmetic15(0x09, "adc", "Add w/ Carry");
     buildArithmetic15(0x0b, "add", "Add");
     buildArithmetic15(0x04, "and", "Bitwise AND");
@@ -470,9 +923,16 @@ GALangST7::GALangST7(bool mode6805) {
     }
     //BTJF
     //BTJT
-    //CALL
     buildCallJump(0x0d, "call", "Call Subroutine");
-    //CALLR
+    insert(mnem("callr", 2, "\xad\x00", "\xff\x00")) //Formerly BSR.
+        ->help("Branch to Subroutine. (rel)")
+        ->example("here: callr here")
+        ->rel("\x00\xff");
+    if(!mode6805)
+        insert(mnem("callr", 3, "\x92\xad\x00", "\xff\xff\x00")) //Formerly BSR.
+            ->help("Branch to Subroutine. (rel)")
+            ->example("callr @0xde")
+            ->abs("\x00\x00\xff");
     buildArithmetic11(0x0f, "clr", "Clear");
     buildArithmetic15(0x01, "cp", "Compare");
     buildArithmetic11(0x03, "cpl", "Logical 1-Complement");
@@ -480,14 +940,42 @@ GALangST7::GALangST7(bool mode6805) {
     insert(mnem("halt", "\x8e"))->help("Stop Oscillator Until Interrupt");
     buildArithmetic11(0x0c, "inc", "Increment");
     insert(mnem("iret", "\x80"))->help("Interrupt Return");
-    //JP
-    //JRA
-    //JRxx -- Conditional Jump
-    buildArithmetic15(0x06, "ld", "Load");
+    buildCallJump(0x0c, "jp",   "Absolute Jump");
+
+    buildRelJump(0x20, "jra",   "Jump Relative Always");
+    //JRxx -- Conditional Jumps
+    buildRelJump(0x25, "jrc",   "Jump Relative Carry");
+    buildRelJump(0x27, "jreq",  "Jump Relative ");
+    buildRelJump(0x21, "jrf",   "Jump Relative False");
+    buildRelJump(0x29, "jrh",   "Jump Relative Half-Carry");
+    buildRelJump(0x2f, "jrih",  "Jump Relative Interrupt High");
+    buildRelJump(0x2e, "jril",  "Jump Relative Interrupt Low");
+    buildRelJump(0x2d, "jrm",   "Jump Relative Interrupt Mask");
+    buildRelJump(0x2b, "jrmi",  "Jump Relative Minus");
+    buildRelJump(0x24, "jrnc",  "Jump Relative Not Carry");
+    buildRelJump(0x26, "jrne",  "Jump Relative Not Equal");
+    buildRelJump(0x28, "jrnh",  "Jump Relative Not Half Carry");
+    buildRelJump(0x2c, "jrnm",  "Jump Relative Not Interrupt Mask");
+    buildRelJump(0x2a, "jrpl",  "Jump Relative Plus");
+    //buildRelJump(0x20, "jrt", "Jump Relative True"); //Collision
+    //buildRelJump(0x24, "jruge", "Jump Relative Unsigned Greater Equal");  //Collision
+    buildRelJump(0x22, "jrugt", "Jump Relative Unsigned Greater Than");
+    buildRelJump(0x23, "jrule", "Jump Relative Unsigned Lower or Equal");
+    //buildRelJump(0x25, "jrult", "Jump Relative Unsigned Lower Than"); //Collision
+
+
+    buildArithmetic15(0x06, "ld", "Load to A"); //In to A
+    buildArithmetic14fromA(0x07, "ld", "Load from A");
+    buildLdToX();
+    buildLdFromX();
+    buildLdToY();
+    buildLdFromY(); //FIXME
+    //FIXME: Between registers.
+
 
     /* Mul isn't really a part of 6805, but we don't cut this
      * out in 6805 mode because many 6805 chips like the ST16C54
-     * include mul a, x.
+     * include the basic form.
      */
     insert(mnem("mul", 1, "\x42", "\xff"))
         ->help("Multiply.")

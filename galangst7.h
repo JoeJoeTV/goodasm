@@ -16,6 +16,19 @@ private:
     void buildArithmetic15(uint8_t opcode,
                            QString name,
                            QString help);
+    //Load instruction, destination x
+    void buildLdToX();
+    //Load instruction, from x
+    void buildLdFromX();
+    //Load instruction, destination y
+    void buildLdToY();
+    //Load instruction, from y
+    void buildLdFromY();
+
+    //14 opcode arithmetic instruction, source A.
+    void buildArithmetic14fromA(uint8_t opcode,
+                           QString name,
+                           QString help);
     //11 opcode arithmetic instruction.  (not A)
     void buildArithmetic11(uint8_t opcode,
                            QString name,
@@ -24,10 +37,15 @@ private:
     void buildStackOp(uint8_t opcode,
                       QString name,
                       QString help);
-    //CALL and JP.
+    //CALL and absolutely Jumps.
     void buildCallJump(uint8_t opcode,
                        QString name,
                        QString help);
+    //Relative and conditional jumps.
+    void buildRelJump(uint8_t opcode,
+                      QString name,
+                      QString help);
+
 };
 
 #endif // GALANGST7_H
