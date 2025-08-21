@@ -68,6 +68,7 @@ fuzz:
 	goodasm --fuzz --s2000
 	goodasm --fuzz --8051
 	goodasm --fuzz --6805
+	goodasm --fuzz --st7
 	goodasm --fuzz --chip8
 	goodasm --fuzz --z80
 	goodasm --fuzz --z8

@@ -187,7 +187,7 @@ int main(int argc, char *argv[]){
                                 );
     parser.addOption(lang6805);
     QCommandLineOption langST7(QStringList()<<"st7",
-                                "ST7 (broken)"
+                                "ST7 (alpha)"
                                 );
     parser.addOption(langST7);
     QCommandLineOption langFcard(QStringList()<<"fcard",
