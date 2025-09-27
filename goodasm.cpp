@@ -22,6 +22,7 @@
 #include "galangst7.h"
 #include "galang8051.h"
 #include "galangsm83.h"
+#include "galangscpu2.h"
 #include "galangchip8.h"
 #include "galangz80.h"
 #include "galangz8.h"
@@ -69,6 +70,7 @@ bool GoodASM::setLanguage(QString language){
         languages.append(new GALangST7());
         languages.append(new GALang8051());
         languages.append(new GALangSM83());  //GameBoy.
+        languages.append(new GALangSCPU2());  //SaarCPU2 (name not final).
         languages.append(new GALangChip8());
         languages.append(new GALangZ80());
         languages.append(new GALangZ8());

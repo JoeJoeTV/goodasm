@@ -8,6 +8,7 @@ all:
 	make -C 6502/nanochess clean all
 	make -C marc4 clean all
 	make -C sm83 clean all
+	make -C scpu2 clean all
 	make -C tlcs47 clean all
 	make -C 6805 clean all
 	make -C fcard clean all
@@ -28,6 +29,7 @@ clean:
 	make -C 6502/nanochess clean
 	make -C marc4 clean
 	make -C sm83 clean
+	make -C scpu2 clean
 	make -C tlcs47 clean
 	make -C 6805 clean
 	make -C fcard clean
@@ -45,6 +47,7 @@ selftests:
 	goodasm --test --6502
 	goodasm --test --marc4
 	goodasm --test --sm83
+#	goodasm --test --scpu2
 	goodasm --test --tlcs47
 	goodasm --test --s2000
 	goodasm --test --8051
@@ -64,6 +67,7 @@ fuzz:
 	goodasm --fuzz --6502
 	goodasm --fuzz --marc4
 	goodasm --fuzz --sm83
+#	goodasm --fuzz --scpu2
 	goodasm --fuzz --tlcs47
 	goodasm --fuzz --s2000
 	goodasm --fuzz --8051

@@ -198,6 +198,10 @@ int main(int argc, char *argv[]){
                                 "Sharp SM83 / Gameboy (stable)"
                                 );
     parser.addOption(langSM83);
+    QCommandLineOption langSCPU2(QStringList()<<"scpu2",
+                                "SaarCPU2 (name not final)"
+                                );
+    parser.addOption(langSCPU2);
     QCommandLineOption langZ80(QStringList()<<"z80",
                                "Zilog Z80 (stable)"
                                );
@@ -288,6 +292,8 @@ int main(int argc, char *argv[]){
         language="8051";
     else if(parser.isSet(langSM83))
         language="sm83";
+    else if(parser.isSet(langSCPU2))
+        language="scpu2";
     else if(parser.isSet(langChip8))
         language="chip8";
     else if(parser.isSet(langZ80))

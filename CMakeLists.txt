@@ -60,6 +60,7 @@ set(GOODASM_SOURCES
     galang6502.h galang6502.cpp
     galang8051.h galang8051.cpp
     galangsm83.h galangsm83.cpp
+    galangscpu2.h galangscpu2.cpp
     galang6805.h galang6805.cpp
     galangst7.h galangst7.cpp
     galangchip8.h galangchip8.cpp
