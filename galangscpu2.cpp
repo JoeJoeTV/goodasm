@@ -189,6 +189,13 @@ GALangSCPU2::GALangSCPU2() {
         ->scpu2reg16("\x30\x00\x00")
         ->imm("\x00\xff\xff");
 
+    // Overload with instruction above to also allow addresses to be written to 16-bit register pairs
+    insert(mnem("ld", 3, "\x01\x00\x00", "\xcf\x00\x00"))
+        ->help("Load r16 with 16-bit address.")
+        ->example("ld sp, 0xdead")
+        ->scpu2reg16("\x30\x00\x00")
+        ->adr("\x00\xff\xff");
+
 
     insert(mnem("ld", 3, "\x08\x00\x00", "\xff\x00\x00"))
         ->help("Load to 16-bit address the value of stack pointer.")
