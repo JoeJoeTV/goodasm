@@ -139,6 +139,7 @@ Options:
   --6805                    68HC05 (stable)
   --fcard                   68HC05SC21 DSS P1 F-Card (stable)
   --sm83, --gb              Sharp SM83 / Gameboy (stable)
+  --scpu2                   SaarCPU2 (name not final)
   --z80                     Zilog Z80 (stable)
   --tlcs47                  Toshiba TLCS47 (alpha)
   --8051                    Intel 8051 (alpha)
