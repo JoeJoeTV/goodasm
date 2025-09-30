@@ -743,11 +743,11 @@ int GAParameterSCPU2Reg8::match(GAParserOperand *op, int len){
     char c=op->value[0].toLatin1();
     switch(c){
         //FIXME: The SCPU2 Register Order might be B, C, D, E, H, L, [HL], A
+        //       -> Yes, it is
     case 'b':
     case 'c':
     case 'd':
     case 'e':
-    case 'f':
     case 'h':
     case 'l':
     case 'a':
@@ -761,7 +761,8 @@ QString GAParameterSCPU2Reg8::decode(GALanguage *lang,
                                     uint64_t adr, const char *bytes,
                                     int inslen){
     uint64_t p=rawdecode(lang,adr,bytes,inslen);
-    assert(p<8); //Reg count on this architecture.
+    assert(p!=6);   // Register 6 is used up by [hl] (indirect hl operand) 
+    assert(p<8);    // Reg count on this architecture.
 
     QString rendering=prefix
                         +regnames[p]

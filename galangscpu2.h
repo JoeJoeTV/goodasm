@@ -30,7 +30,7 @@ public:
 private:
     QString regnames[8]={
         "b", "c", "d", "e",
-        "f", "h", "l", "a"};
+        "h", "l", "_", "a"};
 };
 
 //Represents a 16-bit register pair by SCPU2 name.
